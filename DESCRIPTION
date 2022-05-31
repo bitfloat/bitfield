@@ -1,11 +1,10 @@
 Package: queuebee
 Type: Package
-Title: Handle bit flags recording quality for modeled data products
+Title: Handle Bit-Flags to record Quality for Modeled Data Products
 Version: 0.1.0
 Authors@R: c(
     person("Steffen", "Ehrmann", role = c("aut", "cre"), email = "steffen.ehrmann@posteo.de", comment = c(ORCID = "0000-0002-2958-0796"))
     )
-Maintainer: The package maintainer <yourself@somewhere.net>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
 URL: https://github.com/luckinet/queuebee
@@ -13,4 +12,13 @@ BugReports: https://github.com/luckinet/queuebee/issues
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
+Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
+Imports: 
+    checkmate,
+    dplyr,
+    magrittr,
+    rlang,
+    tibble,
+    tidyr,
+    tidyselect
