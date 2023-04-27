@@ -45,15 +45,14 @@
 #'
 #'
 #' # derive valid values for commodities
-#' validComm <- ontology %>%
-#'   filter(class_from == "commodity") %>%
-#'   distinct(term_from) %>%
-#'   pull(term_from)
+#' validComm <- c("soybean", "maize")
 #'
 #' # specify the quality checks
 #' input %>%
-#'   make_QC(coordinates = c("x", "y"),
-#'           attributes = c("year", "commodity", "landuse", "some_other"),
+#'   make_QC(x = .bit(fun = function(x) is.na(x) | x %in% c(""), flags = 2),
+#'           x = .bit(fun = function(x) x < -180 | x > 180, flags = 2),
+#'           y = .bit(fun = function(x) is.na(x) | x %in% c(""), flags = 2),
+#'           y = .bit(fun = function(x) x < -90 | x > 90, flags = 2),
 #'           year = .bit(fun = function(x) is.na(as.integer(x)), flags = 2),
 #'           commodity = .bit(fun = function(x) !x %in% validComm, flags = 2),
 #'           some_other = .bit(fun = function(x) ifelse(x > 0.5, 0, ifelse(x > 0, 1, 2)),
@@ -69,89 +68,65 @@
 #' @importFrom tidyr unite
 #' @export
 
-make_QC <- function(input, coordinates = NULL, attributes = NULL, ..., sep = ""){
+make_QC <- function(input, ..., sep = ""){
 
   assertDataFrame(x = input)
-  assertCharacter(x = coordinates, len = 2, null.ok = TRUE)
-  assertCharacter(x = attributes, any.missing = FALSE, null.ok = TRUE)
 
   vars <- quos(...)
+  # return(vars)
 
   out <- tibble(.rows = dim(input)[1])
 
-  # test coordinates ...
-  if(!is.null(coordinates)){
+  for(i in seq_along(unique(names(vars)))){
+
+    thisAttrib <- unique(names(vars))[i]
+    if(!testSubset(x = thisAttrib, choices = colnames(input))){
+      message("'", thisAttrib, "' is not part of the column names of the input.")
+      next
+    }
+
+    # test for availability
     temp <- input %>%
-      select(x = coordinates[1], y  = coordinates[2]) %>%
-      testCoords() %>%
-      select(coords = avail,
-             coords2 = range)
+      select(value = all_of(thisAttrib))
+    attribVars <- vars[which(names(vars) %in% thisAttrib)]
 
-    out <- temp %>%
-      unite(col = "coords", contains("coords"), sep = "") %>%
-      select(coords) %>%
-      bind_cols(out, .)
-  }
+    # run other checks, in case available
+    for(j in seq_along(attribVars)){
+      thisTest <- eval_tidy(attribVars[[j]])
+      thisFun <- eval_tidy(thisTest$fun)
+      if(is.function(thisFun)){
+        temp <- temp %>%
+          mutate(flag = suppressWarnings(thisFun(value)))
 
+        uVals <- length(unique(temp$flag))
 
-  if(!is.null(attributes)){
-    for(i in seq_along(attributes)){
-
-      thisAttrib <- attributes[i]
-      if(!testSubset(x = thisAttrib, choices = colnames(input))){
-        message("'", thisAttrib, "' is not part of the column names of the input.")
-        next
-      }
-
-      # test for availability
-      temp <- input %>%
-        select(value = all_of(thisAttrib)) %>%
-        mutate(code = if_else(is.na(value) | value %in% c(""), 1, 0))
-
-      # run other checks, in case available
-      if(thisAttrib %in% names(vars)){
-        attribVars <- vars[which(names(vars) %in% thisAttrib)]
-
-        for(j in seq_along(attribVars)){
-          thisTest <- eval_tidy(attribVars[[j]])
-          thisFun <- eval_tidy(thisTest$fun)
-          if(is.function(thisFun)){
-            temp <- temp %>%
-              mutate(flag = suppressWarnings(thisFun(value)))
-
-            uVals <- length(unique(temp$flag))
-
-            if(length(thisTest$flags$flag) < uVals){
-              stop("please provide as many flags as there are results for testing '", thisAttrib, "' (", length(unique(temp$flag)), ").")
-            }
-            if(is.logical(temp$flag)){
-              temp <- temp %>%
-                mutate(!!paste0("code", j) := as.integer(temp$flag))
-            } else {
-              temp <- temp %>%
-                left_join(thisTest$flags, by = "flag") %>%
-                mutate(!!paste0("code", j) := bits)
-            }
-
-          } else {
-            stop("please provide a function that either returns a logical value, or integers.")
-          }
+        if(length(thisTest$flags$flag) < uVals){
+          stop("please provide as many flags as there are results for testing '", thisAttrib, "' (", length(unique(temp$flag)), ").")
+        }
+        if(is.logical(temp$flag)){
+          temp <- temp %>%
+            mutate(!!paste0("code", j) := as.integer(temp$flag)) #incl. na.omit here?!
+        } else {
+          temp <- temp %>%
+            left_join(thisTest$flags, by = "flag") %>%
+            mutate(!!paste0("code", j) := bits)
         }
 
+      } else {
+        stop("please provide a function that either returns a logical value, or integers.")
       }
-
-      # combine the different tests
-      out <- temp %>%
-        unite(col = !!thisAttrib, contains("code"), sep = "") %>%
-        select(!!thisAttrib) %>%
-        bind_cols(out, .)
-
     }
+
+    # combine the different tests
+    out <- temp %>%
+      unite(col = !!thisAttrib, contains("code"), sep = "") %>%
+      select(!!thisAttrib) %>%
+      bind_cols(out, .)
+
   }
 
-
   out <- out %>%
-    unite(col = "QC", everything(), sep = sep)
+    unite(col = "QB", everything(), sep = sep)
 
   out <- bind_cols(input, out)
   return(out)
