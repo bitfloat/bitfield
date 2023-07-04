@@ -1,20 +1,16 @@
-#' Derive a quality code from provided information
+#' Derive a quality bit from provided information
 #'
-#' Take an input table and a list of columns to combine into a code of quality
+#' Take an input table and a set of functions to combine into a code of quality
 #' information. The code will contain the value 1 in case the fail-criteria are
 #' triggered.
 #' @param input [`data.frame`][data.frame]\cr tidy table that contains all input
 #'   information, this may be both the information to evaluate, but also
 #'   additional columns carrying information that shall just be passed through
 #'   the function.
-#' @param coordinates [`character(2)`][character]\cr name of x and y coordinates
-#'   in the input table.
-#' @param attributes [`character(.)`][character]\cr names of the attributes to
-#'   check.
-#' @param ... additional tests to check deviations from the expected value;
-#'   combination of the names of attributes and a function or the subset of
-#'   allowed values of that attribute, see details.
-#' @param sep Separator to use between values.
+#' @param ... tests to check deviations from the expected value; combination of
+#'   the names of column in the table and a call to the \code{.bit} function.
+#' @param sep Separator to use between values. Used for visualising the value
+#'   for a human eye.
 #' @details In case no additional check is specified for an attribute, merely
 #'   the availability of any value is tested. In case there is an additional
 #'   test, the outcome of that test is pasted right after the outcome of the
@@ -24,9 +20,6 @@
 #'   resulting QC. 'commodity' also has an additional test and thus occupies the
 #'   positions 5 and 6. In contrast 'landuse' will only be tested for
 #'   availability and thus only occupies position 7.
-#'
-#'   Coordinates are by default tested for availability and for plausibility
-#'   (see \code{\link{testCoords}}).
 #' @examples
 #' \dontrun{
 #' library(dplyr)
@@ -38,6 +31,8 @@
 #'                 commodity = rep(c("soybean", "maize"), 5),
 #'                 landuse = sample(c("crop", "grazing", "forest"), size = 10, replace = TRUE),
 #'                 some_other = rnorm(10))
+#'
+#' # make it have some errors
 #' input$x[5] <- 259
 #' input$y[9] <- NA_real_
 #' input$year[c(2:3)] <- c(NA, "2021r")
@@ -49,15 +44,15 @@
 #'
 #' # specify the quality checks
 #' input %>%
-#'   make_QC(x = .bit(fun = function(x) is.na(x) | x %in% c(""), flags = 2),
-#'           x = .bit(fun = function(x) x < -180 | x > 180, flags = 2),
-#'           y = .bit(fun = function(x) is.na(x) | x %in% c(""), flags = 2),
-#'           y = .bit(fun = function(x) x < -90 | x > 90, flags = 2),
-#'           year = .bit(fun = function(x) is.na(as.integer(x)), flags = 2),
-#'           commodity = .bit(fun = function(x) !x %in% validComm, flags = 2),
-#'           some_other = .bit(fun = function(x) ifelse(x > 0.5, 0, ifelse(x > 0, 1, 2)),
-#'                             flags = 3),
-#'           sep = "_")
+#'   make_bits(x = .bit(fun = function(x) is.na(x) | x %in% c(""), flags = 2),
+#'             x = .bit(fun = function(x) x < -180 | x > 180, flags = 2),
+#'             y = .bit(fun = function(x) is.na(x) | x %in% c(""), flags = 2),
+#'             y = .bit(fun = function(x) x < -90 | x > 90, flags = 2),
+#'             year = .bit(fun = function(x) is.na(as.integer(x)), flags = 2),
+#'             commodity = .bit(fun = function(x) !x %in% validComm, flags = 2),
+#'             some_other = .bit(fun = function(x) ifelse(x > 0.5, 0, ifelse(x > 0, 1, 2)),
+#'                               flags = 3),
+#'             sep = "_")
 #' }
 #'
 #' @importFrom checkmate assertDataFrame assertCharacter testSubset
@@ -68,7 +63,7 @@
 #' @importFrom tidyr unite
 #' @export
 
-make_QC <- function(input, ..., sep = ""){
+make_bits <- function(input, ..., sep = ""){
 
   assertDataFrame(x = input)
 
