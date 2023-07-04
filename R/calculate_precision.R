@@ -1,7 +1,7 @@
 #' Calculate the precision from x and y coordinates
 #'
 #' @param input the input dataframe that contains at least the columns x and y.
-#' @param area whether or not to calculate the corresponsing area.
+#' @param area whether or not to return also the corresponding area.
 #' @importFrom checkmate assertDataFrame assertNames
 #' @importFrom dplyr rowwise mutate bind_cols if_else
 #' @importFrom tidyr separate
@@ -20,7 +20,11 @@ calculate_precision <- function(input, area = FALSE){
     separate(col = y, into = c(NA, "precision"), sep = "[.]", remove = FALSE, fill = "right") %>%
     rowwise() %>%
     mutate(digits = str_split(precision, ""),
-           rleRounded = if_else(is.na(precision), "0", if_else(tail(rle(unlist(digits))$lengths, 1) == 1, paste0(digits, collapse = ""), paste0(rle(unlist(digits))$values, collapse = ""))),
+           rleRounded = if_else(is.na(precision), "0",
+                                if_else(tail(rle(unlist(digits))$lengths, 1) == 1,
+                                        paste0(digits, collapse = ""),
+                                        paste0(rle(unlist(digits))$values, collapse = ""))
+                                ),
            precision = 1 / 10 ^ nchar(rleRounded)) %>%
     select(-digits)
 

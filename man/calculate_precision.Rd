@@ -9,7 +9,7 @@ calculate_precision(input, area = FALSE)
 \arguments{
 \item{input}{the input dataframe that contains at least the columns x and y.}
 
-\item{area}{whether or not to calculate the corresponsing area.}
+\item{area}{whether or not to return also the corresponding area.}
 }
 \description{
 Calculate the precision from x and y coordinates
