@@ -18,8 +18,6 @@ testCoords <- function(input){
            range = if_else(xRange == 1 | yRange == 1, 1, 0),
            overall = if_else(avail == 1 | range == 1, 1, 0))
 
-  # CoordinateCleaner::cc_sea()
-
   return(out)
 
 }
