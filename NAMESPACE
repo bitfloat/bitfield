@@ -3,7 +3,7 @@
 export("%>%")
 export(.bit)
 export(calculate_precision)
-export(make_QC)
+export(make_bits)
 export(testCoords)
 importFrom(checkmate,assertCharacter)
 importFrom(checkmate,assertDataFrame)
