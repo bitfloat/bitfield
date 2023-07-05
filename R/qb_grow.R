@@ -75,6 +75,7 @@ qb_grow <- function(bit, desc, na = FALSE, pos, bitfield){
   assertIntegerish(x = pos, lower = 1, min.len = 1, unique = TRUE)
 
 
+  # https://stackoverflow.com/questions/62333478/from-integer-to-bits-and-back-again
   # 'intToBase2' <- function(x){
   #   x %>%
   #     intToBits() %>%
