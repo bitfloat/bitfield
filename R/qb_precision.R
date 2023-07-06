@@ -1,4 +1,12 @@
-
+#' Build a bit by checking
+#'
+#' @param x [`data.frame(1)`][data.frame]\cr the table that contains
+#'   \code{test}.
+#' @param test [`character(1)`][character]\cr the column in \code{x} that is
+#'   checked for NA values.
+#'
+#' @importFrom checkmate assertDataFrame assertLogical
+#' @export
 
 qb_precision <- function(x, test){
 
