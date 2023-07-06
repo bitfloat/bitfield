@@ -25,16 +25,8 @@ devtools::install_github("EhrmannS/queuebee")
 ## Examples
 
 ``` r
+library(dplyr, warn.conflicts = FALSE)
 library(queuebee)
-library(dplyr)
-#> 
-#> Attache Paket: 'dplyr'
-#> Die folgenden Objekte sind maskiert von 'package:stats':
-#> 
-#>     filter, lag
-#> Die folgenden Objekte sind maskiert von 'package:base':
-#> 
-#>     intersect, setdiff, setequal, union
 ```
 
 Let’s first build an example dataset
@@ -59,10 +51,20 @@ input$commodity[c(3, 5)] <- c(NA_character_, "dog")
 validComm <- c("soybean", "maize")
 ```
 
-The first step in yielding quality bits is in creating a bitfield
+The first step in yielding quality bits is in creating a bitfield.
+
+1.  The `width =` specifies how many bits are in the bitfield.
+2.  The `lenght =` specifies how long the output table is. Any input
+    must then have the same length. In case there are inputs with a
+    different length, make sure in your pre-processing steps that all
+    inputs are joined/merged that empty values or NAs are explicit.
+3.  The `name =` specifies the label of the bitfield, which becomes very
+    important when publishing, because bitfield and output table are
+    stored in different files and it must be possible to unambiguously
+    associate them to one another.
 
 ``` r
-newBitfield <- qb_create()
+newBitfield <- qb_create(width = 10, length = dim(input)[1])
 ```
 
 Then, individual bits need to be grown by specifying from which input
@@ -74,39 +76,39 @@ here.
 ``` r
 newBitfield <- newBitfield %>%
   # explicit tests for coordinates ...
-  qb_grow(bit = qb_na(x = input, test = "x"),
+  qb_grow(bit = qb_na(x = input, test = "x"), name = "is_na_x",
           desc = c("x-coordinate values do not contain any NAs"),
           pos = 1, bitfield = .) %>%
-  qb_grow(bit =  qb_range(x = input, test = "x", min = -180, max = 180),
+  qb_grow(bit =  qb_range(x = input, test = "x", min = -180, max = 180), name = "range_1_x",
           desc = c("x-coordinate values are numeric and within the valid WGS84 range"),
           pos = 2, bitfield = .) %>%
   # ... or override NA test
-  qb_grow(bit = qb_range(x = input, test = "y", min = -90, max = 90),
+  qb_grow(bit = qb_range(x = input, test = "y", min = -90, max = 90), name = "range_1_y",
           desc = c("y-coordinate values are numeric and within the valid WGS84 range, NAs are FALSE"),
           pos = 3, na = FALSE, bitfield = .) %>%
   # it is also possible to use other functions that give flags, such as from CoordinateCleaner ...
-  qb_grow(bit = cc_equ(x = input, lon = "x", lat = "y", value = "flagged"),
+  qb_grow(bit = cc_equ(x = input, lon = "x", lat = "y", value = "flagged"), name = "equal_coords",
           desc = c("x and y coordinates are not identical"),
           pos = 4, bitfield = .) %>%
   # ... or stringr ...
-  qb_grow(bit = str_detect(input$year, "r"),
+  qb_grow(bit = str_detect(input$year, "r"), name = "flag_year",
           desc = c("year values do have a flag"),
           pos = 6, bitfield = .) %>%
   # ... or even base R
-  qb_grow(bit = is.na(as.integer(input$year)),
+  qb_grow(bit = is.na(as.integer(input$year)), name = "is_na_year",
           desc = c("year values are valid integers"),
           pos = 5, bitfield = .)  %>%
   # test for matches with an external vector
-  qb_grow(bit = qb_match(x = input, test = "commodity", against = validComm),
+  qb_grow(bit = qb_match(x = input, test = "commodity", against = validComm), name = "match_commodities",
           desc = c("commodity values are part of 'soybean' or 'maize'"),
           pos = 7, na = FALSE, bitfield = .) %>%
   # define cases
-  qb_grow(bit = qb_case(x = input, some_other > 0.5, some_other > 0, some_other < 0),
+  qb_grow(bit = qb_case(x = input, some_other > 0.5, some_other > 0, some_other < 0), name = "cases_some_other",
           desc = c("some_other values are distinguished into large, medium and small"),
           pos = 8:9, bitfield = .)
 ```
 
-This bitfield is basically a record of all the things that are grown on
+This strcuture is basically a record of all the things that are grown on
 a bitfield, but so far nothing has happened
 
 ``` r
@@ -114,11 +116,13 @@ newBitfield
 ```
 
 To make things happen eventually, the bitfield and a(ny) input it shall
-be applied to are combined. This will result in an additional column
-with the name `QB` that is added as the last column of the input table.
+be applied to are combined. This will result in an output table (with
+one column that has the name `QB`) with the same length as the longest
+column in the inputs. When bit flags are grown from inputs with
+different length, a join/merge column needs to be provided.
 
 ``` r
-(output <- qb_combine(bitfield = newBitfield))
+qb_combine(bitfield = newBitfield)
 ```
 
 Anybody that wants to either extend the bitfield or analyse the output
@@ -194,17 +198,11 @@ it for weighing modelling by it?
   solve this now by transforming rasters to a table that can then be
   dealt with easily without any generics/methods
 - [ ] write qb_grow
-  1.  this must have various checks that make sure that functions
-      injected here actually have a valid result
-  2.  this must write the bitfield class
   3.  this must call the function provided in bit = … and write the
       tentative output into a separate environment
-- [ ] write qb_create
-  1.  this should open the environment and create an object ob class
-      bitfield
 - [ ] write qb_combine
 - [ ] write qb_extract
-- [ ] write bitfield class and show method
+- [ ] write bitfield show method
 - [ ] write qb_case
 - [ ] write qb_filter
 - [ ] other pre-made quality flag functions?!
