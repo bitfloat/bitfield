@@ -61,7 +61,6 @@
 #' @importFrom tidyselect contains everything all_of
 #' @importFrom rlang quos eval_tidy :=
 #' @importFrom tidyr unite
-#' @export
 
 make_bits <- function(input, ..., sep = ""){
 

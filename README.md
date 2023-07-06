@@ -27,6 +27,35 @@ devtools::install_github("EhrmannS/queuebee")
 ``` r
 library(dplyr, warn.conflicts = FALSE)
 library(queuebee)
+library(CoordinateCleaner)
+#> The legacy packages maptools, rgdal, and rgeos, underpinning this package
+#> will retire shortly. Please refer to R-spatial evolution reports on
+#> https://r-spatial.org/r/2023/05/15/evolution4.html for details.
+#> This package is now running under evolution status 0
+#> Please note that rgdal will be retired during October 2023,
+#> plan transition to sf/stars/terra functions using GDAL and PROJ
+#> at your earliest convenience.
+#> See https://r-spatial.org/r/2023/05/15/evolution4.html and https://github.com/r-spatial/evolution
+#> rgdal: version: 1.6-7, (SVN revision 1203)
+#> Geospatial Data Abstraction Library extensions to R successfully loaded
+#> Loaded GDAL runtime: GDAL 3.4.1, released 2021/12/27
+#> Path to GDAL shared files: /usr/share/gdal
+#> GDAL binary built with GEOS: TRUE 
+#> Loaded PROJ runtime: Rel. 8.2.1, January 1st, 2022, [PJ_VERSION: 821]
+#> Path to PROJ shared files: /home/se87kuhe/.local/share/proj:/usr/share/proj
+#> PROJ CDN enabled: FALSE
+#> Linking to sp version:1.6-1
+#> To mute warnings of possible GDAL/OSR exportToProj4() degradation,
+#> use options("rgdal_show_exportToProj4_warnings"="none") before loading sp or rgdal.
+#> rgeos version: 0.6-3, (SVN revision 696)
+#>  GEOS runtime version: 3.10.2-CAPI-1.16.0 
+#>  Please note that rgeos will be retired during October 2023,
+#> plan transition to sf or terra functions using GEOS at your earliest convenience.
+#> See https://r-spatial.org/r/2023/05/15/evolution4.html for details.
+#>  GEOS using OverlayNG
+#>  Linking to sp version: 1.6-1 
+#>  Polygon checking: TRUE
+library(stringr)
 ```
 
 Let’s first build an example dataset
@@ -85,23 +114,23 @@ newBitfield <- newBitfield %>%
   # ... or override NA test
   qb_grow(bit = qb_range(x = input, test = "y", min = -90, max = 90), name = "range_1_y",
           desc = c("y-coordinate values are numeric and within the valid WGS84 range, NAs are FALSE"),
-          pos = 3, na = FALSE, bitfield = .) %>%
+          pos = 3, na_val = FALSE, bitfield = .) %>%
   # it is also possible to use other functions that give flags, such as from CoordinateCleaner ...
   qb_grow(bit = cc_equ(x = input, lon = "x", lat = "y", value = "flagged"), name = "equal_coords",
           desc = c("x and y coordinates are not identical"),
-          pos = 4, bitfield = .) %>%
+          pos = 4, na_val = FALSE, bitfield = .) %>%
   # ... or stringr ...
   qb_grow(bit = str_detect(input$year, "r"), name = "flag_year",
           desc = c("year values do have a flag"),
-          pos = 6, bitfield = .) %>%
+          pos = 5, na_val = FALSE, bitfield = .) %>%
   # ... or even base R
   qb_grow(bit = is.na(as.integer(input$year)), name = "is_na_year",
           desc = c("year values are valid integers"),
-          pos = 5, bitfield = .)  %>%
+          pos = 6, bitfield = .)  %>%
   # test for matches with an external vector
   qb_grow(bit = qb_match(x = input, test = "commodity", against = validComm), name = "match_commodities",
           desc = c("commodity values are part of 'soybean' or 'maize'"),
-          pos = 7, na = FALSE, bitfield = .) %>%
+          pos = 7, na_val = FALSE, bitfield = .) %>%
   # define cases
   qb_grow(bit = qb_case(x = input, some_other > 0.5, some_other > 0, some_other < 0), name = "cases_some_other",
           desc = c("some_other values are distinguished into large, medium and small"),
@@ -197,9 +226,6 @@ it for weighing modelling by it?
 - needs functionality to have different data structures interact -\> I
   solve this now by transforming rasters to a table that can then be
   dealt with easily without any generics/methods
-- [ ] write qb_grow
-  3.  this must call the function provided in bit = … and write the
-      tentative output into a separate environment
 - [ ] write qb_combine
 - [ ] write qb_extract
 - [ ] write bitfield show method
