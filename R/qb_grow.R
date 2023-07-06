@@ -13,27 +13,25 @@
 #' @param bitfield [`bitfield(1)`][bitfield]\cr the bitfield in which the bits
 #'   should be set.
 #'
-#' @importFrom checkmate assertDataFrame assertChoice assertIntegerish
+#' @importFrom checkmate assertCharacter assertClass assertIntegerish
 #'   assertTRUE
 #' @importFrom rlang env_bind
 #' @export
 
-qb_grow <- function(bit, name, desc = NULL, na = NULL, pos, bitfield){
+qb_grow <- function(bit, name, desc = NULL, na_val = NULL, pos, bitfield){
 
   # assertions
-  assertDataFrame(x = bit, ncols = 1)
   assertCharacter(x = name, len = 1, any.missing = FALSE)
   assertCharacter(x = desc, null.ok = TRUE)
   assertIntegerish(x = pos, lower = 1, min.len = 1, unique = TRUE)
 
   # test whether the number of flags corresponds to the number of positions provided
-  theValues <- bit %>%
-    pull(1)
+  theValues <- bit
 
   # replace NA values in theValues
   if(any(is.na(theValues))){
-    assertClass(x = class(na), classes = class(theValues))
-    theValues[is.na(theValues)] <- na
+    assertClass(x = na_val, classes = class(theValues), .var.name = "na_val")
+    theValues[is.na(theValues)] <- na_val
   }
 
   if(is.logical(theValues)){
@@ -57,7 +55,9 @@ qb_grow <- function(bit, name, desc = NULL, na = NULL, pos, bitfield){
     message(paste0("please provide a description for ", name))
   } else {
     outDesc <- tibble(pos = as.character(pos), description = desc) %>%
-      bind_rows(theDesc, .)
+      bind_rows(theDesc, .) %>%
+      distinct() %>%
+      arrange(pos)
   }
 
   # assign tentative bit values into the current environment
