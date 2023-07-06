@@ -4,18 +4,26 @@
 \alias{qb_grow}
 \title{Add bits to a bitfield}
 \usage{
-qb_grow(bit, desc, na = FALSE, pos, bitfield)
+qb_grow(bit, name, desc = NULL, na = NULL, pos, bitfield)
 }
 \arguments{
-\item{bit}{a function that returns}
+\item{bit}{\code{\link[=numeric]{numeric(.)}} | \code{\link[=character]{character(.)}} |
+\code{\link[=logical]{logical(1)}}\cr a function that returns a vector that shall be
+stored as bit.}
 
-\item{desc}{the description of the bit(s).}
+\item{name}{\code{\link[=character]{character(.)}}\cr the internal name of the bit(s).}
 
-\item{na}{which value NAs in the output of .bit should have in the bitfield.}
+\item{desc}{\code{\link[=character]{character(.)}}\cr the description of the bit(s).}
 
-\item{pos}{the position in the bitfield that should be set.}
+\item{na}{\code{\link[=numeric]{numeric(.)}} | \code{\link[=character]{character(.)}} |
+\code{\link[=logical]{logical(1)}}\cr which value NAs in the output of .bit should
+have in the bitfield.}
 
-\item{bitfield}{the bitfield in which the bits should be set.}
+\item{pos}{\code{\link[=integer]{integerish(1)}}\cr the position in the bitfield that
+should be set.}
+
+\item{bitfield}{\code{\link[=bitfield]{bitfield(1)}}\cr the bitfield in which the bits
+should be set.}
 }
 \description{
 Add bits to a bitfield
