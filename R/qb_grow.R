@@ -33,6 +33,10 @@ qb_grow <- function(bit, name, desc = NULL, na_val = NULL, pos, bitfield){
     assertClass(x = na_val, classes = class(theValues), .var.name = "na_val")
     theValues[is.na(theValues)] <- na_val
   }
+  if(is.numeric(theValues) | is.integer(theValues)){
+
+
+  }
 
   if(is.logical(theValues)){
     # this is needed because not always both TRUE and FALSE are in the vector
@@ -41,13 +45,13 @@ qb_grow <- function(bit, name, desc = NULL, na_val = NULL, pos, bitfield){
   } else {
     nFlags <- theValues %>%
       unique() %>%
+      length() %>%
       sqrt() %>%
       ceiling()
     outValues <- theValues
   }
-  nBits <- ceiling(log2(nFlags))
 
-  assertTRUE(x = nBits == length(pos))
+  assertTRUE(x = nFlags == length(pos))
 
   # handle descriptions
   theDesc <- bitfield@desc
