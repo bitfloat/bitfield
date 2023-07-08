@@ -10,7 +10,12 @@ qb_case(x, ..., exclusive = TRUE)
 \item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the table that contains
 \code{test}.}
 
-\item{...}{any statement that results in a logical return value}
+\item{...}{\cr any set of (mutually exclusive) statements that results in a
+logical return value}
+
+\item{exclusive}{\code{\link[=logical]{logical(1)}}\cr whether the function should check
+that the cases are mutually exclusive, or whether it would allow that cases
+defined later in the sequence overwrite cases earlier in the sequence.}
 }
 \description{
 Build a bit by checking
