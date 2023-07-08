@@ -111,7 +111,7 @@ newBitfield <- newBitfield %>%
           desc = c("commodity values are part of 'soybean' or 'maize'"),
           pos = 7, na_val = FALSE, bitfield = .) %>%
   # define cases
-  qb_grow(bit = qb_case(x = input, some_other > 0.5, some_other > 0, some_other < 0), name = "cases_some_other",
+  qb_grow(bit = qb_case(x = input, some_other > 0.5, some_other > 0, some_other < 0, exclusive = FALSE), name = "cases_some_other",
           desc = c("some_other values are distinguished into large, medium and small"),
           pos = 8:9, bitfield = .)
 ```
