@@ -9,6 +9,7 @@
 #' @importFrom checkmate assertDataFrame assertSubset assertNumeric
 #' @importFrom rlang new_environment
 #' @importFrom tibble tibble
+#' @importFrom methods new
 #' @export
 
 qb_create <- function(width, length, name = NULL){
