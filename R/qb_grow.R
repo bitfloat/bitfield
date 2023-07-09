@@ -5,7 +5,7 @@
 #'   stored as bit.
 #' @param name [`character(.)`][character]\cr the internal name of the bit(s).
 #' @param desc [`character(.)`][character]\cr the description of the bit(s).
-#' @param na [`numeric(.)`][numeric] | [`character(.)`][character] |
+#' @param na_val [`numeric(.)`][numeric] | [`character(.)`][character] |
 #'   [`logical(1)`][logical]\cr which value NAs in the output of .bit should
 #'   have in the bitfield.
 #' @param pos [`integerish(1)`][integer]\cr the position in the bitfield that
@@ -13,8 +13,7 @@
 #' @param bitfield [`bitfield(1)`][bitfield]\cr the bitfield in which the bits
 #'   should be set.
 #'
-#' @importFrom checkmate assertCharacter assertClass assertIntegerish
-#'   assertTRUE
+#' @importFrom checkmate assertCharacter assertClass assertIntegerish assertTRUE
 #' @importFrom rlang env_bind
 #' @export
 
@@ -24,6 +23,7 @@ qb_grow <- function(bit, name, desc = NULL, na_val = NULL, pos, bitfield){
   assertCharacter(x = name, len = 1, any.missing = FALSE)
   assertCharacter(x = desc, null.ok = TRUE)
   assertIntegerish(x = pos, lower = 1, min.len = 1, unique = TRUE)
+  assertClass(x = bitfield, classes = "bitfield")
 
   # test whether the number of flags corresponds to the number of positions provided
   theValues <- bit
@@ -33,25 +33,21 @@ qb_grow <- function(bit, name, desc = NULL, na_val = NULL, pos, bitfield){
     assertClass(x = na_val, classes = class(theValues), .var.name = "na_val")
     theValues[is.na(theValues)] <- na_val
   }
-  if(is.numeric(theValues) | is.integer(theValues)){
-
-
-  }
 
   if(is.logical(theValues)){
     # this is needed because not always both TRUE and FALSE are in the vector
     nFlags <- 2
     outValues <- c(TRUE, FALSE)
+  } else if(is.numeric(theValues) | is.integer(theValues)) {
+    nFlags <- max(theValues)
+    outValues <- 1:nFlags
   } else {
-    nFlags <- theValues %>%
-      unique() %>%
-      length() %>%
-      sqrt() %>%
-      ceiling()
-    outValues <- theValues
+    nFlags <- length(unique(theValues))
+    outValues <- seq_along(unique(theValues))
   }
+  nBits <- ceiling(log2(nFlags))
 
-  assertTRUE(x = nFlags == length(pos))
+  assertTRUE(x = nBits == length(pos))
 
   # handle descriptions
   theDesc <- bitfield@desc
