@@ -14,7 +14,7 @@
 #'   should be set.
 #'
 #' @importFrom checkmate assertCharacter assertClass assertIntegerish assertTRUE
-#' @importFrom rlang env_bind
+#' @importFrom rlang env_bind `:=`
 #' @export
 
 qb_grow <- function(bit, name, desc = NULL, na_val = NULL, pos, bitfield){

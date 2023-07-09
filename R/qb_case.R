@@ -9,7 +9,7 @@
 #'   defined later in the sequence overwrite cases earlier in the sequence.
 #'
 #' @importFrom checkmate assertDataFrame assertLogical assertTRUE
-#' @importFrom rlang enquos eval_tidy as_label
+#' @importFrom rlang enquos eval_tidy as_label `:=`
 #' @importFrom purrr map reduce
 #' @importFrom tibble as_tibble
 #' @importFrom dplyr rename bind_cols filter if_else
