@@ -54,7 +54,6 @@ input <- tibble(x = sample(seq(23.3, 28.1, 0.1), 10),
                 y = sample(seq(57.5, 59.6, 0.1), 10),
                 year = rep(2021, 10),
                 commodity = rep(c("soybean", "maize"), 5),
-                landuse = sample(c("crop", "grazing", "forest"), size = 10, replace = TRUE),
                 some_other = rnorm(10))
 
 # make it have some errors
@@ -81,7 +80,7 @@ newBitfield <- qb_create(width = 10, length = dim(input)[1])
 
 Then, individual bits need to be grown by specifying from which input and based on which mapping function a particular position of the bitfield should be modified. When providing a concise yet expressive description, you will also in the future still understand what you did here.
 
-```{r, eval = FALSE}
+```{r}
 newBitfield <- newBitfield %>%
   # explicit tests for coordinates ...
   qb_grow(bit = qb_na(x = input, test = "x"), name = "is_na_x",
@@ -96,14 +95,14 @@ newBitfield <- newBitfield %>%
           pos = 3, na_val = FALSE, bitfield = .) %>%
   # it is also possible to use other functions that give flags, such as from CoordinateCleaner ...
   qb_grow(bit = cc_equ(x = input, lon = "x", lat = "y", value = "flagged"), name = "equal_coords",
-          desc = c("x and y coordinates are not identical"),
+          desc = c("x and y coordinates are not identical, NAs are FALSE"),
           pos = 4, na_val = FALSE, bitfield = .) %>%
   # ... or stringr ...
   qb_grow(bit = str_detect(input$year, "r"), name = "flag_year",
-          desc = c("year values do have a flag"),
+          desc = c("year values do have a flag, NAs are FALSE"),
           pos = 5, na_val = FALSE, bitfield = .) %>%
   # ... or even base R
-  qb_grow(bit = is.na(as.integer(input$year)), name = "is_na_year",
+  qb_grow(bit = !is.na(as.integer(input$year)), name = "is_na_year",
           desc = c("year values are valid integers"),
           pos = 6, bitfield = .)  %>%
   # test for matches with an external vector
@@ -112,7 +111,7 @@ newBitfield <- newBitfield %>%
           pos = 7, na_val = FALSE, bitfield = .) %>%
   # define cases
   qb_grow(bit = qb_case(x = input, some_other > 0.5, some_other > 0, some_other < 0, exclusive = FALSE), name = "cases_some_other",
-          desc = c("some_other values are distinguished into large, medium and small"),
+          desc = c("some_other values are distinguished into large (. > 0.5), medium (. > 0) and small (. < 0)"),
           pos = 8:9, bitfield = .)
 ```
 
@@ -124,8 +123,11 @@ newBitfield
 
 To make things happen eventually, the bitfield and a(ny) input it shall be applied to are combined. This will result in an output table (with one column that has the name `QB`) with the same length as the longest column in the inputs. When bit flags are grown from inputs with different length, a join/merge column needs to be provided.
 
-```{r, eval = FALSE}
-qb_combine(bitfield = newBitfield)
+```{r}
+(output <- qb_combine(bitfield = newBitfield))
+
+input %>% 
+  bind_cols(qb_combine(bitfield = newBitfield, inspect = TRUE, sep = "_"))
 ```
 
 Anybody that wants to either extend the bitfield or analyse the output data and base their judgement on the quality bit will want to extract that bit. The bitfield is thereby the key that is required to decode the quality bit

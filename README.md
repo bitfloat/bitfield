@@ -28,33 +28,6 @@ devtools::install_github("EhrmannS/queuebee")
 library(dplyr, warn.conflicts = FALSE)
 library(queuebee)
 library(CoordinateCleaner)
-#> The legacy packages maptools, rgdal, and rgeos, underpinning this package
-#> will retire shortly. Please refer to R-spatial evolution reports on
-#> https://r-spatial.org/r/2023/05/15/evolution4.html for details.
-#> This package is now running under evolution status 0
-#> Please note that rgdal will be retired during October 2023,
-#> plan transition to sf/stars/terra functions using GDAL and PROJ
-#> at your earliest convenience.
-#> See https://r-spatial.org/r/2023/05/15/evolution4.html and https://github.com/r-spatial/evolution
-#> rgdal: version: 1.6-7, (SVN revision 1203)
-#> Geospatial Data Abstraction Library extensions to R successfully loaded
-#> Loaded GDAL runtime: GDAL 3.4.1, released 2021/12/27
-#> Path to GDAL shared files: /usr/share/gdal
-#> GDAL binary built with GEOS: TRUE 
-#> Loaded PROJ runtime: Rel. 8.2.1, January 1st, 2022, [PJ_VERSION: 821]
-#> Path to PROJ shared files: /home/se87kuhe/.local/share/proj:/usr/share/proj
-#> PROJ CDN enabled: FALSE
-#> Linking to sp version:1.6-1
-#> To mute warnings of possible GDAL/OSR exportToProj4() degradation,
-#> use options("rgdal_show_exportToProj4_warnings"="none") before loading sp or rgdal.
-#> rgeos version: 0.6-3, (SVN revision 696)
-#>  GEOS runtime version: 3.10.2-CAPI-1.16.0 
-#>  Please note that rgeos will be retired during October 2023,
-#> plan transition to sf or terra functions using GEOS at your earliest convenience.
-#> See https://r-spatial.org/r/2023/05/15/evolution4.html for details.
-#>  GEOS using OverlayNG
-#>  Linking to sp version: 1.6-1 
-#>  Polygon checking: TRUE
 library(stringr)
 ```
 
@@ -65,7 +38,6 @@ input <- tibble(x = sample(seq(23.3, 28.1, 0.1), 10),
                 y = sample(seq(57.5, 59.6, 0.1), 10),
                 year = rep(2021, 10),
                 commodity = rep(c("soybean", "maize"), 5),
-                landuse = sample(c("crop", "grazing", "forest"), size = 10, replace = TRUE),
                 some_other = rnorm(10))
 
 # make it have some errors
@@ -117,14 +89,14 @@ newBitfield <- newBitfield %>%
           pos = 3, na_val = FALSE, bitfield = .) %>%
   # it is also possible to use other functions that give flags, such as from CoordinateCleaner ...
   qb_grow(bit = cc_equ(x = input, lon = "x", lat = "y", value = "flagged"), name = "equal_coords",
-          desc = c("x and y coordinates are not identical"),
+          desc = c("x and y coordinates are not identical, NAs are FALSE"),
           pos = 4, na_val = FALSE, bitfield = .) %>%
   # ... or stringr ...
   qb_grow(bit = str_detect(input$year, "r"), name = "flag_year",
-          desc = c("year values do have a flag"),
+          desc = c("year values do have a flag, NAs are FALSE"),
           pos = 5, na_val = FALSE, bitfield = .) %>%
   # ... or even base R
-  qb_grow(bit = is.na(as.integer(input$year)), name = "is_na_year",
+  qb_grow(bit = !is.na(as.integer(input$year)), name = "is_na_year",
           desc = c("year values are valid integers"),
           pos = 6, bitfield = .)  %>%
   # test for matches with an external vector
@@ -132,9 +104,13 @@ newBitfield <- newBitfield %>%
           desc = c("commodity values are part of 'soybean' or 'maize'"),
           pos = 7, na_val = FALSE, bitfield = .) %>%
   # define cases
-  qb_grow(bit = qb_case(x = input, some_other > 0.5, some_other > 0, some_other < 0), name = "cases_some_other",
-          desc = c("some_other values are distinguished into large, medium and small"),
+  qb_grow(bit = qb_case(x = input, some_other > 0.5, some_other > 0, some_other < 0, exclusive = FALSE), name = "cases_some_other",
+          desc = c("some_other values are distinguished into large (. > 0.5), medium (. > 0) and small (. < 0)"),
           pos = 8:9, bitfield = .)
+#> Testing equal lat/lon
+#> Flagged NA records.
+#> Warning in qb_grow(bit = !is.na(as.integer(input$year)), name = "is_na_year", :
+#> NAs durch Umwandlung erzeugt
 ```
 
 This strcuture is basically a record of all the things that are grown on
@@ -151,7 +127,36 @@ column in the inputs. When bit flags are grown from inputs with
 different length, a join/merge column needs to be provided.
 
 ``` r
-qb_combine(bitfield = newBitfield)
+(output <- qb_combine(bitfield = newBitfield))
+#> # A tibble: 10 × 1
+#>       QB
+#>    <int>
+#>  1   367
+#>  2   335
+#>  3   415
+#>  4   367
+#>  5   429
+#>  6   367
+#>  7   367
+#>  8   495
+#>  9   359
+#> 10   483
+
+input %>% 
+  bind_cols(qb_combine(bitfield = newBitfield, inspect = TRUE, sep = "_"))
+#> # A tibble: 10 × 7
+#>        x     y year  commodity some_other QB_insepct          QB
+#>    <dbl> <dbl> <chr> <chr>          <dbl> <chr>            <int>
+#>  1  23.5  58.7 2021  soybean        1.24  1_1_1_1_0_1_1_01   367
+#>  2  26    58.1 <NA>  maize          1.79  1_1_1_1_0_0_1_01   335
+#>  3  26.4  58.9 2021r <NA>          -1.36  1_1_1_1_1_0_0_11   415
+#>  4  27.7  57.9 2021  maize          1.61  1_1_1_1_0_1_1_01   367
+#>  5 259    57.5 2021  dog           -0.653 1_0_1_1_0_1_0_11   429
+#>  6  24.7  58.8 2021  maize          0.647 1_1_1_1_0_1_1_01   367
+#>  7  26.7  58.3 2021  soybean        0.597 1_1_1_1_0_1_1_01   367
+#>  8  25.1  59.3 2021  maize         -0.810 1_1_1_1_0_1_1_11   495
+#>  9   0     0   2021  soybean        0.434 1_1_1_0_0_1_1_01   359
+#> 10  27.2  NA   2021  maize         -0.527 1_1_0_0_0_1_1_11   483
 ```
 
 Anybody that wants to either extend the bitfield or analyse the output
