@@ -11,14 +11,14 @@ A \code{bitfield} stores ...
 \section{Slots}{
 
 \describe{
-\item{\code{width}}{\link{\code{integerish(1)}}\cr}
+\item{\code{width}}{\code{\link[=integer]{integerish(1)}}\cr}
 
-\item{\code{length}}{\link{\code{integerish(1)}}\cr}
+\item{\code{length}}{\code{\link[=integer]{integerish(1)}}\cr}
 
-\item{\code{name}}{\link{\code{character(1)}}\cr}
+\item{\code{name}}{\code{\link[=character]{character(.)}}\cr}
 
-\item{\code{desc}}{\link{\code{data.frame(1)}}\cr}
+\item{\code{desc}}{\code{\link[=data.frame]{data.frame(1)}}\cr}
 
-\item{\code{bits}}{\link{\code{list(.)}}\cr}
+\item{\code{bits}}{\code{\link[=list]{list(.)}}\cr}
 }}
 
