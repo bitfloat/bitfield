@@ -21,6 +21,7 @@ qb_case <- function(x, ..., exclusive = TRUE){
   assertLogical(x = exclusive, len = 1)
 
   cases <- enquos(...)
+  # return(cases)
 
   temp <- map(cases, function(ix){
     eval_tidy(expr = ix, data = x) %>%
