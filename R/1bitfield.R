@@ -3,11 +3,11 @@
 #' A \code{bitfield} stores ...
 #'
 #'
-#' @slot width [\code{integerish(1)}]\cr
-#' @slot length [\code{integerish(1)}]\cr
-#' @slot name [\code{character(1)}]\cr
-#' @slot desc [\code{data.frame(1)}]\cr
-#' @slot bits [\code{list(.)}]\cr
+#' @slot width [`integerish(1)`][integer]\cr
+#' @slot length [`integerish(1)`][integer]\cr
+#' @slot name [`character(.)`][character]\cr
+#' @slot desc [`data.frame(1)`][data.frame]\cr
+#' @slot bits [`list(.)`][list]\cr
 
 bitfield <- setClass(Class = "bitfield",
                  slots = c(width = "integer",
@@ -180,7 +180,7 @@ setValidity("bitfield", function(object){
 
 #' Print geom in the console
 #'
-#' @param object [\code{geom}]\cr object to \code{show}.
+#' @param object [`bitfield(1)`][bitfield]\cr object to \code{show}.
 #' @importFrom utils head
 #' @importFrom crayon yellow red cyan
 
