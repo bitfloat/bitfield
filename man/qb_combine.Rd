@@ -4,18 +4,11 @@
 \alias{qb_combine}
 \title{Combine the bitfield into a quality bit (QB)}
 \usage{
-qb_combine(bitfield, sep = "", inspect = FALSE)
+qb_combine(bitfield)
 }
 \arguments{
 \item{bitfield}{\code{\link[=bitfield]{bitfield(1)}}\cr the bitfield that should be
 combined into a quality bit (QB).}
-
-\item{sep}{\code{\link[=character]{character(1)}}\cr when \code{inspect = TRUE}, this is
-used as separator for the bit-groups.}
-
-\item{inspect}{\code{\link[=logical]{logical(1)}}\cr whether or not to inspect the
-bitfield. This will return not only the quality bit in integer
-representation, but also in bit representation.}
 }
 \description{
 Combine the bitfield into a quality bit (QB)
