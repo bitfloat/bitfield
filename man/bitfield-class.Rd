@@ -17,8 +17,8 @@ A \code{bitfield} stores ...
 
 \item{\code{name}}{\code{\link[=character]{character(.)}}\cr}
 
-\item{\code{desc}}{\code{\link[=data.frame]{data.frame(.)}}\cr}
+\item{\code{desc}}{\code{\link[=data.frame]{data.frame(1)}}\cr}
 
-\item{\code{bits}}{\code{\link[=list]{list()}}\cr}
+\item{\code{bits}}{\code{\link[=list]{list(.)}}\cr}
 }}
 

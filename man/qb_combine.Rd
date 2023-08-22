@@ -2,16 +2,14 @@
 % Please edit documentation in R/qb_combine.R
 \name{qb_combine}
 \alias{qb_combine}
-\title{Add new bits to a bitfield}
+\title{Combine the bitfield into a quality bit (QB)}
 \usage{
-qb_combine(bitfield, inspect = FALSE)
+qb_combine(bitfield)
 }
 \arguments{
-\item{bitfield}{\code{\link[=bitfield]{bitfield(1)}}\cr the bitfield with which the bits
-should be combined.}
-
-\item{inspect}{\code{\link[=logical]{logical(1)}}\cr whether or not to inspect the bit.}
+\item{bitfield}{\code{\link[=bitfield]{bitfield(1)}}\cr the bitfield that should be
+combined into a quality bit (QB).}
 }
 \description{
-Add new bits to a bitfield
+Combine the bitfield into a quality bit (QB)
 }

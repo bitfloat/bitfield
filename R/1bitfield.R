@@ -6,8 +6,8 @@
 #' @slot width [`integerish(1)`][integer]\cr
 #' @slot length [`integerish(1)`][integer]\cr
 #' @slot name [`character(.)`][character]\cr
-#' @slot desc [`data.frame(.)`][data.frame]\cr
-#' @slot bits [`list()`][list]\cr
+#' @slot desc [`data.frame(1)`][data.frame]\cr
+#' @slot bits [`list(.)`][list]\cr
 
 bitfield <- setClass(Class = "bitfield",
                  slots = c(width = "integer",

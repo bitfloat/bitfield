@@ -8,7 +8,7 @@ Authors@R: c(
            comment = c(ORCID = "0000-0002-2958-0796"))
     )
 Description: Provides tools to record formal data quality and meta data to store 
-    that in a bitfield that can be published alongside all sort of (modelled) 
+    that in a bitfield, which can be published alongside all sort of (modelled) 
     data products that can be handled in tabular form.
 URL: https://github.com/luckinet/queuebee
 BugReports: https://github.com/luckinet/queuebee/issues
@@ -25,6 +25,6 @@ Imports:
     methods,
     purrr,
     rlang,
+    stringr,
     tibble,
-    tidyr,
-    tidyselect
+    tidyr

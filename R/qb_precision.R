@@ -5,7 +5,6 @@
 #' @param test [`character(1)`][character]\cr the column in \code{x} that is
 #'   checked for NA values.
 #'
-#' @importFrom checkmate assertDataFrame assertLogical
 #' @export
 
 qb_precision <- function(x, test){
