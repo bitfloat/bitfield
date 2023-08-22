@@ -34,40 +34,8 @@ devtools::install_github("EhrmannS/queuebee")
 ## Examples
 
 ``` r
-library(dplyr, warn.conflicts = FALSE)
 library(queuebee)
 library(CoordinateCleaner)
-#> The legacy packages maptools, rgdal, and rgeos, underpinning the sp package,
-#> which was just loaded, will retire in October 2023.
-#> Please refer to R-spatial evolution reports for details, especially
-#> https://r-spatial.org/r/2023/05/15/evolution4.html.
-#> It may be desirable to make the sf package available;
-#> package maintainers should consider adding sf to Suggests:.
-#> The sp package is now running under evolution status 2
-#>      (status 2 uses the sf package in place of rgdal)
-#> Please note that rgdal will be retired during October 2023,
-#> plan transition to sf/stars/terra functions using GDAL and PROJ
-#> at your earliest convenience.
-#> See https://r-spatial.org/r/2023/05/15/evolution4.html and https://github.com/r-spatial/evolution
-#> rgdal: version: 1.6-7, (SVN revision 1203)
-#> Geospatial Data Abstraction Library extensions to R successfully loaded
-#> Loaded GDAL runtime: GDAL 3.4.1, released 2021/12/27
-#> Path to GDAL shared files: /usr/share/gdal
-#> GDAL binary built with GEOS: TRUE 
-#> Loaded PROJ runtime: Rel. 8.2.1, January 1st, 2022, [PJ_VERSION: 821]
-#> Path to PROJ shared files: /home/se87kuhe/.local/share/proj:/usr/share/proj
-#> PROJ CDN enabled: TRUE
-#> Linking to sp version:1.6-1
-#> To mute warnings of possible GDAL/OSR exportToProj4() degradation,
-#> use options("rgdal_show_exportToProj4_warnings"="none") before loading sp or rgdal.
-#> rgeos version: 0.6-4, (SVN revision 699)
-#>  GEOS runtime version: 3.10.2-CAPI-1.16.0 
-#>  Please note that rgeos will be retired during October 2023,
-#> plan transition to sf or terra functions using GEOS at your earliest convenience.
-#> See https://r-spatial.org/r/2023/05/15/evolution4.html for details.
-#>  GEOS using OverlayNG
-#>  Linking to sp version: 2.0-0 
-#>  Polygon checking: TRUE
 library(stringr)
 ```
 
@@ -171,16 +139,16 @@ different length, a join/merge column needs to be provided.
 #> # A tibble: 10 × 1
 #>       QB
 #>    <int>
-#>  1   495
-#>  2   335
-#>  3   287
+#>  1   367
+#>  2   463
+#>  3   415
 #>  4   495
-#>  5   429
+#>  5   301
 #>  6   495
-#>  7   495
-#>  8   495
+#>  7   367
+#>  8   367
 #>  9   487
-#> 10   483
+#> 10   355
 ```
 
 Anybody that wants to either extend the bitfield or analyse the output
@@ -209,16 +177,16 @@ input %>%
 #> # A tibble: 10 × 7
 #>        x     y year  commodity some_other    QB QB_chr          
 #>    <dbl> <dbl> <chr> <chr>          <dbl> <int> <chr>           
-#>  1  26.6  58.2 2021  soybean      -0.393    495 1|1|1|1|0|1|1|11
-#>  2  24    57.8 <NA>  maize         0.533    335 1|1|1|1|0|0|1|01
-#>  3  28.1  58.9 2021r <NA>          0.0852   287 1|1|1|1|1|0|0|01
-#>  4  23.5  58.6 2021  maize        -0.425    495 1|1|1|1|0|1|1|11
-#>  5 259    59.5 2021  dog          -1.25     429 1|0|1|1|0|1|0|11
-#>  6  27    59.6 2021  maize        -0.290    495 1|1|1|1|0|1|1|11
-#>  7  27.6  59   2021  soybean      -0.997    495 1|1|1|1|0|1|1|11
-#>  8  25    58   2021  maize        -0.521    495 1|1|1|1|0|1|1|11
-#>  9   0     0   2021  soybean      -0.566    487 1|1|1|0|0|1|1|11
-#> 10  25.2  NA   2021  maize        -1.01     483 1|1|0|0|0|1|1|11
+#>  1  28.1  58.6 2021  soybean        0.252   367 1|1|1|1|0|1|1|01
+#>  2  25.6  58   <NA>  maize         -0.399   463 1|1|1|1|0|0|1|11
+#>  3  28    59.6 2021r <NA>          -1.67    415 1|1|1|1|1|0|0|11
+#>  4  27.5  58.9 2021  maize         -1.37    495 1|1|1|1|0|1|1|11
+#>  5 259    57.5 2021  dog            0.197   301 1|0|1|1|0|1|0|01
+#>  6  27.4  59   2021  maize         -0.537   495 1|1|1|1|0|1|1|11
+#>  7  26.2  58.1 2021  soybean        0.921   367 1|1|1|1|0|1|1|01
+#>  8  24    59.4 2021  maize          0.628   367 1|1|1|1|0|1|1|01
+#>  9   0     0   2021  soybean       -1.16    487 1|1|1|0|0|1|1|11
+#> 10  24.4  NA   2021  maize          0.471   355 1|1|0|0|0|1|1|01
 ```
 
 ## Bitfields for other data-types
