@@ -35,7 +35,7 @@ qb_precision <- function(x, test){
   #            derivArea = derivArea ** 2 * pi,
   #            area = if_else(is.na(area), derivArea, as.numeric(area)))
   # }
-
-  return(temp)
+  #
+  # return(temp)
 
 }

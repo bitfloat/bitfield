@@ -5,7 +5,7 @@
 #'   stored as bit.
 #' @param name [`character(.)`][character]\cr the internal name of the bit(s).
 #' @param desc [`character(.)`][character]\cr the description of the bit(s).
-#' @param na [`numeric(.)`][numeric] | [`character(.)`][character] |
+#' @param na_val [`numeric(.)`][numeric] | [`character(.)`][character] |
 #'   [`logical(1)`][logical]\cr which value NAs in the output of .bit should
 #'   have in the bitfield.
 #' @param pos [`integerish(1)`][integer]\cr the position in the bitfield that
@@ -16,6 +16,7 @@
 #' @importFrom checkmate assertCharacter assertClass assertIntegerish
 #'   assertTRUE
 #' @importFrom rlang env_bind
+#' @importFrom dplyr arrange distinct bind_rows
 #' @export
 
 qb_grow <- function(bit, name, desc = NULL, na_val = NULL, pos, bitfield){

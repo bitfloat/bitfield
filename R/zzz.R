@@ -1,2 +1,2 @@
 globalVariables(c("avail", "coords", "value", "bits", "xAvail", "yAvail",
-                  "xRange", "yRange", "flag", ".", "x", "y"))
+                  "xRange", "yRange", "flag", ".", "x", "y", "qb_env"))

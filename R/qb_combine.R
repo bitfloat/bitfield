@@ -1,4 +1,8 @@
+#' Add new bits to a bitfield
 #'
+#' @param bitfield [`bitfield(1)`][bitfield]\cr the bitfield with which the bits
+#'   should be combined.
+#' @param inspect [`logical(1)`][logical]\cr whether or not to inspect the bit.
 #' @export
 
 qb_combine <- function(bitfield, inspect = FALSE){
