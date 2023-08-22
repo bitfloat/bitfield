@@ -57,7 +57,7 @@ qb_grow <- function(bit, name, desc = NULL, na_val = NULL, pos, bitfield){
     message(paste0("please provide a description for ", name))
   } else {
     outDesc <- tibble(pos = as.character(pos), description = desc)
-    outDesc <- bind_rows(outDesc, theDesc, .)
+    outDesc <- bind_rows(theDesc, outDesc)
     outDesc <- distinct(outDesc)
     outDesc <- arrange(outDesc, pos)
   }

@@ -11,6 +11,11 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   out.width = "100%"
 )
+library(dplyr)
+library(queuebee)
+library(CoordinateCleaner)
+library(stringr)
+library(magrittr)
 ```
 
 # queuebee <a href='https://github.com/luckinet/queuebee/'><img src='man/figures/logo.svg' align="right" height="200" /></a>
@@ -48,8 +53,7 @@ devtools::install_github("EhrmannS/queuebee")
 
 ## Examples
 
-```{r example}
-library(dplyr, warn.conflicts = FALSE)
+```{r example, eval=FALSE}
 library(queuebee)
 library(CoordinateCleaner)
 library(stringr)
