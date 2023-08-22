@@ -140,7 +140,7 @@ Anybody that wants to either extend the bitfield or analyse the output data and 
 ```{r}
 QB_chr <- qb_unpack(x = QB_int, bitfield = newBitfield, sep = "|") 
 
-# prints legend by default, but it is also available in qb_env$legend
+# -> prints legend by default, but it is also available in qb_env$legend
 
 input %>% 
   bind_cols(QB_chr)

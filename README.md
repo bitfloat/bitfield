@@ -171,16 +171,16 @@ different length, a join/merge column needs to be provided.
 #> # A tibble: 10 × 1
 #>       QB
 #>    <int>
-#>  1   367
+#>  1   495
 #>  2   335
-#>  3   415
+#>  3   287
 #>  4   495
-#>  5   301
-#>  6   367
-#>  7   367
-#>  8   367
-#>  9   359
-#> 10   355
+#>  5   429
+#>  6   495
+#>  7   495
+#>  8   495
+#>  9   487
+#> 10   483
 ```
 
 Anybody that wants to either extend the bitfield or analyse the output
@@ -202,23 +202,23 @@ QB_chr <- qb_unpack(x = QB_int, bitfield = newBitfield, sep = "|")
 #> 7 match_commodities     2 7     commodity values are part of 'soybean' or 'maiz…
 #> 8 cases_some_other      3 8:9   some_other values are distinguished into large …
 
-# prints legend by default, but it is also available in qb_env$legend
+# -> prints legend by default, but it is also available in qb_env$legend
 
 input %>% 
   bind_cols(QB_chr)
 #> # A tibble: 10 × 7
 #>        x     y year  commodity some_other    QB QB_chr          
 #>    <dbl> <dbl> <chr> <chr>          <dbl> <int> <chr>           
-#>  1  25.6  59   2021  soybean        0.119   367 1|1|1|1|0|1|1|01
-#>  2  23.6  58.9 <NA>  maize          1.46    335 1|1|1|1|0|0|1|01
-#>  3  26.5  58.2 2021r <NA>          -0.408   415 1|1|1|1|1|0|0|11
-#>  4  27.9  58.1 2021  maize         -0.998   495 1|1|1|1|0|1|1|11
-#>  5 259    58.3 2021  dog            0.395   301 1|0|1|1|0|1|0|01
-#>  6  26.4  58.4 2021  maize          0.860   367 1|1|1|1|0|1|1|01
-#>  7  25    58.5 2021  soybean        0.142   367 1|1|1|1|0|1|1|01
-#>  8  24.9  59.5 2021  maize          0.661   367 1|1|1|1|0|1|1|01
-#>  9   0     0   2021  soybean        1.48    359 1|1|1|0|0|1|1|01
-#> 10  27.1  NA   2021  maize          0.432   355 1|1|0|0|0|1|1|01
+#>  1  26.6  58.2 2021  soybean      -0.393    495 1|1|1|1|0|1|1|11
+#>  2  24    57.8 <NA>  maize         0.533    335 1|1|1|1|0|0|1|01
+#>  3  28.1  58.9 2021r <NA>          0.0852   287 1|1|1|1|1|0|0|01
+#>  4  23.5  58.6 2021  maize        -0.425    495 1|1|1|1|0|1|1|11
+#>  5 259    59.5 2021  dog          -1.25     429 1|0|1|1|0|1|0|11
+#>  6  27    59.6 2021  maize        -0.290    495 1|1|1|1|0|1|1|11
+#>  7  27.6  59   2021  soybean      -0.997    495 1|1|1|1|0|1|1|11
+#>  8  25    58   2021  maize        -0.521    495 1|1|1|1|0|1|1|11
+#>  9   0     0   2021  soybean      -0.566    487 1|1|1|0|0|1|1|11
+#> 10  25.2  NA   2021  maize        -1.01     483 1|1|0|0|0|1|1|11
 ```
 
 ## Bitfields for other data-types
