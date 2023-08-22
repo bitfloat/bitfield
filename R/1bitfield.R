@@ -3,11 +3,11 @@
 #' A \code{bitfield} stores ...
 #'
 #'
-#' @slot width [\code{integerish(1)}]\cr
-#' @slot length [\code{integerish(1)}]\cr
-#' @slot name [\code{character(1)}]\cr
-#' @slot desc [\code{data.frame(1)}]\cr
-#' @slot bits [\code{list(.)}]\cr
+#' @slot width [`integerish(1)`][integer]\cr
+#' @slot length [`integerish(1)`][integer]\cr
+#' @slot name [`character(.)`][character]\cr
+#' @slot desc [`data.frame(.)`][data.frame]\cr
+#' @slot bits [`list()`][list]\cr
 
 bitfield <- setClass(Class = "bitfield",
                  slots = c(width = "integer",
@@ -28,7 +28,6 @@ setValidity("bitfield", function(object){
     if(!is.integer(object@width)){
       errors = c(errors, "the slot 'width' is not a integer.")
     }
-
 
   }
 
@@ -63,7 +62,7 @@ setValidity("bitfield", function(object){
     errors = c(errors, "the bitfield does not have a 'bits' slot.")
   } else {
     if(!is.list(object@bits)){
-      errors = c(errors, "the slot 'bits' is not a character.")
+      errors = c(errors, "the slot 'bits' is not a list")
     }
 
   }
@@ -180,7 +179,7 @@ setValidity("bitfield", function(object){
 
 #' Print geom in the console
 #'
-#' @param object [\code{geom}]\cr object to \code{show}.
+#' @param object [`bitfield(1)`][bitfield]\cr object to \code{show}.
 #' @importFrom utils head
 #' @importFrom crayon yellow red cyan
 
