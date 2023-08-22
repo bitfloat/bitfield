@@ -8,7 +8,7 @@
 #' @importFrom checkmate assertDataFrame assertSubset
 #' @export
 
-qb_na <- function(x, test){
+qbb_na <- function(x, test){
 
   assertDataFrame(x = x)
   assertSubset(x = test, choices = names(x))

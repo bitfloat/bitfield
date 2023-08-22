@@ -7,18 +7,30 @@ development:
   mode: release
 
 reference:
-  - title:
-    desc:
+  - title: build and unpack bitfields
+    desc: functions to enable interaction with bitfields
     contents:
-      -
-  - title:
-    desc:
+      - qb_create
+      - qb_grow
+      - qb_combine
+      - qb_unpack
+  - title: bit builders
+    desc: functions that build a particular bit value
     contents:
-      -
+      - qbb_case
+      - qbb_filter
+      - qbb_match
+      - qbb_na
+      - qbb_range
   - title: classes
     desc: new classes that come with this package
     contents:
       - bitfield-class
+      - show,bitfield-method
+  - title: helpers
+    contents:
+      - .getBit
+      - .getPrecision
 
 navbar:
   left:

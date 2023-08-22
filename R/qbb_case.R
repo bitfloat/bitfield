@@ -15,7 +15,7 @@
 #' @importFrom dplyr rename bind_cols filter if_else
 #' @export
 
-qb_case <- function(x, ..., exclusive = TRUE){
+qbb_case <- function(x, ..., exclusive = TRUE){
 
   assertDataFrame(x = x)
   assertLogical(x = exclusive, len = 1)

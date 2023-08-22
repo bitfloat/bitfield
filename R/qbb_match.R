@@ -4,15 +4,21 @@
 #'   contains \code{test}.
 #' @param test [`character(1)`][character]\cr the column in
 #'   \code{x} for which a match is checked.
-#' @param condition \cr any statement that results in a logical return value
+#' @param against [`numeric(.)`][numeric] | [`character(.)`][character] |
+#'   [`logical(1)`][logical]\cr a vector of the same class as in \code{test}
+#'   against which a match is performed.
 #'
 #' @importFrom checkmate assertDataFrame assertSubset assertClass
 #' @export
 
-qb_filter <- function(x, test, condition){
+qbb_match <- function(x, test, against){
 
   assertDataFrame(x = x)
   assertSubset(x = test, choices = names(x))
+  assertClass(x = against, classes = class(x[[test]]))
 
+  out <- x[[test]] %in% against
+
+  return(out)
 
 }

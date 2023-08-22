@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# queuebee <a href=''><img src='' align="right" height="200" /></a>
+# queuebee <a href='https://github.com/EhrmannS/queuebee/'><img src='man/figures/logo.svg' align="right" height="200" /></a>
 
 <!-- badges: start -->
 <!-- [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/)](https://cran.r-project.org/package=) -->
