@@ -1,14 +1,14 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# queuebee <a href=''><img src='' align="right" height="200" /></a>
+# queuebee <a href='https://github.com/luckinet/queuebee/'><img src='man/figures/logo.svg' align="right" height="200" /></a>
 
 <!-- badges: start -->
 <!-- [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/)](https://cran.r-project.org/package=) -->
 <!-- [![DOI](https://zenodo.org/badge/DOI/)](https://doi.org/) -->
 
 [![R-CMD-check](https://github.com/luckinet/queuebee/workflows/R-CMD-check/badge.svg)](https://github.com/luckinet/queuebee/actions)
-[![codecov](https://codecov.io/gh/EhrmannS/queuebee/branch/master/graph/badge.svg?token=hjppymcGr3)](https://codecov.io/gh/EhrmannS/queuebee)
+[![codecov](https://codecov.io/gh/luckinet/queuebee/branch/master/graph/badge.svg?token=hjppymcGr3)](https://codecov.io/gh/luckinet/queuebee)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 
@@ -117,14 +117,14 @@ here.
 ``` r
 newBitfield <- newBitfield %>%
   # explicit tests for coordinates ...
-  qb_grow(bit = qb_na(x = input, test = "x"), name = "is_na_x",
+  qb_grow(bit = qbb_na(x = input, test = "x"), name = "is_na_x",
           desc = c("x-coordinate values do not contain any NAs"),
           pos = 1, bitfield = .) %>%
-  qb_grow(bit =  qb_range(x = input, test = "x", min = -180, max = 180), name = "range_1_x",
+  qb_grow(bit =  qbb_range(x = input, test = "x", min = -180, max = 180), name = "range_1_x",
           desc = c("x-coordinate values are numeric and within the valid WGS84 range"),
           pos = 2, bitfield = .) %>%
   # ... or override NA test
-  qb_grow(bit = qb_range(x = input, test = "y", min = -90, max = 90), name = "range_1_y",
+  qb_grow(bit = qbb_range(x = input, test = "y", min = -90, max = 90), name = "range_1_y",
           desc = c("y-coordinate values are numeric and within the valid WGS84 range, NAs are FALSE"),
           pos = 3, na_val = FALSE, bitfield = .) %>%
   # it is also possible to use other functions that give flags, such as from CoordinateCleaner ...
@@ -140,11 +140,11 @@ newBitfield <- newBitfield %>%
           desc = c("year values are valid integers"),
           pos = 6, bitfield = .)  %>%
   # test for matches with an external vector
-  qb_grow(bit = qb_match(x = input, test = "commodity", against = validComm), name = "match_commodities",
+  qb_grow(bit = qbb_match(x = input, test = "commodity", against = validComm), name = "match_commodities",
           desc = c("commodity values are part of 'soybean' or 'maize'"),
           pos = 7, na_val = FALSE, bitfield = .) %>%
   # define cases
-  qb_grow(bit = qb_case(x = input, some_other > 0.5, some_other > 0, some_other < 0, exclusive = FALSE), name = "cases_some_other",
+  qb_grow(bit = qbb_case(x = input, some_other > 0.5, some_other > 0, some_other < 0, exclusive = FALSE), name = "cases_some_other",
           desc = c("some_other values are distinguished into large (. > 0.5), medium (. > 0) and small (. < 0)"),
           pos = 8:9, bitfield = .)
 #> Testing equal lat/lon
@@ -172,15 +172,15 @@ different length, a join/merge column needs to be provided.
 #>       QB
 #>    <int>
 #>  1   367
-#>  2   463
-#>  3   287
-#>  4   367
+#>  2   335
+#>  3   415
+#>  4   495
 #>  5   301
-#>  6   495
-#>  7   495
+#>  6   367
+#>  7   367
 #>  8   367
 #>  9   359
-#> 10   483
+#> 10   355
 ```
 
 Anybody that wants to either extend the bitfield or analyse the output
@@ -209,16 +209,16 @@ input %>%
 #> # A tibble: 10 × 7
 #>        x     y year  commodity some_other    QB QB_chr          
 #>    <dbl> <dbl> <chr> <chr>          <dbl> <int> <chr>           
-#>  1  24.5  58.1 2021  soybean        0.564   367 1|1|1|1|0|1|1|01
-#>  2  26.7  58.2 <NA>  maize         -0.517   463 1|1|1|1|0|0|1|11
-#>  3  25.5  59   2021r <NA>           0.522   287 1|1|1|1|1|0|0|01
-#>  4  27.3  58.9 2021  maize          0.618   367 1|1|1|1|0|1|1|01
-#>  5 259    59.5 2021  dog            1.04    301 1|0|1|1|0|1|0|01
-#>  6  25.7  58   2021  maize         -0.257   495 1|1|1|1|0|1|1|11
-#>  7  23.5  58.8 2021  soybean       -0.655   495 1|1|1|1|0|1|1|11
-#>  8  23.7  57.7 2021  maize          0.518   367 1|1|1|1|0|1|1|01
-#>  9   0     0   2021  soybean        2.17    359 1|1|1|0|0|1|1|01
-#> 10  23.3  NA   2021  maize         -0.258   483 1|1|0|0|0|1|1|11
+#>  1  25.6  59   2021  soybean        0.119   367 1|1|1|1|0|1|1|01
+#>  2  23.6  58.9 <NA>  maize          1.46    335 1|1|1|1|0|0|1|01
+#>  3  26.5  58.2 2021r <NA>          -0.408   415 1|1|1|1|1|0|0|11
+#>  4  27.9  58.1 2021  maize         -0.998   495 1|1|1|1|0|1|1|11
+#>  5 259    58.3 2021  dog            0.395   301 1|0|1|1|0|1|0|01
+#>  6  26.4  58.4 2021  maize          0.860   367 1|1|1|1|0|1|1|01
+#>  7  25    58.5 2021  soybean        0.142   367 1|1|1|1|0|1|1|01
+#>  8  24.9  59.5 2021  maize          0.661   367 1|1|1|1|0|1|1|01
+#>  9   0     0   2021  soybean        1.48    359 1|1|1|0|0|1|1|01
+#> 10  27.1  NA   2021  maize          0.432   355 1|1|0|0|0|1|1|01
 ```
 
 ## Bitfields for other data-types

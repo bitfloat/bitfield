@@ -13,14 +13,14 @@ knitr::opts_chunk$set(
 )
 ```
 
-# queuebee <a href='https://github.com/EhrmannS/queuebee/'><img src='man/figures/logo.svg' align="right" height="200" /></a>
+# queuebee <a href='https://github.com/luckinet/queuebee/'><img src='man/figures/logo.svg' align="right" height="200" /></a>
 
 <!-- badges: start -->
 <!-- [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/)](https://cran.r-project.org/package=) -->
 <!-- [![DOI](https://zenodo.org/badge/DOI/)](https://doi.org/) -->
 
 [![R-CMD-check](https://github.com/luckinet/queuebee/workflows/R-CMD-check/badge.svg)](https://github.com/luckinet/queuebee/actions)
-[![codecov](https://codecov.io/gh/EhrmannS/queuebee/branch/master/graph/badge.svg?token=hjppymcGr3)](https://codecov.io/gh/EhrmannS/queuebee)
+[![codecov](https://codecov.io/gh/luckinet/queuebee/branch/master/graph/badge.svg?token=hjppymcGr3)](https://codecov.io/gh/luckinet/queuebee)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 
 <!-- [![](http://cranlogs.r-pkg.org/badges/grand-total/)](https://cran.r-project.org/package=) -->
@@ -91,14 +91,14 @@ Then, individual bits need to be grown by specifying from which input and based 
 ```{r}
 newBitfield <- newBitfield %>%
   # explicit tests for coordinates ...
-  qb_grow(bit = qb_na(x = input, test = "x"), name = "is_na_x",
+  qb_grow(bit = qbb_na(x = input, test = "x"), name = "is_na_x",
           desc = c("x-coordinate values do not contain any NAs"),
           pos = 1, bitfield = .) %>%
-  qb_grow(bit =  qb_range(x = input, test = "x", min = -180, max = 180), name = "range_1_x",
+  qb_grow(bit =  qbb_range(x = input, test = "x", min = -180, max = 180), name = "range_1_x",
           desc = c("x-coordinate values are numeric and within the valid WGS84 range"),
           pos = 2, bitfield = .) %>%
   # ... or override NA test
-  qb_grow(bit = qb_range(x = input, test = "y", min = -90, max = 90), name = "range_1_y",
+  qb_grow(bit = qbb_range(x = input, test = "y", min = -90, max = 90), name = "range_1_y",
           desc = c("y-coordinate values are numeric and within the valid WGS84 range, NAs are FALSE"),
           pos = 3, na_val = FALSE, bitfield = .) %>%
   # it is also possible to use other functions that give flags, such as from CoordinateCleaner ...
@@ -114,11 +114,11 @@ newBitfield <- newBitfield %>%
           desc = c("year values are valid integers"),
           pos = 6, bitfield = .)  %>%
   # test for matches with an external vector
-  qb_grow(bit = qb_match(x = input, test = "commodity", against = validComm), name = "match_commodities",
+  qb_grow(bit = qbb_match(x = input, test = "commodity", against = validComm), name = "match_commodities",
           desc = c("commodity values are part of 'soybean' or 'maize'"),
           pos = 7, na_val = FALSE, bitfield = .) %>%
   # define cases
-  qb_grow(bit = qb_case(x = input, some_other > 0.5, some_other > 0, some_other < 0, exclusive = FALSE), name = "cases_some_other",
+  qb_grow(bit = qbb_case(x = input, some_other > 0.5, some_other > 0, some_other < 0, exclusive = FALSE), name = "cases_some_other",
           desc = c("some_other values are distinguished into large (. > 0.5), medium (. > 0) and small (. < 0)"),
           pos = 8:9, bitfield = .)
 ```
