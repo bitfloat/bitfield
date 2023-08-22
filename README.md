@@ -28,10 +28,14 @@ devtools::install_github("EhrmannS/queuebee")
 library(dplyr, warn.conflicts = FALSE)
 library(queuebee)
 library(CoordinateCleaner)
-#> The legacy packages maptools, rgdal, and rgeos, underpinning this package
-#> will retire shortly. Please refer to R-spatial evolution reports on
-#> https://r-spatial.org/r/2023/05/15/evolution4.html for details.
-#> This package is now running under evolution status 0
+#> The legacy packages maptools, rgdal, and rgeos, underpinning the sp package,
+#> which was just loaded, will retire in October 2023.
+#> Please refer to R-spatial evolution reports for details, especially
+#> https://r-spatial.org/r/2023/05/15/evolution4.html.
+#> It may be desirable to make the sf package available;
+#> package maintainers should consider adding sf to Suggests:.
+#> The sp package is now running under evolution status 2
+#>      (status 2 uses the sf package in place of rgdal)
 #> Please note that rgdal will be retired during October 2023,
 #> plan transition to sf/stars/terra functions using GDAL and PROJ
 #> at your earliest convenience.
@@ -43,17 +47,17 @@ library(CoordinateCleaner)
 #> GDAL binary built with GEOS: TRUE 
 #> Loaded PROJ runtime: Rel. 8.2.1, January 1st, 2022, [PJ_VERSION: 821]
 #> Path to PROJ shared files: /home/se87kuhe/.local/share/proj:/usr/share/proj
-#> PROJ CDN enabled: FALSE
+#> PROJ CDN enabled: TRUE
 #> Linking to sp version:1.6-1
 #> To mute warnings of possible GDAL/OSR exportToProj4() degradation,
 #> use options("rgdal_show_exportToProj4_warnings"="none") before loading sp or rgdal.
-#> rgeos version: 0.6-3, (SVN revision 696)
+#> rgeos version: 0.6-4, (SVN revision 699)
 #>  GEOS runtime version: 3.10.2-CAPI-1.16.0 
 #>  Please note that rgeos will be retired during October 2023,
 #> plan transition to sf or terra functions using GEOS at your earliest convenience.
 #> See https://r-spatial.org/r/2023/05/15/evolution4.html for details.
 #>  GEOS using OverlayNG
-#>  Linking to sp version: 1.6-1 
+#>  Linking to sp version: 2.0-0 
 #>  Polygon checking: TRUE
 library(stringr)
 ```
@@ -132,7 +136,7 @@ newBitfield <- newBitfield %>%
           desc = c("commodity values are part of 'soybean' or 'maize'"),
           pos = 7, na_val = FALSE, bitfield = .) %>%
   # define cases
-  qb_grow(bit = qb_case(x = input, some_other > 0.5, some_other > 0, some_other < 0), name = "cases_some_other",
+  qb_grow(bit = qb_case(x = input, some_other > 0.5, some_other > 0, some_other < 0, exclusive = FALSE), name = "cases_some_other",
           desc = c("some_other values are distinguished into large, medium and small"),
           pos = 8:9, bitfield = .)
 ```
