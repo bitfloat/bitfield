@@ -31,7 +31,7 @@ reference:
     contents:
       - .getBit
       - .getPrecision
-      - %>%
+      - `%>%`
 
 navbar:
   left:
