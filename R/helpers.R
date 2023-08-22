@@ -21,18 +21,15 @@
     len <- 32
   }
 
-  temp <- x %>%
-    intToBits() %>%
-    as.character() %>%
-    str_split_i(pattern = "", 2)
+  temp <- intToBits(x)
+  temp <- as.character(temp)
+  temp <- str_split_i(string = temp, pattern = "", 2)
 
   if(rev){
     temp <- rev(temp)
   }
 
-  out <- temp %>%
-    head(len) %>%
-    paste0(collapse = "")
+  out <- paste0(head(x = temp, n = len), collapse = "")
 
   return(out)
 }

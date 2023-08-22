@@ -18,12 +18,11 @@ qb_combine <- function(bitfield){
   theBitfield <- tibble(.rows = bitfield@length)
 
   # arrange them by position of the bit ...
-  theBits <- map(seq_along(bitfield@bits), function(ix){
+  theBits <- bind_rows(map(seq_along(bitfield@bits), function(ix){
     tibble(pos = bitfield@bits[[ix]]$position,
            name = names(bitfield@bits)[ix])
-  }) %>%
-    bind_rows() %>%
-    arrange(pos)
+  }))
+  theBits <- arrange(theBits, pos)
 
   # ... and write into the bitfield
   for(i in seq_along(unique(theBits$name))){
@@ -35,27 +34,24 @@ qb_combine <- function(bitfield){
     if(is.logical(theBit$values)){
       # insert logical values as is
 
-      theBitfield <- theBitfield %>%
-        bind_cols(as.character(as.integer(theVals)), .name_repair = "minimal")
+      theBitfield <- bind_cols(theBitfield, as.character(as.integer(theVals)), .name_repair = "minimal")
 
     } else {
       # build new bit representations from integer values
 
-      bitVals <- map(seq_along(theVals), function(ix){
+      bitVals <- unlist(map(seq_along(theVals), function(ix){
         temp <- .getBit(theVals[ix])
 
         paste0(temp[1:length(theBit$position)], collapse = "")
-      }) %>%
-        unlist()
+      }))
 
-      theBitfield <- theBitfield %>%
-        bind_cols(bitVals, .name_repair = "minimal")
+      theBitfield <- bind_cols(theBitfield, bitVals, .name_repair = "minimal")
 
     }
 
   }
 
-  out <- map(1:dim(theBitfield)[1], function(ix){
+  out <- bind_rows(map(1:dim(theBitfield)[1], function(ix){
 
     temp <- paste0(theBitfield[ix, ], collapse = "")
     int <- str_split(temp, "")[[1]]
@@ -63,8 +59,7 @@ qb_combine <- function(bitfield){
 
     tibble(QB = as.integer(int))
 
-  }) %>%
-    bind_rows()
+  }))
 
   return(out)
 
