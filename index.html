@@ -5,7 +5,13 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Handle Bitfields to record Data-Quality • queuebee</title>
+<title>Handle Bitfields to record Data-Quality • geometr</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="apple-touch-icon-60x60.png">
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
 <script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
@@ -15,6 +21,7 @@
 <meta property="og:description" content="Provides tools to record formal data quality and meta data to store 
     that in a bitfield, which can be published alongside all sort of (modelled) 
     data products that can be handled in tabular form.">
+<meta property="og:image" content="http://EhrmannS.github.io/queuebee/logo.svg">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -34,21 +41,27 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="index.html">queuebee</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0</span>
+        <a class="navbar-link" href="index.html">geometr</a>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
+  <a href="articles/queuebee.html">Get Started</a>
+</li>
+<li>
   <a href="reference/index.html">Reference</a>
+</li>
+<li>
+  <a href="news/index.html">Changelog</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/luckinet/queuebee/" class="external-link">
-    <span class="fab fa-github fa-lg"></span>
+  <a href="https://github.com/EhrmannS/queuebee" class="external-link">
+    <span class="fa fa-github"></span>
      
   </a>
 </li>
@@ -66,10 +79,14 @@
   <div class="contents col-md-9">
 
 <div class="section level1">
-<div class="page-header"><h1 id="queuebee-">queuebee <a href=""><img src="" align="right" height="200"></a>
+<div class="page-header"><h1 id="queuebee-">queuebee <a href="https://github.com/luckinet/queuebee/" class="external-link"><img src="reference/figures/logo.svg" align="right" height="200"></a>
 <a class="anchor" aria-label="anchor" href="#queuebee-"></a>
 </h1></div>
 <!-- badges: start -->
+<!-- [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/)](https://cran.r-project.org/package=) -->
+<!-- [![DOI](https://zenodo.org/badge/DOI/)](https://doi.org/) -->
+
+<!-- [![](http://cranlogs.r-pkg.org/badges/grand-total/)](https://cran.r-project.org/package=) -->
 <!-- badges: end -->
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
@@ -130,7 +147,6 @@
 <span>                y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">57.5</span>, <span class="fl">59.6</span>, <span class="fl">0.1</span><span class="op">)</span>, <span class="fl">10</span><span class="op">)</span>,</span>
 <span>                year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2021</span>, <span class="fl">10</span><span class="op">)</span>,</span>
 <span>                commodity <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"soybean"</span>, <span class="st">"maize"</span><span class="op">)</span>, <span class="fl">5</span><span class="op">)</span>,</span>
-<span>                landuse <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"crop"</span>, <span class="st">"grazing"</span>, <span class="st">"forest"</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">10</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>                some_other <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># make it have some errors</span></span>
@@ -153,86 +169,147 @@
 <code class="sourceCode R"><span><span class="va">newBitfield</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/qb_create.html">qb_create</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">10</span>, length <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">input</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <p>Then, individual bits need to be grown by specifying from which input and based on which mapping function a particular position of the bitfield should be modified. When providing a concise yet expressive description, you will also in the future still understand what you did here.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">newBitfield</span> <span class="op">&lt;-</span> <span class="va">newBitfield</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<code class="sourceCode R"><span><span class="va">newBitfield</span> <span class="op">&lt;-</span> <span class="va">newBitfield</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="co"># explicit tests for coordinates ...</span></span>
-<span>  <span class="fu"><a href="reference/qb_grow.html">qb_grow</a></span><span class="op">(</span>bit <span class="op">=</span> <span class="fu"><a href="reference/qb_na.html">qb_na</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">input</span>, test <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span>, name <span class="op">=</span> <span class="st">"is_na_x"</span>,</span>
+<span>  <span class="fu"><a href="reference/qb_grow.html">qb_grow</a></span><span class="op">(</span>bit <span class="op">=</span> <span class="fu"><a href="reference/qbb_na.html">qbb_na</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">input</span>, test <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span>, name <span class="op">=</span> <span class="st">"is_na_x"</span>,</span>
 <span>          desc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x-coordinate values do not contain any NAs"</span><span class="op">)</span>,</span>
-<span>          pos <span class="op">=</span> <span class="fl">1</span>, bitfield <span class="op">=</span> <span class="va">.</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="reference/qb_grow.html">qb_grow</a></span><span class="op">(</span>bit <span class="op">=</span>  <span class="fu"><a href="reference/qb_range.html">qb_range</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">input</span>, test <span class="op">=</span> <span class="st">"x"</span>, min <span class="op">=</span> <span class="op">-</span><span class="fl">180</span>, max <span class="op">=</span> <span class="fl">180</span><span class="op">)</span>, name <span class="op">=</span> <span class="st">"range_1_x"</span>,</span>
+<span>          pos <span class="op">=</span> <span class="fl">1</span>, bitfield <span class="op">=</span> <span class="va">.</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/qb_grow.html">qb_grow</a></span><span class="op">(</span>bit <span class="op">=</span>  <span class="fu"><a href="reference/qbb_range.html">qbb_range</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">input</span>, test <span class="op">=</span> <span class="st">"x"</span>, min <span class="op">=</span> <span class="op">-</span><span class="fl">180</span>, max <span class="op">=</span> <span class="fl">180</span><span class="op">)</span>, name <span class="op">=</span> <span class="st">"range_1_x"</span>,</span>
 <span>          desc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x-coordinate values are numeric and within the valid WGS84 range"</span><span class="op">)</span>,</span>
-<span>          pos <span class="op">=</span> <span class="fl">2</span>, bitfield <span class="op">=</span> <span class="va">.</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>          pos <span class="op">=</span> <span class="fl">2</span>, bitfield <span class="op">=</span> <span class="va">.</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="co"># ... or override NA test</span></span>
-<span>  <span class="fu"><a href="reference/qb_grow.html">qb_grow</a></span><span class="op">(</span>bit <span class="op">=</span> <span class="fu"><a href="reference/qb_range.html">qb_range</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">input</span>, test <span class="op">=</span> <span class="st">"y"</span>, min <span class="op">=</span> <span class="op">-</span><span class="fl">90</span>, max <span class="op">=</span> <span class="fl">90</span><span class="op">)</span>, name <span class="op">=</span> <span class="st">"range_1_y"</span>,</span>
+<span>  <span class="fu"><a href="reference/qb_grow.html">qb_grow</a></span><span class="op">(</span>bit <span class="op">=</span> <span class="fu"><a href="reference/qbb_range.html">qbb_range</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">input</span>, test <span class="op">=</span> <span class="st">"y"</span>, min <span class="op">=</span> <span class="op">-</span><span class="fl">90</span>, max <span class="op">=</span> <span class="fl">90</span><span class="op">)</span>, name <span class="op">=</span> <span class="st">"range_1_y"</span>,</span>
 <span>          desc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"y-coordinate values are numeric and within the valid WGS84 range, NAs are FALSE"</span><span class="op">)</span>,</span>
-<span>          pos <span class="op">=</span> <span class="fl">3</span>, na_val <span class="op">=</span> <span class="cn">FALSE</span>, bitfield <span class="op">=</span> <span class="va">.</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>          pos <span class="op">=</span> <span class="fl">3</span>, na_val <span class="op">=</span> <span class="cn">FALSE</span>, bitfield <span class="op">=</span> <span class="va">.</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="co"># it is also possible to use other functions that give flags, such as from CoordinateCleaner ...</span></span>
 <span>  <span class="fu"><a href="reference/qb_grow.html">qb_grow</a></span><span class="op">(</span>bit <span class="op">=</span> <span class="fu">cc_equ</span><span class="op">(</span>x <span class="op">=</span> <span class="va">input</span>, lon <span class="op">=</span> <span class="st">"x"</span>, lat <span class="op">=</span> <span class="st">"y"</span>, value <span class="op">=</span> <span class="st">"flagged"</span><span class="op">)</span>, name <span class="op">=</span> <span class="st">"equal_coords"</span>,</span>
-<span>          desc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x and y coordinates are not identical"</span><span class="op">)</span>,</span>
-<span>          pos <span class="op">=</span> <span class="fl">4</span>, na_val <span class="op">=</span> <span class="cn">FALSE</span>, bitfield <span class="op">=</span> <span class="va">.</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>          desc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x and y coordinates are not identical, NAs are FALSE"</span><span class="op">)</span>,</span>
+<span>          pos <span class="op">=</span> <span class="fl">4</span>, na_val <span class="op">=</span> <span class="cn">FALSE</span>, bitfield <span class="op">=</span> <span class="va">.</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="co"># ... or stringr ...</span></span>
 <span>  <span class="fu"><a href="reference/qb_grow.html">qb_grow</a></span><span class="op">(</span>bit <span class="op">=</span> <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">input</span><span class="op">$</span><span class="va">year</span>, <span class="st">"r"</span><span class="op">)</span>, name <span class="op">=</span> <span class="st">"flag_year"</span>,</span>
-<span>          desc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"year values do have a flag"</span><span class="op">)</span>,</span>
-<span>          pos <span class="op">=</span> <span class="fl">5</span>, na_val <span class="op">=</span> <span class="cn">FALSE</span>, bitfield <span class="op">=</span> <span class="va">.</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>          desc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"year values do have a flag, NAs are FALSE"</span><span class="op">)</span>,</span>
+<span>          pos <span class="op">=</span> <span class="fl">5</span>, na_val <span class="op">=</span> <span class="cn">FALSE</span>, bitfield <span class="op">=</span> <span class="va">.</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="co"># ... or even base R</span></span>
-<span>  <span class="fu"><a href="reference/qb_grow.html">qb_grow</a></span><span class="op">(</span>bit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">input</span><span class="op">$</span><span class="va">year</span><span class="op">)</span><span class="op">)</span>, name <span class="op">=</span> <span class="st">"is_na_year"</span>,</span>
+<span>  <span class="fu"><a href="reference/qb_grow.html">qb_grow</a></span><span class="op">(</span>bit <span class="op">=</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">input</span><span class="op">$</span><span class="va">year</span><span class="op">)</span><span class="op">)</span>, name <span class="op">=</span> <span class="st">"is_na_year"</span>,</span>
 <span>          desc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"year values are valid integers"</span><span class="op">)</span>,</span>
-<span>          pos <span class="op">=</span> <span class="fl">6</span>, bitfield <span class="op">=</span> <span class="va">.</span><span class="op">)</span>  <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>          pos <span class="op">=</span> <span class="fl">6</span>, bitfield <span class="op">=</span> <span class="va">.</span><span class="op">)</span>  <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="co"># test for matches with an external vector</span></span>
-<span>  <span class="fu"><a href="reference/qb_grow.html">qb_grow</a></span><span class="op">(</span>bit <span class="op">=</span> <span class="fu"><a href="reference/qb_match.html">qb_match</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">input</span>, test <span class="op">=</span> <span class="st">"commodity"</span>, against <span class="op">=</span> <span class="va">validComm</span><span class="op">)</span>, name <span class="op">=</span> <span class="st">"match_commodities"</span>,</span>
+<span>  <span class="fu"><a href="reference/qb_grow.html">qb_grow</a></span><span class="op">(</span>bit <span class="op">=</span> <span class="fu"><a href="reference/qbb_match.html">qbb_match</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">input</span>, test <span class="op">=</span> <span class="st">"commodity"</span>, against <span class="op">=</span> <span class="va">validComm</span><span class="op">)</span>, name <span class="op">=</span> <span class="st">"match_commodities"</span>,</span>
 <span>          desc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"commodity values are part of 'soybean' or 'maize'"</span><span class="op">)</span>,</span>
-<span>          pos <span class="op">=</span> <span class="fl">7</span>, na_val <span class="op">=</span> <span class="cn">FALSE</span>, bitfield <span class="op">=</span> <span class="va">.</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>          pos <span class="op">=</span> <span class="fl">7</span>, na_val <span class="op">=</span> <span class="cn">FALSE</span>, bitfield <span class="op">=</span> <span class="va">.</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="co"># define cases</span></span>
-<span>  <span class="fu"><a href="reference/qb_grow.html">qb_grow</a></span><span class="op">(</span>bit <span class="op">=</span> <span class="fu"><a href="reference/qb_case.html">qb_case</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">input</span>, <span class="va">some_other</span> <span class="op">&gt;</span> <span class="fl">0.5</span>, <span class="va">some_other</span> <span class="op">&gt;</span> <span class="fl">0</span>, <span class="va">some_other</span> <span class="op">&lt;</span> <span class="fl">0</span>, exclusive <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>, name <span class="op">=</span> <span class="st">"cases_some_other"</span>,</span>
-<span>          desc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"some_other values are distinguished into large, medium and small"</span><span class="op">)</span>,</span>
-<span>          pos <span class="op">=</span> <span class="fl">8</span><span class="op">:</span><span class="fl">9</span>, bitfield <span class="op">=</span> <span class="va">.</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="reference/qb_grow.html">qb_grow</a></span><span class="op">(</span>bit <span class="op">=</span> <span class="fu"><a href="reference/qbb_case.html">qbb_case</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">input</span>, <span class="va">some_other</span> <span class="op">&gt;</span> <span class="fl">0.5</span>, <span class="va">some_other</span> <span class="op">&gt;</span> <span class="fl">0</span>, <span class="va">some_other</span> <span class="op">&lt;</span> <span class="fl">0</span>, exclusive <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>, name <span class="op">=</span> <span class="st">"cases_some_other"</span>,</span>
+<span>          desc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"some_other values are distinguished into large (. &gt; 0.5), medium (. &gt; 0) and small (. &lt; 0)"</span><span class="op">)</span>,</span>
+<span>          pos <span class="op">=</span> <span class="fl">8</span><span class="op">:</span><span class="fl">9</span>, bitfield <span class="op">=</span> <span class="va">.</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Testing equal lat/lon</span></span>
+<span><span class="co">#&gt; Flagged NA records.</span></span>
+<span><span class="co">#&gt; Warning in qb_grow(bit = !is.na(as.integer(input$year)), name = "is_na_year", :</span></span>
+<span><span class="co">#&gt; NAs durch Umwandlung erzeugt</span></span></code></pre></div>
 <p>This strcuture is basically a record of all the things that are grown on a bitfield, but so far nothing has happened</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">newBitfield</span></span></code></pre></div>
 <p>To make things happen eventually, the bitfield and a(ny) input it shall be applied to are combined. This will result in an output table (with one column that has the name <code>QB</code>) with the same length as the longest column in the inputs. When bit flags are grown from inputs with different length, a join/merge column needs to be provided.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/qb_combine.html">qb_combine</a></span><span class="op">(</span>bitfield <span class="op">=</span> <span class="va">newBitfield</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="op">(</span><span class="va">QB_int</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/qb_combine.html">qb_combine</a></span><span class="op">(</span>bitfield <span class="op">=</span> <span class="va">newBitfield</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 10 × 1</span></span>
+<span><span class="co">#&gt;       QB</span></span>
+<span><span class="co">#&gt;    &lt;int&gt;</span></span>
+<span><span class="co">#&gt;  1   495</span></span>
+<span><span class="co">#&gt;  2   335</span></span>
+<span><span class="co">#&gt;  3   287</span></span>
+<span><span class="co">#&gt;  4   495</span></span>
+<span><span class="co">#&gt;  5   429</span></span>
+<span><span class="co">#&gt;  6   495</span></span>
+<span><span class="co">#&gt;  7   495</span></span>
+<span><span class="co">#&gt;  8   495</span></span>
+<span><span class="co">#&gt;  9   487</span></span>
+<span><span class="co">#&gt; 10   483</span></span></code></pre></div>
 <p>Anybody that wants to either extend the bitfield or analyse the output data and base their judgement on the quality bit will want to extract that bit. The bitfield is thereby the key that is required to decode the quality bit</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">qb_extract</span><span class="op">(</span>x <span class="op">=</span> <span class="va">output</span>, bitfield <span class="op">=</span> <span class="va">newBitfield</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">QB_chr</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/qb_unpack.html">qb_unpack</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">QB_int</span>, bitfield <span class="op">=</span> <span class="va">newBitfield</span>, sep <span class="op">=</span> <span class="st">"|"</span><span class="op">)</span> </span>
+<span><span class="co">#&gt; # A tibble: 8 × 4</span></span>
+<span><span class="co">#&gt;   name              flags pos   description                                     </span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;             &lt;int&gt; &lt;chr&gt; &lt;chr&gt;                                           </span></span>
+<span><span class="co">#&gt; 1 is_na_x               2 1     x-coordinate values do not contain any NAs      </span></span>
+<span><span class="co">#&gt; 2 range_1_x             2 2     x-coordinate values are numeric and within the …</span></span>
+<span><span class="co">#&gt; 3 range_1_y             2 3     y-coordinate values are numeric and within the …</span></span>
+<span><span class="co">#&gt; 4 equal_coords          2 4     x and y coordinates are not identical, NAs are …</span></span>
+<span><span class="co">#&gt; 5 flag_year             2 5     year values do have a flag, NAs are FALSE       </span></span>
+<span><span class="co">#&gt; 6 is_na_year            2 6     year values are valid integers                  </span></span>
+<span><span class="co">#&gt; 7 match_commodities     2 7     commodity values are part of 'soybean' or 'maiz…</span></span>
+<span><span class="co">#&gt; 8 cases_some_other      3 8:9   some_other values are distinguished into large …</span></span>
+<span></span>
+<span><span class="co"># -&gt; prints legend by default, but it is also available in qb_env$legend</span></span>
+<span></span>
+<span><span class="va">input</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_cols.html" class="external-link">bind_cols</a></span><span class="op">(</span><span class="va">QB_chr</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 10 × 7</span></span>
+<span><span class="co">#&gt;        x     y year  commodity some_other    QB QB_chr          </span></span>
+<span><span class="co">#&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;          &lt;dbl&gt; &lt;int&gt; &lt;chr&gt;           </span></span>
+<span><span class="co">#&gt;  1  26.6  58.2 2021  soybean      -0.393    495 1|1|1|1|0|1|1|11</span></span>
+<span><span class="co">#&gt;  2  24    57.8 &lt;NA&gt;  maize         0.533    335 1|1|1|1|0|0|1|01</span></span>
+<span><span class="co">#&gt;  3  28.1  58.9 2021r &lt;NA&gt;          0.0852   287 1|1|1|1|1|0|0|01</span></span>
+<span><span class="co">#&gt;  4  23.5  58.6 2021  maize        -0.425    495 1|1|1|1|0|1|1|11</span></span>
+<span><span class="co">#&gt;  5 259    59.5 2021  dog          -1.25     429 1|0|1|1|0|1|0|11</span></span>
+<span><span class="co">#&gt;  6  27    59.6 2021  maize        -0.290    495 1|1|1|1|0|1|1|11</span></span>
+<span><span class="co">#&gt;  7  27.6  59   2021  soybean      -0.997    495 1|1|1|1|0|1|1|11</span></span>
+<span><span class="co">#&gt;  8  25    58   2021  maize        -0.521    495 1|1|1|1|0|1|1|11</span></span>
+<span><span class="co">#&gt;  9   0     0   2021  soybean      -0.566    487 1|1|1|0|0|1|1|11</span></span>
+<span><span class="co">#&gt; 10  25.2  NA   2021  maize        -1.01     483 1|1|0|0|0|1|1|11</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="some-background---what-is-a-bitfield-really">Some background - what is a bitfield, really?<a class="anchor" aria-label="anchor" href="#some-background---what-is-a-bitfield-really"></a>
+<h2 id="bitfields-for-other-data-types">Bitfields for other data-types<a class="anchor" aria-label="anchor" href="#bitfields-for-other-data-types"></a>
 </h2>
-<p>Adding more thoughts about what I had in mind about this code. For MODIS, this is a so-called “bit flag” (or <a href="https://en.wikipedia.org/wiki/Bit_field" class="external-link">bit field</a>). This is a combination of 0s and 1s that are combined into a binary sequence. It’s called bit flag because each position in the sequence is coded by a single bit. R stores each integer as a (huge) 32 bit value, you can check this with <code>intToBits(x = 2L)</code> and see how many 0s are used up for that (or actually 00s here, it’s just their way of representing a 0) … But I think we can do way better, by having each single of those 0s be one “switch” that stores particular information, so in the integer <code>2L</code> we can store 32 pieces of information, we probably don’t even need that many. Depending on how we arrange that information, we’ll then get different integers, see the following (32 positions, either 00 or 01):</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">intToBits</span>(<span class="at">x =</span> 0L)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a> [<span class="dv">1</span>] <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">intToBits</span>(<span class="at">x =</span> 1L)</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a> [<span class="dv">1</span>] <span class="dv">01</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">intToBits</span>(<span class="at">x =</span> 2L)</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a> [<span class="dv">1</span>] <span class="dv">00</span> <span class="dv">01</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="fu">intToBits</span>(<span class="at">x =</span> 3L)</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a> [<span class="dv">1</span>] <span class="dv">01</span> <span class="dv">01</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span> <span class="dv">00</span></span></code></pre></div>
-<p>Using the first two of those bits, we can represent 4 different states of an attribute (00, 01, 10 and 11, or in the R-notation that would be <code>'00 00'</code>, <code>'00 01'</code>, <code>'01 00'</code> and <code>'01 01'</code>), with three bits 8 states, etc (2^n)</p>
-<p>We could translate the bit-vector, we create, back to an integer and store those integers in a raster-tiff, or a vector for point data and have a giant amount of quality information stored in that single value, which takes up hardly any volume on the hard disc.</p>
-<p>It’s good that you bring up such information that has several values because I now change the function so that the user can provide the number of bits that shall encode for the quality of a particular attribute. So if we have something like precision and we decided that we want to represent 4 levels, we’d have to specify that we want to use two bits for that. And yeah, the idea was to encode several attributes to be able to select downstream what to weigh more!</p>
-<p>Ok, I’ll try to implement the country-border check! I am just not sure about the matching with actual landuse/cover information. Which data product should we use for that? I guess ESA LC is not trustworthy enough, right? Would it also make sense to include and propagate the quality metrics you derive for your first chapter in that data structure? Maybe we could already implement that for modelling in LUCKINet, basically, build such a QB-layer based on your metric and use it for weighing modelling by it?</p>
+<p>This example here shows how to compute quality bits for tabular data, but this technique is especially helpful for raster data. Complex workflows will, however, not only contain raster data, but a mix of tabular and raster data, for example when occurrences and/or areal data are modelled based on drivers that are available as rasters. In this case the design of <code>queuebee</code> allows to use different of its’ functions in different (distinct) parts of the workflow to build one overall QB.</p>
+<p>To keep this package as simple as possible, no specific methods for rasters were developed, rasters instead need to be converted to tabular form and joined to the attributes or meta data that should be added to the QB, for example like this</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">raster</span> <span class="op">&lt;-</span> <span class="fu">rast</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">25</span>, nrow <span class="op">=</span> <span class="fl">5</span>, ncol <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu">values</span><span class="op">(</span><span class="va">raster</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>values <span class="op">=</span> <span class="va">lyr.1</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_cols.html" class="external-link">bind_cols</a></span><span class="op">(</span><span class="fu">crds</span><span class="op">(</span><span class="va">raster</span><span class="op">)</span>, <span class="va">.</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># from here we can continue creating a bitfield and growing bits on it just like shown above...</span></span>
+<span></span>
+<span><span class="co"># ... and then converting it back to a raster</span></span>
+<span><span class="co"># </span></span>
+<span><span class="va">QB_rast</span> <span class="op">&lt;-</span> <span class="fu">crds</span><span class="op">(</span><span class="va">raster</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_cols.html" class="external-link">bind_cols</a></span><span class="op">(</span><span class="va">QB_int</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu">rast</span><span class="op">(</span>type<span class="op">=</span><span class="st">"xyz"</span>, crs <span class="op">=</span> <span class="fu">crs</span><span class="op">(</span><span class="va">raster</span><span class="op">)</span>, extent <span class="op">=</span> <span class="fu">ext</span><span class="op">(</span><span class="va">raster</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="what-is-a-bitfield-really">What is a bitfield, really?<a class="anchor" aria-label="anchor" href="#what-is-a-bitfield-really"></a>
+</h2>
+<p>In MODIS dataproducts a so-called “bit flag” (or <a href="https://en.wikipedia.org/wiki/Bit_field" class="external-link">bit field</a>) is used. This is a combination of 0s and 1s that are combined into a binary sequence. It’s called bit flag because each position in the sequence is coded by a single bit. R stores each integer as a (huge) 32 bit value, you can check this with <code>intToBits(x = 0L)</code> and see how many 0s are used up for that (or actually 00s here, in hex-representation). This basically means, that each integer in R can, by default, store 32 “switches” that code for a particular information.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/rawConversion.html" class="external-link">intToBits</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">0L</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  [1] 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</span></span>
+<span><span class="co">#&gt; [26] 00 00 00 00 00 00 00</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/rawConversion.html" class="external-link">intToBits</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  [1] 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</span></span>
+<span><span class="co">#&gt; [26] 00 00 00 00 00 00 00</span></span>
+<span></span>
+<span><span class="co"># or easier to read with .getBit</span></span>
+<span><span class="fu"><a href="reference/dot-getBit.html">.getBit</a></span><span class="op">(</span><span class="fl">2L</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "01000000000000000000000000000000"</span></span>
+<span><span class="fu"><a href="reference/dot-getBit.html">.getBit</a></span><span class="op">(</span><span class="fl">3L</span>, len <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "11"</span></span></code></pre></div>
+<p>Using the first two of those bits, we can represent 4 different states of an attribute (00, 01, 10 and 11, or in the hex-notation that would be <code>'00 00'</code>, <code>'00 01'</code>, <code>'01 00'</code> and <code>'01 01'</code>), with three bits 8 states and with n bits 2^n states. This leaves lots of room to store all kind of information in a single R integer.</p>
+<p>By growing a bitfield with this package, you decide which information is stored in which location, to represent not only data quality <em>per se</em>, but all sort of information and perhaps even meta data.</p>
+<p>When preparing a publication that contains (FAIR) data, it can therefore be a good solution to provide not only the data table/layer, but also a <em>single</em> additional column in a table or raster layer that records all of those information, and the bitfield to decode the QB values.</p>
 </div>
 </div>
 <div class="section level1">
 <h1 id="to-do">To Do<a class="anchor" aria-label="anchor" href="#to-do"></a>
 </h1>
-<ul>
-<li>need functionality to build the sequence actually sequentially. For instance, when going through a pipeline, where certain actions are carried out but in different scripts, an old QB from a previous script could be picked up and additional information can be added to it. -&gt; This should be possible with this set-up, but needs to be described explicitly</li>
-<li>needs functionality to have different data structures interact -&gt; I solve this now by transforming rasters to a table that can then be dealt with easily without any generics/methods</li>
-<li>
-<input type="checkbox" disabled>write qb_combine</li>
-<li>
-<input type="checkbox" disabled>write qb_extract</li>
+<ul class="task-list">
 <li>
 <input type="checkbox" disabled>write bitfield show method</li>
-<li>
-<input type="checkbox" disabled>write qb_case</li>
 <li>
 <input type="checkbox" disabled>write qb_filter</li>
 <li>
 <input type="checkbox" disabled>other pre-made quality flag functions?!</li>
-<li>
-<input type="checkbox" disabled>write and/or improve documentation</li>
 </ul>
 </div>
 
@@ -266,7 +343,8 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Steffen Ehrmann <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-2958-0796" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>
+<a href="https://orcid.org/0000-0002-2958-0796" class="external-link">Steffen Ehrmann</a> <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-2958-0796" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 </ul>
 </div>
 
@@ -278,7 +356,7 @@
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by Steffen Ehrmann.</p>
+<p>Developed by <a href="https://orcid.org/0000-0002-2958-0796" class="external-link">Steffen Ehrmann</a>.</p>
 </div>
 
 <div class="pkgdown">

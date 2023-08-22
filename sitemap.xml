@@ -1,60 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>/404.html</loc>
+    <loc>http://EhrmannS.github.io/queuebee/404.html</loc>
   </url>
   <url>
-    <loc>/LICENSE.html</loc>
+    <loc>http://EhrmannS.github.io/queuebee/LICENSE.html</loc>
   </url>
   <url>
-    <loc>/authors.html</loc>
+    <loc>http://EhrmannS.github.io/queuebee/authors.html</loc>
   </url>
   <url>
-    <loc>/index.html</loc>
+    <loc>http://EhrmannS.github.io/queuebee/index.html</loc>
   </url>
   <url>
-    <loc>/reference/bitfield-class.html</loc>
+    <loc>http://EhrmannS.github.io/queuebee/reference/bitfield-class.html</loc>
   </url>
   <url>
-    <loc>/reference/dot-getBit.html</loc>
+    <loc>http://EhrmannS.github.io/queuebee/reference/dot-getBit.html</loc>
   </url>
   <url>
-    <loc>/reference/index.html</loc>
+    <loc>http://EhrmannS.github.io/queuebee/reference/dot-getPrecision.html</loc>
   </url>
   <url>
-    <loc>/reference/pipe.html</loc>
+    <loc>http://EhrmannS.github.io/queuebee/reference/index.html</loc>
   </url>
   <url>
-    <loc>/reference/qb_case.html</loc>
+    <loc>http://EhrmannS.github.io/queuebee/reference/qb_combine.html</loc>
   </url>
   <url>
-    <loc>/reference/qb_combine.html</loc>
+    <loc>http://EhrmannS.github.io/queuebee/reference/qb_create.html</loc>
   </url>
   <url>
-    <loc>/reference/qb_create.html</loc>
+    <loc>http://EhrmannS.github.io/queuebee/reference/qb_grow.html</loc>
   </url>
   <url>
-    <loc>/reference/qb_filter.html</loc>
+    <loc>http://EhrmannS.github.io/queuebee/reference/qb_unpack.html</loc>
   </url>
   <url>
-    <loc>/reference/qb_grow.html</loc>
+    <loc>http://EhrmannS.github.io/queuebee/reference/qbb_case.html</loc>
   </url>
   <url>
-    <loc>/reference/qb_match.html</loc>
+    <loc>http://EhrmannS.github.io/queuebee/reference/qbb_filter.html</loc>
   </url>
   <url>
-    <loc>/reference/qb_na.html</loc>
+    <loc>http://EhrmannS.github.io/queuebee/reference/qbb_match.html</loc>
   </url>
   <url>
-    <loc>/reference/qb_precision.html</loc>
+    <loc>http://EhrmannS.github.io/queuebee/reference/qbb_na.html</loc>
   </url>
   <url>
-    <loc>/reference/qb_range.html</loc>
+    <loc>http://EhrmannS.github.io/queuebee/reference/qbb_range.html</loc>
   </url>
   <url>
-    <loc>/reference/qb_unpack.html</loc>
-  </url>
-  <url>
-    <loc>/reference/show-bitfield-method.html</loc>
+    <loc>http://EhrmannS.github.io/queuebee/reference/show-bitfield-method.html</loc>
   </url>
 </urlset>
