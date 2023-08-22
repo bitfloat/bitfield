@@ -7,7 +7,7 @@
 <!-- [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/)](https://cran.r-project.org/package=) -->
 <!-- [![DOI](https://zenodo.org/badge/DOI/)](https://doi.org/) -->
 
-[![R-CMD-check](https://github.com/EhrmannS/queuebee/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/EhrmannS/queuebee/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/luckinet/queuebee/workflows/R-CMD-check/badge.svg)](https://github.com/luckinet/queuebee/actions)
 [![codecov](https://codecov.io/gh/EhrmannS/queuebee/branch/master/graph/badge.svg?token=hjppymcGr3)](https://codecov.io/gh/EhrmannS/queuebee)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
@@ -171,16 +171,16 @@ different length, a join/merge column needs to be provided.
 #> # A tibble: 10 × 1
 #>       QB
 #>    <int>
-#>  1   495
-#>  2   335
+#>  1   367
+#>  2   463
 #>  3   287
-#>  4   495
+#>  4   367
 #>  5   301
-#>  6   367
-#>  7   367
+#>  6   495
+#>  7   495
 #>  8   367
-#>  9   487
-#> 10   355
+#>  9   359
+#> 10   483
 ```
 
 Anybody that wants to either extend the bitfield or analyse the output
@@ -209,16 +209,16 @@ input %>%
 #> # A tibble: 10 × 7
 #>        x     y year  commodity some_other    QB QB_chr          
 #>    <dbl> <dbl> <chr> <chr>          <dbl> <int> <chr>           
-#>  1  27.8  59.3 2021  soybean       -0.459   495 1|1|1|1|0|1|1|11
-#>  2  25.3  58.8 <NA>  maize          0.620   335 1|1|1|1|0|0|1|01
-#>  3  23.5  59.4 2021r <NA>           0.363   287 1|1|1|1|1|0|0|01
-#>  4  25.6  59.2 2021  maize         -1.01    495 1|1|1|1|0|1|1|11
-#>  5 259    58.7 2021  dog            0.462   301 1|0|1|1|0|1|0|01
-#>  6  24.7  57.8 2021  maize          1.27    367 1|1|1|1|0|1|1|01
-#>  7  25.5  58.1 2021  soybean        1.17    367 1|1|1|1|0|1|1|01
-#>  8  24.9  58.5 2021  maize          0.411   367 1|1|1|1|0|1|1|01
-#>  9   0     0   2021  soybean       -0.835   487 1|1|1|0|0|1|1|11
-#> 10  26.9  NA   2021  maize          0.250   355 1|1|0|0|0|1|1|01
+#>  1  24.5  58.1 2021  soybean        0.564   367 1|1|1|1|0|1|1|01
+#>  2  26.7  58.2 <NA>  maize         -0.517   463 1|1|1|1|0|0|1|11
+#>  3  25.5  59   2021r <NA>           0.522   287 1|1|1|1|1|0|0|01
+#>  4  27.3  58.9 2021  maize          0.618   367 1|1|1|1|0|1|1|01
+#>  5 259    59.5 2021  dog            1.04    301 1|0|1|1|0|1|0|01
+#>  6  25.7  58   2021  maize         -0.257   495 1|1|1|1|0|1|1|11
+#>  7  23.5  58.8 2021  soybean       -0.655   495 1|1|1|1|0|1|1|11
+#>  8  23.7  57.7 2021  maize          0.518   367 1|1|1|1|0|1|1|01
+#>  9   0     0   2021  soybean        2.17    359 1|1|1|0|0|1|1|01
+#> 10  23.3  NA   2021  maize         -0.258   483 1|1|0|0|0|1|1|11
 ```
 
 ## Bitfields for other data-types
