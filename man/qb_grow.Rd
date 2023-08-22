@@ -15,15 +15,15 @@ stored as bit.}
 
 \item{desc}{\code{\link[=character]{character(.)}}\cr the description of the bit(s).}
 
+\item{na_val}{\code{\link[=numeric]{numeric(.)}} | \code{\link[=character]{character(.)}} |
+\code{\link[=logical]{logical(1)}}\cr which value NAs in the output of .bit should
+have in the bitfield.}
+
 \item{pos}{\code{\link[=integer]{integerish(1)}}\cr the position in the bitfield that
 should be set.}
 
 \item{bitfield}{\code{\link[=bitfield]{bitfield(1)}}\cr the bitfield in which the bits
 should be set.}
-
-\item{na}{\code{\link[=numeric]{numeric(.)}} | \code{\link[=character]{character(.)}} |
-\code{\link[=logical]{logical(1)}}\cr which value NAs in the output of .bit should
-have in the bitfield.}
 }
 \description{
 Add bits to a bitfield

@@ -7,7 +7,7 @@
 \S4method{show}{bitfield}(object)
 }
 \arguments{
-\item{object}{\link{\code{geom}}\cr object to \code{show}.}
+\item{object}{\code{\link[=bitfield]{bitfield(1)}}\cr object to \code{show}.}
 }
 \description{
 Print geom in the console
