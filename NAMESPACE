@@ -2,10 +2,10 @@
 
 export(.getBit)
 export(.getPrecision)
-export(qb_combine)
 export(qb_create)
 export(qb_grow)
-export(qb_unpack)
+export(qb_harvest)
+export(qb_propagate)
 export(qbb_case)
 export(qbb_filter)
 export(qbb_match)
