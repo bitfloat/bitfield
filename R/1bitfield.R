@@ -177,7 +177,7 @@ setValidity("bitfield", function(object){
 
 })
 
-#' Print geom in the console
+#' Print bitfield in the console (not working yet)
 #'
 #' @param object [`bitfield(1)`][bitfield]\cr object to \code{show}.
 #' @importFrom utils head

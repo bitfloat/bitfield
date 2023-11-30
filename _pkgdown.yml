@@ -12,8 +12,8 @@ reference:
     contents:
       - qb_create
       - qb_grow
-      - qb_combine
-      - qb_unpack
+      - qb_harvest
+      - qb_propagate
   - title: bit builders
     desc: functions that build a particular bit value
     contents:

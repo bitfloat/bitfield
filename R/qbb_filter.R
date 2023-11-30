@@ -1,4 +1,4 @@
-#' Build a bit by checking for a match with an external vector
+#' Build a bit by checking for a match with an external vector (not working yet)
 #'
 #' @param x [`data.frame(1)`][data.frame]\cr the table that
 #'   contains \code{test}.
