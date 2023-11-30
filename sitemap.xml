@@ -34,16 +34,16 @@
     <loc>http://EhrmannS.github.io/queuebee/reference/index.html</loc>
   </url>
   <url>
-    <loc>http://EhrmannS.github.io/queuebee/reference/qb_combine.html</loc>
-  </url>
-  <url>
     <loc>http://EhrmannS.github.io/queuebee/reference/qb_create.html</loc>
   </url>
   <url>
     <loc>http://EhrmannS.github.io/queuebee/reference/qb_grow.html</loc>
   </url>
   <url>
-    <loc>http://EhrmannS.github.io/queuebee/reference/qb_unpack.html</loc>
+    <loc>http://EhrmannS.github.io/queuebee/reference/qb_harvest.html</loc>
+  </url>
+  <url>
+    <loc>http://EhrmannS.github.io/queuebee/reference/qb_propagate.html</loc>
   </url>
   <url>
     <loc>http://EhrmannS.github.io/queuebee/reference/qbb_case.html</loc>
