@@ -13,7 +13,7 @@
 #' @importFrom tidyr separate unite
 #' @export
 
-qb_unpack <- function(x, bitfield, sep = "."){
+qb_propagate <- function(x, bitfield, sep = "."){
 
   assertDataFrame(x = x, ncols = 1)
   assertNames(x = names(x), identical.to = "QB")
@@ -48,7 +48,7 @@ qb_unpack <- function(x, bitfield, sep = "."){
   out <- rowwise(x)
   out <- mutate(out, bit = .getBit(x = QB, len = bitfield@width))
   out <- separate(out, col = bit, into = paste0("b", tempTab$split), sep = tempTab$split)
-  out <- unite(out, col = "QB_chr", paste0("b", tempTab$split), sep = sep)
+  out <- unite(out, col = "QB_flags", paste0("b", tempTab$split), sep = sep)
 
   # create look-up table for what the bits stand for
   lut <- mutate(tempTab, split = as.character(split))

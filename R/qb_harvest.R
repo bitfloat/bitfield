@@ -10,7 +10,7 @@
 #' @importFrom stringr str_split str_split_i
 #' @export
 
-qb_combine <- function(bitfield){
+qb_harvest <- function(bitfield){
 
   assertClass(x = bitfield, classes = "bitfield")
 

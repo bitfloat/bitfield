@@ -1,4 +1,4 @@
-#' Build a bit by checking for NA values
+#' Build a bit by checking that values are not NA
 #'
 #' @param x [`data.frame(1)`][data.frame]\cr the table that contains
 #'   \code{test}.
