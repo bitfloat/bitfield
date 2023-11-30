@@ -2,7 +2,7 @@
 % Please edit documentation in R/qbb_na.R
 \name{qbb_na}
 \alias{qbb_na}
-\title{Build a bit by checking for NA values}
+\title{Build a bit by checking that values are not NA}
 \usage{
 qbb_na(x, test)
 }
@@ -14,5 +14,5 @@ qbb_na(x, test)
 checked for NA values.}
 }
 \description{
-Build a bit by checking for NA values
+Build a bit by checking that values are not NA
 }
