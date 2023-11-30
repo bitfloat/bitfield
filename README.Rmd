@@ -202,4 +202,3 @@ Complex workflows do not only contain raster data, but a mix of tabular and rast
 - [ ] write bitfield show method
 - [ ] write qb_filter
 - [ ] other pre-made quality flag functions?!
-- [ ] use-cases for the paper: 1. show a complex usecase that makes use of provenance data throughout the pipeline to build QB, 2. store a distribution of values in a single pixel, 3. 

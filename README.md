@@ -17,12 +17,14 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 
 ## Overview
 
-This package is designed to queue up bits for efficient storage of
-non-complex big data, or to document the quality, provenance, or other
-metadata of a dataset by collecting information throughout the dataset
-creation process. The resulting data structure is referred to as a “bit
-flag” or “[bit field](https://en.wikipedia.org/wiki/Bit_field)”,
-commonly used in MODIS dataproducts to document layer quality.
+This package is designed to queue up bits for documenting the quality,
+provenance, or other metadata of any tabular dataset by collecting
+information throughout the dataset creation process. This can also be
+useful in any setting where large amounts of non-complex data have to be
+stored in an efficient way. The resulting data structure is referred to
+as a “bit flag” or “[bit
+field](https://en.wikipedia.org/wiki/Bit_field)”, commonly used in MODIS
+dataproducts to document layer quality.
 
 Think of a bit as a switch, having values 0 and 1, representing off and
 on states. A pair of bits can store four states, and n bits can
@@ -88,16 +90,16 @@ kable(input)
 
 |     x |    y | year  | commodity | some_other |
 |------:|-----:|:------|:----------|-----------:|
-|  26.0 | 58.2 | 2021  | soybean   | -0.3486210 |
-|  25.2 | 59.5 | NA    | maize     |  0.0796066 |
-|  23.3 | 58.4 | 2021r | NA        | -0.6165373 |
-|  24.2 | 58.1 | 2021  | maize     | -1.4907269 |
-| 259.0 | 58.7 | 2021  | honey     |  0.3783356 |
-|  27.7 | 59.0 | 2021  | maize     |  0.9787268 |
-|  24.9 | 58.9 | 2021  | soybean   |  0.8942037 |
-|  27.8 | 58.5 | 2021  | maize     | -0.4894627 |
-|   0.0 |  0.0 | 2021  | soybean   | -1.0949320 |
-|  27.5 |   NA | 2021  | maize     |  0.3015083 |
+|  24.3 | 58.6 | 2021  | soybean   | -1.1146879 |
+|  24.2 | 59.1 | NA    | maize     | -0.6762735 |
+|  26.5 | 57.5 | 2021r | NA        |  0.5370055 |
+|  25.0 | 59.5 | 2021  | maize     | -0.3850026 |
+| 259.0 | 58.7 | 2021  | honey     |  0.1894515 |
+|  26.7 | 59.0 | 2021  | maize     |  0.3974708 |
+|  26.9 | 58.3 | 2021  | soybean   |  0.8316019 |
+|  24.4 | 57.8 | 2021  | maize     |  0.9572233 |
+|   0.0 |  0.0 | 2021  | soybean   | -1.2514773 |
+|  24.0 |   NA | 2021  | maize     | -2.6089963 |
 
 The first step in yielding quality bits is in creating a bitfield with
 
@@ -194,15 +196,15 @@ output table (with one column that has the name `QB`).
 #>       QB
 #>    <int>
 #>  1   495
-#>  2   335
-#>  3   415
+#>  2   463
+#>  3   287
 #>  4   495
 #>  5   301
 #>  6   367
 #>  7   367
-#>  8   495
+#>  8   367
 #>  9   487
-#> 10   355
+#> 10   483
 ```
 
 As mentioned above, the bitfield is a record of things, which is
@@ -233,16 +235,16 @@ input %>%
 
 |     x |    y | year  | commodity | some_other |  QB | QB_flags                |
 |------:|-----:|:------|:----------|-----------:|----:|:------------------------|
-|  26.0 | 58.2 | 2021  | soybean   | -0.3486210 | 495 | 1\|1\|1\|1\|0\|1\|1\|11 |
-|  25.2 | 59.5 | NA    | maize     |  0.0796066 | 335 | 1\|1\|1\|1\|0\|0\|1\|01 |
-|  23.3 | 58.4 | 2021r | NA        | -0.6165373 | 415 | 1\|1\|1\|1\|1\|0\|0\|11 |
-|  24.2 | 58.1 | 2021  | maize     | -1.4907269 | 495 | 1\|1\|1\|1\|0\|1\|1\|11 |
-| 259.0 | 58.7 | 2021  | honey     |  0.3783356 | 301 | 1\|0\|1\|1\|0\|1\|0\|01 |
-|  27.7 | 59.0 | 2021  | maize     |  0.9787268 | 367 | 1\|1\|1\|1\|0\|1\|1\|01 |
-|  24.9 | 58.9 | 2021  | soybean   |  0.8942037 | 367 | 1\|1\|1\|1\|0\|1\|1\|01 |
-|  27.8 | 58.5 | 2021  | maize     | -0.4894627 | 495 | 1\|1\|1\|1\|0\|1\|1\|11 |
-|   0.0 |  0.0 | 2021  | soybean   | -1.0949320 | 487 | 1\|1\|1\|0\|0\|1\|1\|11 |
-|  27.5 |   NA | 2021  | maize     |  0.3015083 | 355 | 1\|1\|0\|0\|0\|1\|1\|01 |
+|  24.3 | 58.6 | 2021  | soybean   | -1.1146879 | 495 | 1\|1\|1\|1\|0\|1\|1\|11 |
+|  24.2 | 59.1 | NA    | maize     | -0.6762735 | 463 | 1\|1\|1\|1\|0\|0\|1\|11 |
+|  26.5 | 57.5 | 2021r | NA        |  0.5370055 | 287 | 1\|1\|1\|1\|1\|0\|0\|01 |
+|  25.0 | 59.5 | 2021  | maize     | -0.3850026 | 495 | 1\|1\|1\|1\|0\|1\|1\|11 |
+| 259.0 | 58.7 | 2021  | honey     |  0.1894515 | 301 | 1\|0\|1\|1\|0\|1\|0\|01 |
+|  26.7 | 59.0 | 2021  | maize     |  0.3974708 | 367 | 1\|1\|1\|1\|0\|1\|1\|01 |
+|  26.9 | 58.3 | 2021  | soybean   |  0.8316019 | 367 | 1\|1\|1\|1\|0\|1\|1\|01 |
+|  24.4 | 57.8 | 2021  | maize     |  0.9572233 | 367 | 1\|1\|1\|1\|0\|1\|1\|01 |
+|   0.0 |  0.0 | 2021  | soybean   | -1.2514773 | 487 | 1\|1\|1\|0\|0\|1\|1\|11 |
+|  24.0 |   NA | 2021  | maize     | -2.6089963 | 483 | 1\|1\|0\|0\|0\|1\|1\|11 |
 
 ## Bitfields for other data-types
 
@@ -283,6 +285,3 @@ different (distinct) parts of the workflow to build one overall QB.
 - [ ] write bitfield show method
 - [ ] write qb_filter
 - [ ] other pre-made quality flag functions?!
-- [ ] use-cases for the paper: 1. show a complex usecase that makes use
-  of provenance data throughout the pipeline to build QB, 2. store a
-  distribution of values in a single pixel, 3.
