@@ -3,7 +3,7 @@ pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
   queuebee: queuebee.html
-last_built: 2023-11-30T16:11Z
+last_built: 2023-12-02T10:48Z
 urls:
   reference: http://EhrmannS.github.io/queuebee/reference
   article: http://EhrmannS.github.io/queuebee/articles

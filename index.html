@@ -93,7 +93,7 @@
 </h2>
 <p>This package is designed to queue up bits for documenting the quality, provenance, or other metadata of any tabular dataset by collecting information throughout the dataset creation process. This can also be useful in any setting where large amounts of non-complex data have to be stored in an efficient way. The resulting data structure is referred to as a “bit flag” or “<a href="https://en.wikipedia.org/wiki/Bit_field" class="external-link">bit field</a>”, commonly used in MODIS dataproducts to document layer quality.</p>
 <p>Think of a bit as a switch, having values 0 and 1, representing off and on states. A pair of bits can store four states, and n bits can accommodate 2^n states. In R, integers are typically 32-bit values, allowing a single integer to store 32 switches and 2^32 states. <code>queuebee</code> facilitates combining states into a bit sequence and storing that as an integer. These states might be the outcomes of functions returning boolean values (each using one bit) or functions returning a small set of cases (using the corresponding number of bits).</p>
-<p>In essence, <code>queuebee</code> allows you to encapsulate a diverse range of information into a single value, like a column in a table or a raster layer. This is beneficial not only for reporting quality metrics, provenance, or other metadata but also for simplifying the reuse of ancillary data in script-based workflows.</p>
+<p>In essence, <code>queuebee</code> allows you to capture a diverse range of information into a single value, like a column from table or a raster layer from a data cube. This is beneficial not only for reporting quality metrics, provenance, or other metadata but also for simplifying the reuse of ancillary data in script-based workflows.</p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -141,74 +141,74 @@
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">24.3</td>
-<td align="right">58.6</td>
+<td align="right">25.8</td>
+<td align="right">57.7</td>
 <td align="left">2021</td>
 <td align="left">soybean</td>
-<td align="right">-1.1146879</td>
+<td align="right">-0.0026519</td>
 </tr>
 <tr class="even">
-<td align="right">24.2</td>
-<td align="right">59.1</td>
+<td align="right">23.8</td>
+<td align="right">58.4</td>
 <td align="left">NA</td>
 <td align="left">maize</td>
-<td align="right">-0.6762735</td>
+<td align="right">0.2049487</td>
 </tr>
 <tr class="odd">
-<td align="right">26.5</td>
-<td align="right">57.5</td>
+<td align="right">27.2</td>
+<td align="right">58.3</td>
 <td align="left">2021r</td>
 <td align="left">NA</td>
-<td align="right">0.5370055</td>
+<td align="right">0.0539777</td>
 </tr>
 <tr class="even">
-<td align="right">25.0</td>
-<td align="right">59.5</td>
-<td align="left">2021</td>
-<td align="left">maize</td>
-<td align="right">-0.3850026</td>
-</tr>
-<tr class="odd">
-<td align="right">259.0</td>
-<td align="right">58.7</td>
-<td align="left">2021</td>
-<td align="left">honey</td>
-<td align="right">0.1894515</td>
-</tr>
-<tr class="even">
-<td align="right">26.7</td>
+<td align="right">24.6</td>
 <td align="right">59.0</td>
 <td align="left">2021</td>
 <td align="left">maize</td>
-<td align="right">0.3974708</td>
+<td align="right">-1.0008374</td>
 </tr>
 <tr class="odd">
-<td align="right">26.9</td>
-<td align="right">58.3</td>
+<td align="right">259.0</td>
+<td align="right">58.1</td>
 <td align="left">2021</td>
-<td align="left">soybean</td>
-<td align="right">0.8316019</td>
+<td align="left">honey</td>
+<td align="right">-0.2780210</td>
 </tr>
 <tr class="even">
-<td align="right">24.4</td>
-<td align="right">57.8</td>
+<td align="right">25.7</td>
+<td align="right">58.7</td>
 <td align="left">2021</td>
 <td align="left">maize</td>
-<td align="right">0.9572233</td>
+<td align="right">-2.1653212</td>
+</tr>
+<tr class="odd">
+<td align="right">27.3</td>
+<td align="right">58.9</td>
+<td align="left">2021</td>
+<td align="left">soybean</td>
+<td align="right">-0.0587031</td>
+</tr>
+<tr class="even">
+<td align="right">27.6</td>
+<td align="right">59.4</td>
+<td align="left">2021</td>
+<td align="left">maize</td>
+<td align="right">0.6484230</td>
 </tr>
 <tr class="odd">
 <td align="right">0.0</td>
 <td align="right">0.0</td>
 <td align="left">2021</td>
 <td align="left">soybean</td>
-<td align="right">-1.2514773</td>
+<td align="right">-1.7140368</td>
 </tr>
 <tr class="even">
-<td align="right">24.0</td>
+<td align="right">25.1</td>
 <td align="right">NA</td>
 <td align="left">2021</td>
 <td align="left">maize</td>
-<td align="right">-2.6089963</td>
+<td align="right">-0.3314015</td>
 </tr>
 </tbody>
 </table>
@@ -279,12 +279,12 @@
 <span><span class="co">#&gt;       QB</span></span>
 <span><span class="co">#&gt;    &lt;int&gt;</span></span>
 <span><span class="co">#&gt;  1   495</span></span>
-<span><span class="co">#&gt;  2   463</span></span>
+<span><span class="co">#&gt;  2   335</span></span>
 <span><span class="co">#&gt;  3   287</span></span>
 <span><span class="co">#&gt;  4   495</span></span>
-<span><span class="co">#&gt;  5   301</span></span>
-<span><span class="co">#&gt;  6   367</span></span>
-<span><span class="co">#&gt;  7   367</span></span>
+<span><span class="co">#&gt;  5   429</span></span>
+<span><span class="co">#&gt;  6   495</span></span>
+<span><span class="co">#&gt;  7   495</span></span>
 <span><span class="co">#&gt;  8   367</span></span>
 <span><span class="co">#&gt;  9   487</span></span>
 <span><span class="co">#&gt; 10   483</span></span></code></pre></div>
@@ -329,74 +329,74 @@
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">24.3</td>
-<td align="right">58.6</td>
+<td align="right">25.8</td>
+<td align="right">57.7</td>
 <td align="left">2021</td>
 <td align="left">soybean</td>
-<td align="right">-1.1146879</td>
+<td align="right">-0.0026519</td>
 <td align="right">495</td>
 <td align="left">1|1|1|1|0|1|1|11</td>
 </tr>
 <tr class="even">
-<td align="right">24.2</td>
-<td align="right">59.1</td>
+<td align="right">23.8</td>
+<td align="right">58.4</td>
 <td align="left">NA</td>
 <td align="left">maize</td>
-<td align="right">-0.6762735</td>
-<td align="right">463</td>
-<td align="left">1|1|1|1|0|0|1|11</td>
+<td align="right">0.2049487</td>
+<td align="right">335</td>
+<td align="left">1|1|1|1|0|0|1|01</td>
 </tr>
 <tr class="odd">
-<td align="right">26.5</td>
-<td align="right">57.5</td>
+<td align="right">27.2</td>
+<td align="right">58.3</td>
 <td align="left">2021r</td>
 <td align="left">NA</td>
-<td align="right">0.5370055</td>
+<td align="right">0.0539777</td>
 <td align="right">287</td>
 <td align="left">1|1|1|1|1|0|0|01</td>
 </tr>
 <tr class="even">
-<td align="right">25.0</td>
-<td align="right">59.5</td>
+<td align="right">24.6</td>
+<td align="right">59.0</td>
 <td align="left">2021</td>
 <td align="left">maize</td>
-<td align="right">-0.3850026</td>
+<td align="right">-1.0008374</td>
 <td align="right">495</td>
 <td align="left">1|1|1|1|0|1|1|11</td>
 </tr>
 <tr class="odd">
 <td align="right">259.0</td>
-<td align="right">58.7</td>
+<td align="right">58.1</td>
 <td align="left">2021</td>
 <td align="left">honey</td>
-<td align="right">0.1894515</td>
-<td align="right">301</td>
-<td align="left">1|0|1|1|0|1|0|01</td>
+<td align="right">-0.2780210</td>
+<td align="right">429</td>
+<td align="left">1|0|1|1|0|1|0|11</td>
 </tr>
 <tr class="even">
-<td align="right">26.7</td>
-<td align="right">59.0</td>
+<td align="right">25.7</td>
+<td align="right">58.7</td>
 <td align="left">2021</td>
 <td align="left">maize</td>
-<td align="right">0.3974708</td>
-<td align="right">367</td>
-<td align="left">1|1|1|1|0|1|1|01</td>
+<td align="right">-2.1653212</td>
+<td align="right">495</td>
+<td align="left">1|1|1|1|0|1|1|11</td>
 </tr>
 <tr class="odd">
-<td align="right">26.9</td>
-<td align="right">58.3</td>
+<td align="right">27.3</td>
+<td align="right">58.9</td>
 <td align="left">2021</td>
 <td align="left">soybean</td>
-<td align="right">0.8316019</td>
-<td align="right">367</td>
-<td align="left">1|1|1|1|0|1|1|01</td>
+<td align="right">-0.0587031</td>
+<td align="right">495</td>
+<td align="left">1|1|1|1|0|1|1|11</td>
 </tr>
 <tr class="even">
-<td align="right">24.4</td>
-<td align="right">57.8</td>
+<td align="right">27.6</td>
+<td align="right">59.4</td>
 <td align="left">2021</td>
 <td align="left">maize</td>
-<td align="right">0.9572233</td>
+<td align="right">0.6484230</td>
 <td align="right">367</td>
 <td align="left">1|1|1|1|0|1|1|01</td>
 </tr>
@@ -405,16 +405,16 @@
 <td align="right">0.0</td>
 <td align="left">2021</td>
 <td align="left">soybean</td>
-<td align="right">-1.2514773</td>
+<td align="right">-1.7140368</td>
 <td align="right">487</td>
 <td align="left">1|1|1|0|0|1|1|11</td>
 </tr>
 <tr class="even">
-<td align="right">24.0</td>
+<td align="right">25.1</td>
 <td align="right">NA</td>
 <td align="left">2021</td>
 <td align="left">maize</td>
-<td align="right">-2.6089963</td>
+<td align="right">-0.3314015</td>
 <td align="right">483</td>
 <td align="left">1|1|0|0|0|1|1|11</td>
 </tr>
