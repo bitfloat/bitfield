@@ -35,11 +35,11 @@ that as an integer. These states might be the outcomes of functions
 returning boolean values (each using one bit) or functions returning a
 small set of cases (using the corresponding number of bits).
 
-In essence, `queuebee` allows you to encapsulate a diverse range of
-information into a single value, like a column in a table or a raster
-layer. This is beneficial not only for reporting quality metrics,
-provenance, or other metadata but also for simplifying the reuse of
-ancillary data in script-based workflows.
+In essence, `queuebee` allows you to capture a diverse range of
+information into a single value, like a column from table or a raster
+layer from a data cube. This is beneficial not only for reporting
+quality metrics, provenance, or other metadata but also for simplifying
+the reuse of ancillary data in script-based workflows.
 
 ## Installation
 
@@ -90,16 +90,16 @@ kable(input)
 
 |     x |    y | year  | commodity | some_other |
 |------:|-----:|:------|:----------|-----------:|
-|  24.3 | 58.6 | 2021  | soybean   | -1.1146879 |
-|  24.2 | 59.1 | NA    | maize     | -0.6762735 |
-|  26.5 | 57.5 | 2021r | NA        |  0.5370055 |
-|  25.0 | 59.5 | 2021  | maize     | -0.3850026 |
-| 259.0 | 58.7 | 2021  | honey     |  0.1894515 |
-|  26.7 | 59.0 | 2021  | maize     |  0.3974708 |
-|  26.9 | 58.3 | 2021  | soybean   |  0.8316019 |
-|  24.4 | 57.8 | 2021  | maize     |  0.9572233 |
-|   0.0 |  0.0 | 2021  | soybean   | -1.2514773 |
-|  24.0 |   NA | 2021  | maize     | -2.6089963 |
+|  25.8 | 57.7 | 2021  | soybean   | -0.0026519 |
+|  23.8 | 58.4 | NA    | maize     |  0.2049487 |
+|  27.2 | 58.3 | 2021r | NA        |  0.0539777 |
+|  24.6 | 59.0 | 2021  | maize     | -1.0008374 |
+| 259.0 | 58.1 | 2021  | honey     | -0.2780210 |
+|  25.7 | 58.7 | 2021  | maize     | -2.1653212 |
+|  27.3 | 58.9 | 2021  | soybean   | -0.0587031 |
+|  27.6 | 59.4 | 2021  | maize     |  0.6484230 |
+|   0.0 |  0.0 | 2021  | soybean   | -1.7140368 |
+|  25.1 |   NA | 2021  | maize     | -0.3314015 |
 
 The first step in yielding quality bits is in creating a bitfield with
 
@@ -196,12 +196,12 @@ output table (with one column that has the name `QB`).
 #>       QB
 #>    <int>
 #>  1   495
-#>  2   463
+#>  2   335
 #>  3   287
 #>  4   495
-#>  5   301
-#>  6   367
-#>  7   367
+#>  5   429
+#>  6   495
+#>  7   495
 #>  8   367
 #>  9   487
 #> 10   483
@@ -235,16 +235,16 @@ input %>%
 
 |     x |    y | year  | commodity | some_other |  QB | QB_flags                |
 |------:|-----:|:------|:----------|-----------:|----:|:------------------------|
-|  24.3 | 58.6 | 2021  | soybean   | -1.1146879 | 495 | 1\|1\|1\|1\|0\|1\|1\|11 |
-|  24.2 | 59.1 | NA    | maize     | -0.6762735 | 463 | 1\|1\|1\|1\|0\|0\|1\|11 |
-|  26.5 | 57.5 | 2021r | NA        |  0.5370055 | 287 | 1\|1\|1\|1\|1\|0\|0\|01 |
-|  25.0 | 59.5 | 2021  | maize     | -0.3850026 | 495 | 1\|1\|1\|1\|0\|1\|1\|11 |
-| 259.0 | 58.7 | 2021  | honey     |  0.1894515 | 301 | 1\|0\|1\|1\|0\|1\|0\|01 |
-|  26.7 | 59.0 | 2021  | maize     |  0.3974708 | 367 | 1\|1\|1\|1\|0\|1\|1\|01 |
-|  26.9 | 58.3 | 2021  | soybean   |  0.8316019 | 367 | 1\|1\|1\|1\|0\|1\|1\|01 |
-|  24.4 | 57.8 | 2021  | maize     |  0.9572233 | 367 | 1\|1\|1\|1\|0\|1\|1\|01 |
-|   0.0 |  0.0 | 2021  | soybean   | -1.2514773 | 487 | 1\|1\|1\|0\|0\|1\|1\|11 |
-|  24.0 |   NA | 2021  | maize     | -2.6089963 | 483 | 1\|1\|0\|0\|0\|1\|1\|11 |
+|  25.8 | 57.7 | 2021  | soybean   | -0.0026519 | 495 | 1\|1\|1\|1\|0\|1\|1\|11 |
+|  23.8 | 58.4 | NA    | maize     |  0.2049487 | 335 | 1\|1\|1\|1\|0\|0\|1\|01 |
+|  27.2 | 58.3 | 2021r | NA        |  0.0539777 | 287 | 1\|1\|1\|1\|1\|0\|0\|01 |
+|  24.6 | 59.0 | 2021  | maize     | -1.0008374 | 495 | 1\|1\|1\|1\|0\|1\|1\|11 |
+| 259.0 | 58.1 | 2021  | honey     | -0.2780210 | 429 | 1\|0\|1\|1\|0\|1\|0\|11 |
+|  25.7 | 58.7 | 2021  | maize     | -2.1653212 | 495 | 1\|1\|1\|1\|0\|1\|1\|11 |
+|  27.3 | 58.9 | 2021  | soybean   | -0.0587031 | 495 | 1\|1\|1\|1\|0\|1\|1\|11 |
+|  27.6 | 59.4 | 2021  | maize     |  0.6484230 | 367 | 1\|1\|1\|1\|0\|1\|1\|01 |
+|   0.0 |  0.0 | 2021  | soybean   | -1.7140368 | 487 | 1\|1\|1\|0\|0\|1\|1\|11 |
+|  25.1 |   NA | 2021  | maize     | -0.3314015 | 483 | 1\|1\|0\|0\|0\|1\|1\|11 |
 
 ## Bitfields for other data-types
 

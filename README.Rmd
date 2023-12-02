@@ -38,7 +38,7 @@ This package is designed to queue up bits for documenting the quality, provenanc
 
 Think of a bit as a switch, having values 0 and 1, representing off and on states. A pair of bits can store four states, and n bits can accommodate 2^n states. In R, integers are typically 32-bit values, allowing a single integer to store 32 switches and 2^32 states. `queuebee` facilitates combining states into a bit sequence and storing that as an integer. These states might be the outcomes of functions returning boolean values (each using one bit) or functions returning a small set of cases (using the corresponding number of bits).
 
-In essence, `queuebee` allows you to encapsulate a diverse range of information into a single value, like a column in a table or a raster layer. This is beneficial not only for reporting quality metrics, provenance, or other metadata but also for simplifying the reuse of ancillary data in script-based workflows.
+In essence, `queuebee` allows you to capture a diverse range of information into a single value, like a column from table or a raster layer from a data cube. This is beneficial not only for reporting quality metrics, provenance, or other metadata but also for simplifying the reuse of ancillary data in script-based workflows.
 
 
 ## Installation
