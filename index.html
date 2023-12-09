@@ -79,8 +79,8 @@
   <div class="contents col-md-9">
 
 <div class="section level1">
-<div class="page-header"><h1 id="queuebee-">queuebee <a href="https://github.com/luckinet/queuebee/" class="external-link"><img src="reference/figures/logo.svg" align="right" height="200"></a>
-<a class="anchor" aria-label="anchor" href="#queuebee-"></a>
+<div class="page-header"><h1 id="bitfield-">bitfield <a href="https://github.com/luckinet/bitfield/" class="external-link"><img src="reference/figures/logo.svg" align="right" height="200"></a>
+<a class="anchor" aria-label="anchor" href="#bitfield-"></a>
 </h1></div>
 <!-- badges: start -->
 <!-- [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/)](https://cran.r-project.org/package=) -->
@@ -92,29 +92,36 @@
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
 <p>This package is designed to queue up bits for documenting the quality, provenance, or other metadata of any tabular dataset by collecting information throughout the dataset creation process. This can also be useful in any setting where large amounts of non-complex data have to be stored in an efficient way. The resulting data structure is referred to as a “bit flag” or “<a href="https://en.wikipedia.org/wiki/Bit_field" class="external-link">bit field</a>”, commonly used in MODIS dataproducts to document layer quality.</p>
-<p>Think of a bit as a switch, having values 0 and 1, representing off and on states. A pair of bits can store four states, and n bits can accommodate 2^n states. In R, integers are typically 32-bit values, allowing a single integer to store 32 switches and 2^32 states. <code>queuebee</code> facilitates combining states into a bit sequence and storing that as an integer. These states might be the outcomes of functions returning boolean values (each using one bit) or functions returning a small set of cases (using the corresponding number of bits).</p>
-<p>In essence, <code>queuebee</code> allows you to capture a diverse range of information into a single value, like a column from table or a raster layer from a data cube. This is beneficial not only for reporting quality metrics, provenance, or other metadata but also for simplifying the reuse of ancillary data in script-based workflows.</p>
+<p>Think of a bit as a switch, having values 0 and 1, representing off and on states. A pair of bits can store four states, and n bits can accommodate 2^n states. In R, integers are typically 32-bit values, allowing a single integer to store 32 switches and 2^32 states. <code>bitfield</code> facilitates combining states into a bit sequence and storing that as an integer. These states might be the outcomes of functions returning boolean values (each using one bit) or functions returning a small set of cases (using the corresponding number of bits).</p>
+<p>In essence, <code>bitfield</code> allows you to capture a diverse range of information into a single value, like a column from table or a raster layer from a data cube. This is beneficial not only for reporting quality metrics, provenance, or other metadata but also for simplifying the reuse of ancillary data in script-based workflows.</p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <p>Install the official version from CRAN:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># install.packages("queuebee")</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># install.packages("bitfield")</span></span></code></pre></div>
 <p>Install the latest development version from github:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"EhrmannS/queuebee"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"luckinet/bitfield"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
 </h2>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/luckinet/queuebee" class="external-link">queuebee</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/luckinet/bitfield" class="external-link">bitfield</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Attache Paket: 'bitfield'</span></span>
+<span><span class="co">#&gt; Die folgenden Objekte sind maskiert von 'package:queuebee':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     .getBit, qb_create, qb_grow</span></span>
+<span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span>, warn.conflicts <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ropensci.github.io/CoordinateCleaner/" class="external-link">CoordinateCleaner</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://stringr.tidyverse.org" class="external-link">stringr</a></span><span class="op">)</span></span></code></pre></div>
 <p>Let’s first build an example dataset</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">23.3</span>, <span class="fl">28.1</span>, <span class="fl">0.1</span><span class="op">)</span>, <span class="fl">10</span><span class="op">)</span>,</span>
+<code class="sourceCode R"><span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">23.3</span>, <span class="fl">28.1</span>, <span class="fl">0.1</span><span class="op">)</span>, <span class="fl">10</span><span class="op">)</span>,</span>
 <span>                y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">57.5</span>, <span class="fl">59.6</span>, <span class="fl">0.1</span><span class="op">)</span>, <span class="fl">10</span><span class="op">)</span>,</span>
 <span>                year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2021</span>, <span class="fl">10</span><span class="op">)</span>,</span>
 <span>                commodity <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"soybean"</span>, <span class="st">"maize"</span><span class="op">)</span>, <span class="fl">5</span><span class="op">)</span>,</span>
@@ -141,74 +148,74 @@
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">25.8</td>
-<td align="right">57.7</td>
+<td align="right">27.7</td>
+<td align="right">58.8</td>
 <td align="left">2021</td>
 <td align="left">soybean</td>
-<td align="right">-0.0026519</td>
+<td align="right">0.0459235</td>
 </tr>
 <tr class="even">
-<td align="right">23.8</td>
-<td align="right">58.4</td>
+<td align="right">26.2</td>
+<td align="right">58.0</td>
 <td align="left">NA</td>
 <td align="left">maize</td>
-<td align="right">0.2049487</td>
+<td align="right">0.2133662</td>
 </tr>
 <tr class="odd">
-<td align="right">27.2</td>
-<td align="right">58.3</td>
+<td align="right">27.8</td>
+<td align="right">58.2</td>
 <td align="left">2021r</td>
 <td align="left">NA</td>
-<td align="right">0.0539777</td>
+<td align="right">1.1520725</td>
 </tr>
 <tr class="even">
-<td align="right">24.6</td>
-<td align="right">59.0</td>
-<td align="left">2021</td>
-<td align="left">maize</td>
-<td align="right">-1.0008374</td>
-</tr>
-<tr class="odd">
-<td align="right">259.0</td>
-<td align="right">58.1</td>
-<td align="left">2021</td>
-<td align="left">honey</td>
-<td align="right">-0.2780210</td>
-</tr>
-<tr class="even">
-<td align="right">25.7</td>
-<td align="right">58.7</td>
-<td align="left">2021</td>
-<td align="left">maize</td>
-<td align="right">-2.1653212</td>
-</tr>
-<tr class="odd">
-<td align="right">27.3</td>
-<td align="right">58.9</td>
-<td align="left">2021</td>
-<td align="left">soybean</td>
-<td align="right">-0.0587031</td>
-</tr>
-<tr class="even">
-<td align="right">27.6</td>
+<td align="right">25.6</td>
 <td align="right">59.4</td>
 <td align="left">2021</td>
 <td align="left">maize</td>
-<td align="right">0.6484230</td>
+<td align="right">1.1636828</td>
+</tr>
+<tr class="odd">
+<td align="right">259.0</td>
+<td align="right">58.5</td>
+<td align="left">2021</td>
+<td align="left">honey</td>
+<td align="right">-1.0385096</td>
+</tr>
+<tr class="even">
+<td align="right">25.2</td>
+<td align="right">58.1</td>
+<td align="left">2021</td>
+<td align="left">maize</td>
+<td align="right">0.3648299</td>
+</tr>
+<tr class="odd">
+<td align="right">25.8</td>
+<td align="right">57.5</td>
+<td align="left">2021</td>
+<td align="left">soybean</td>
+<td align="right">-0.2093071</td>
+</tr>
+<tr class="even">
+<td align="right">24.7</td>
+<td align="right">58.3</td>
+<td align="left">2021</td>
+<td align="left">maize</td>
+<td align="right">0.4786660</td>
 </tr>
 <tr class="odd">
 <td align="right">0.0</td>
 <td align="right">0.0</td>
 <td align="left">2021</td>
 <td align="left">soybean</td>
-<td align="right">-1.7140368</td>
+<td align="right">-1.5963287</td>
 </tr>
 <tr class="even">
-<td align="right">25.1</td>
+<td align="right">25.4</td>
 <td align="right">NA</td>
 <td align="left">2021</td>
 <td align="left">maize</td>
-<td align="right">-0.3314015</td>
+<td align="right">0.7565213</td>
 </tr>
 </tbody>
 </table>
@@ -278,16 +285,16 @@
 <span><span class="co">#&gt; # A tibble: 10 × 1</span></span>
 <span><span class="co">#&gt;       QB</span></span>
 <span><span class="co">#&gt;    &lt;int&gt;</span></span>
-<span><span class="co">#&gt;  1   495</span></span>
+<span><span class="co">#&gt;  1   367</span></span>
 <span><span class="co">#&gt;  2   335</span></span>
 <span><span class="co">#&gt;  3   287</span></span>
-<span><span class="co">#&gt;  4   495</span></span>
+<span><span class="co">#&gt;  4   367</span></span>
 <span><span class="co">#&gt;  5   429</span></span>
-<span><span class="co">#&gt;  6   495</span></span>
+<span><span class="co">#&gt;  6   367</span></span>
 <span><span class="co">#&gt;  7   495</span></span>
 <span><span class="co">#&gt;  8   367</span></span>
 <span><span class="co">#&gt;  9   487</span></span>
-<span><span class="co">#&gt; 10   483</span></span></code></pre></div>
+<span><span class="co">#&gt; 10   355</span></span></code></pre></div>
 <p>As mentioned above, the bitfield is a record of things, which is required to decode the quality bit (similar to a key). Together with the legend, the bit flags can then be converted back to human readable text or used in any downstream workflow.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">QB_chr</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/qb_propagate.html">qb_propagate</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">QB_int</span>, bitfield <span class="op">=</span> <span class="va">newBitfield</span>, sep <span class="op">=</span> <span class="st">"|"</span><span class="op">)</span></span>
@@ -306,7 +313,7 @@
 <span><span class="co"># -&gt; prints legend by default, but it is also available in qb_env$legend</span></span>
 <span></span>
 <span><span class="va">input</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu">bind_cols</span><span class="op">(</span><span class="va">QB_chr</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_cols.html" class="external-link">bind_cols</a></span><span class="op">(</span><span class="va">QB_chr</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu">kable</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
@@ -329,74 +336,74 @@
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">25.8</td>
-<td align="right">57.7</td>
+<td align="right">27.7</td>
+<td align="right">58.8</td>
 <td align="left">2021</td>
 <td align="left">soybean</td>
-<td align="right">-0.0026519</td>
-<td align="right">495</td>
-<td align="left">1|1|1|1|0|1|1|11</td>
+<td align="right">0.0459235</td>
+<td align="right">367</td>
+<td align="left">1|1|1|1|0|1|1|01</td>
 </tr>
 <tr class="even">
-<td align="right">23.8</td>
-<td align="right">58.4</td>
+<td align="right">26.2</td>
+<td align="right">58.0</td>
 <td align="left">NA</td>
 <td align="left">maize</td>
-<td align="right">0.2049487</td>
+<td align="right">0.2133662</td>
 <td align="right">335</td>
 <td align="left">1|1|1|1|0|0|1|01</td>
 </tr>
 <tr class="odd">
-<td align="right">27.2</td>
-<td align="right">58.3</td>
+<td align="right">27.8</td>
+<td align="right">58.2</td>
 <td align="left">2021r</td>
 <td align="left">NA</td>
-<td align="right">0.0539777</td>
+<td align="right">1.1520725</td>
 <td align="right">287</td>
 <td align="left">1|1|1|1|1|0|0|01</td>
 </tr>
 <tr class="even">
-<td align="right">24.6</td>
-<td align="right">59.0</td>
+<td align="right">25.6</td>
+<td align="right">59.4</td>
 <td align="left">2021</td>
 <td align="left">maize</td>
-<td align="right">-1.0008374</td>
-<td align="right">495</td>
-<td align="left">1|1|1|1|0|1|1|11</td>
+<td align="right">1.1636828</td>
+<td align="right">367</td>
+<td align="left">1|1|1|1|0|1|1|01</td>
 </tr>
 <tr class="odd">
 <td align="right">259.0</td>
-<td align="right">58.1</td>
+<td align="right">58.5</td>
 <td align="left">2021</td>
 <td align="left">honey</td>
-<td align="right">-0.2780210</td>
+<td align="right">-1.0385096</td>
 <td align="right">429</td>
 <td align="left">1|0|1|1|0|1|0|11</td>
 </tr>
 <tr class="even">
-<td align="right">25.7</td>
-<td align="right">58.7</td>
+<td align="right">25.2</td>
+<td align="right">58.1</td>
 <td align="left">2021</td>
 <td align="left">maize</td>
-<td align="right">-2.1653212</td>
-<td align="right">495</td>
-<td align="left">1|1|1|1|0|1|1|11</td>
+<td align="right">0.3648299</td>
+<td align="right">367</td>
+<td align="left">1|1|1|1|0|1|1|01</td>
 </tr>
 <tr class="odd">
-<td align="right">27.3</td>
-<td align="right">58.9</td>
+<td align="right">25.8</td>
+<td align="right">57.5</td>
 <td align="left">2021</td>
 <td align="left">soybean</td>
-<td align="right">-0.0587031</td>
+<td align="right">-0.2093071</td>
 <td align="right">495</td>
 <td align="left">1|1|1|1|0|1|1|11</td>
 </tr>
 <tr class="even">
-<td align="right">27.6</td>
-<td align="right">59.4</td>
+<td align="right">24.7</td>
+<td align="right">58.3</td>
 <td align="left">2021</td>
 <td align="left">maize</td>
-<td align="right">0.6484230</td>
+<td align="right">0.4786660</td>
 <td align="right">367</td>
 <td align="left">1|1|1|1|0|1|1|01</td>
 </tr>
@@ -405,18 +412,18 @@
 <td align="right">0.0</td>
 <td align="left">2021</td>
 <td align="left">soybean</td>
-<td align="right">-1.7140368</td>
+<td align="right">-1.5963287</td>
 <td align="right">487</td>
 <td align="left">1|1|1|0|0|1|1|11</td>
 </tr>
 <tr class="even">
-<td align="right">25.1</td>
+<td align="right">25.4</td>
 <td align="right">NA</td>
 <td align="left">2021</td>
 <td align="left">maize</td>
-<td align="right">-0.3314015</td>
-<td align="right">483</td>
-<td align="left">1|1|0|0|0|1|1|11</td>
+<td align="right">0.7565213</td>
+<td align="right">355</td>
+<td align="left">1|1|0|0|0|1|1|01</td>
 </tr>
 </tbody>
 </table>
@@ -426,25 +433,26 @@
 </h2>
 <p>This example here shows how to compute quality bits for tabular data, but this technique is especially helpful for raster data. To keep this package as simple as possible, no specific methods for rasters were developed (so far), they instead need to be converted to tabular form and joined to the attributes or meta data that should be added to the QB, for example like this</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">raster</span> <span class="op">&lt;-</span> <span class="fu">rast</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">25</span>, nrow <span class="op">=</span> <span class="fl">5</span>, ncol <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/" class="external-link">terra</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">raster</span> <span class="op">&lt;-</span> <span class="fu">rast</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">25</span>, nrow <span class="op">=</span> <span class="fl">5</span>, ncol <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu">values</span><span class="op">(</span><span class="va">raster</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu">as_tibble</span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu">rename</span><span class="op">(</span>values <span class="op">=</span> <span class="va">lyr.1</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu">bind_cols</span><span class="op">(</span><span class="fu">crds</span><span class="op">(</span><span class="va">raster</span><span class="op">)</span>, <span class="va">.</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>values <span class="op">=</span> <span class="va">lyr.1</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_cols.html" class="external-link">bind_cols</a></span><span class="op">(</span><span class="fu">crds</span><span class="op">(</span><span class="va">raster</span><span class="op">)</span>, <span class="va">.</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># from here we can continue creating a bitfield and growing bits on it just like shown above...</span></span>
 <span></span>
 <span><span class="co"># ... and then converting it back to a raster</span></span>
-<span><span class="co"># </span></span>
 <span><span class="va">QB_rast</span> <span class="op">&lt;-</span> <span class="fu">crds</span><span class="op">(</span><span class="va">raster</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu">bind_cols</span><span class="op">(</span><span class="va">QB_int</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_cols.html" class="external-link">bind_cols</a></span><span class="op">(</span><span class="va">QB_int</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu">rast</span><span class="op">(</span>type<span class="op">=</span><span class="st">"xyz"</span>, crs <span class="op">=</span> <span class="fu">crs</span><span class="op">(</span><span class="va">raster</span><span class="op">)</span>, extent <span class="op">=</span> <span class="fu">ext</span><span class="op">(</span><span class="va">raster</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="growing-bitfields-in-complex-workflows">Growing bitfields in complex workflows<a class="anchor" aria-label="anchor" href="#growing-bitfields-in-complex-workflows"></a>
 </h2>
-<p>Complex workflows do not only contain raster data, but a mix of tabular and raster data, for example when occurrences and/or areal data are modelled based on drivers that are available as rasters. In this case the design of <code>queuebee</code> allows to use different of its’ functions in different (distinct) parts of the workflow to build one overall QB.</p>
+<p>Complex workflows do not only contain raster data, but a mix of tabular and raster data, for example when occurrences and/or areal data are modelled based on drivers that are available as rasters. In this case the design of <code>bitfield</code> allows to use different of its’ functions in different (distinct) parts of the workflow to build one overall QB.</p>
 </div>
 </div>
 <div class="section level1">
@@ -466,8 +474,8 @@
     <div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/luckinet/queuebee/" class="external-link">Browse source code</a></li>
-<li><a href="https://github.com/luckinet/queuebee/issues" class="external-link">Report a bug</a></li>
+<li><a href="https://github.com/luckinet/bitfield/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/luckinet/bitfield/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
 
@@ -483,7 +491,7 @@
 <div class="citation">
 <h2 data-toc-skip>Citation</h2>
 <ul class="list-unstyled">
-<li><a href="authors.html#citation">Citing queuebee</a></li>
+<li><a href="authors.html#citation">Citing bitfield</a></li>
 </ul>
 </div>
 
