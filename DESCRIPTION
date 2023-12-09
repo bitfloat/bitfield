@@ -1,4 +1,4 @@
-Package: queuebee
+Package: bitfield
 Type: Package
 Title: Handle Bitfields to record Data-Quality
 Version: 0.1.0
@@ -10,8 +10,8 @@ Authors@R: c(
 Description: Provides tools to record formal data quality and meta data to store 
     that in a bitfield, which can be published alongside all sort of (modelled) 
     data products that can be handled in tabular form.
-URL: https://github.com/luckinet/queuebee
-BugReports: https://github.com/luckinet/queuebee/issues
+URL: https://github.com/luckinet/bitfield
+BugReports: https://github.com/luckinet/bitfield/issues
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true

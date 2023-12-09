@@ -28,21 +28,22 @@ knitr::opts_chunk$set(
 Install the official version from CRAN:
 
 ```{r, eval=FALSE}
-# install.packages("queuebee")
+# install.packages("bitfield")
 ```
 
 Install the latest development version from github:
 
 ```{r, eval=FALSE}
-devtools::install_github("EhrmannS/queuebee")
+devtools::install_github("luckinet/bitfield")
 ```
 
 
 ## Examples
 
 ```{r example}
+library(bitfield)
+
 library(dplyr, warn.conflicts = FALSE)
-library(queuebee)
 library(CoordinateCleaner)
 library(stringr)
 ```
@@ -146,6 +147,8 @@ This example here shows how to compute quality bits for tabular data, but this t
 To keep this package as simple as possible, no specific methods for rasters were developed, rasters instead need to be converted to tabular form and joined to the attributes or meta data that should be added to the QB, for example like this
 
 ```{r, eval = FALSE}
+library(terra)
+
 raster <- rast(matrix(data = 1:25, nrow = 5, ncol = 5))
 
 input <- values(raster) %>% 
@@ -156,7 +159,6 @@ input <- values(raster) %>%
 # from here we can continue creating a bitfield and growing bits on it just like shown above...
 
 # ... and then converting it back to a raster
-# 
 QB_rast <- crds(raster) %>% 
   bind_cols(QB_int) %>% 
   rast(type="xyz", crs = crs(raster), extent = ext(raster))
@@ -181,11 +183,3 @@ Using the first two of those bits, we can represent 4 different states of an att
 By growing a bitfield with this package, you decide which information is stored in which location, to represent not only data quality *per se*, but all sort of information and perhaps even meta data.
 
 When preparing a publication that contains (FAIR) data, it can therefore be a good solution to provide not only the data table/layer, but also a *single* additional column in a table or raster layer that records all of those information, and the bitfield to decode the QB values.
-
-
-
-# To Do
-
-- [ ] write bitfield show method
-- [ ] write qb_filter
-- [ ] other pre-made quality flag functions?!

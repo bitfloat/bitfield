@@ -13,20 +13,21 @@
 Install the official version from CRAN:
 
 ``` r
-# install.packages("queuebee")
+# install.packages("bitfield")
 ```
 
 Install the latest development version from github:
 
 ``` r
-devtools::install_github("EhrmannS/queuebee")
+devtools::install_github("luckinet/bitfield")
 ```
 
 ## Examples
 
 ``` r
+library(bitfield)
+
 library(dplyr, warn.conflicts = FALSE)
-library(queuebee)
 library(CoordinateCleaner)
 library(stringr)
 ```
@@ -131,16 +132,16 @@ different length, a join/merge column needs to be provided.
 #> # A tibble: 10 × 1
 #>       QB
 #>    <int>
-#>  1   367
-#>  2   463
+#>  1   495
+#>  2   335
 #>  3   415
-#>  4   367
+#>  4   495
 #>  5   429
-#>  6   495
+#>  6   367
 #>  7   495
-#>  8   367
-#>  9   359
-#> 10   483
+#>  8   495
+#>  9   487
+#> 10   355
 ```
 
 Anybody that wants to either extend the bitfield or analyse the output
@@ -169,16 +170,16 @@ input %>%
 #> # A tibble: 10 × 7
 #>        x     y year  commodity some_other    QB QB_chr          
 #>    <dbl> <dbl> <chr> <chr>          <dbl> <int> <chr>           
-#>  1  24    57.5 2021  soybean        0.284   367 1|1|1|1|0|1|1|01
-#>  2  26.4  59.6 <NA>  maize         -0.524   463 1|1|1|1|0|0|1|11
-#>  3  27.5  58.3 2021r <NA>          -0.237   415 1|1|1|1|1|0|0|11
-#>  4  23.9  58.7 2021  maize          0.412   367 1|1|1|1|0|1|1|01
-#>  5 259    58.6 2021  dog           -1.42    429 1|0|1|1|0|1|0|11
-#>  6  23.8  58.1 2021  maize         -0.266   495 1|1|1|1|0|1|1|11
-#>  7  24.2  58.9 2021  soybean       -0.656   495 1|1|1|1|0|1|1|11
-#>  8  27    59.3 2021  maize          1.45    367 1|1|1|1|0|1|1|01
-#>  9   0     0   2021  soybean        0.315   359 1|1|1|0|0|1|1|01
-#> 10  27.1  NA   2021  maize         -0.626   483 1|1|0|0|0|1|1|11
+#>  1  24.5  59.6 2021  soybean      -0.134    495 1|1|1|1|0|1|1|11
+#>  2  24.7  57.6 <NA>  maize         1.17     335 1|1|1|1|0|0|1|01
+#>  3  27.7  59   2021r <NA>         -0.559    415 1|1|1|1|1|0|0|11
+#>  4  27.8  59.3 2021  maize        -2.39     495 1|1|1|1|0|1|1|11
+#>  5 259    57.8 2021  dog          -3.93     429 1|0|1|1|0|1|0|11
+#>  6  24.2  57.5 2021  maize         0.0905   367 1|1|1|1|0|1|1|01
+#>  7  24.9  59.2 2021  soybean      -0.0455   495 1|1|1|1|0|1|1|11
+#>  8  23.6  58.3 2021  maize        -2.68     495 1|1|1|1|0|1|1|11
+#>  9   0     0   2021  soybean      -0.261    487 1|1|1|0|0|1|1|11
+#> 10  23.9  NA   2021  maize         0.201    355 1|1|0|0|0|1|1|01
 ```
 
 ## Bitfields for other data-types
@@ -197,6 +198,8 @@ form and joined to the attributes or meta data that should be added to
 the QB, for example like this
 
 ``` r
+library(terra)
+
 raster <- rast(matrix(data = 1:25, nrow = 5, ncol = 5))
 
 input <- values(raster) %>% 
@@ -207,7 +210,6 @@ input <- values(raster) %>%
 # from here we can continue creating a bitfield and growing bits on it just like shown above...
 
 # ... and then converting it back to a raster
-# 
 QB_rast <- crds(raster) %>% 
   bind_cols(QB_int) %>% 
   rast(type="xyz", crs = crs(raster), extent = ext(raster))
@@ -254,9 +256,3 @@ When preparing a publication that contains (FAIR) data, it can therefore
 be a good solution to provide not only the data table/layer, but also a
 *single* additional column in a table or raster layer that records all
 of those information, and the bitfield to decode the QB values.
-
-# To Do
-
-- [ ] write bitfield show method
-- [ ] write qb_filter
-- [ ] other pre-made quality flag functions?!
