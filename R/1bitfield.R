@@ -29,7 +29,6 @@ setValidity("bitfield", function(object){
       errors = c(errors, "the slot 'width' is not a integer.")
     }
 
-
   }
 
   if(!.hasSlot(object = object, name = "length")){
@@ -63,7 +62,7 @@ setValidity("bitfield", function(object){
     errors = c(errors, "the bitfield does not have a 'bits' slot.")
   } else {
     if(!is.list(object@bits)){
-      errors = c(errors, "the slot 'bits' is not a character.")
+      errors = c(errors, "the slot 'bits' is not a list")
     }
 
   }
@@ -178,7 +177,7 @@ setValidity("bitfield", function(object){
 
 })
 
-#' Print geom in the console
+#' Print bitfield in the console (not working yet)
 #'
 #' @param object [`bitfield(1)`][bitfield]\cr object to \code{show}.
 #' @importFrom utils head

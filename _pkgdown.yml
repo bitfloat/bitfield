@@ -1,0 +1,45 @@
+authors:
+  Steffen Ehrmann:
+    href:  https://orcid.org/0000-0002-2958-0796
+title: queuebee
+url: http://EhrmannS.github.io/queuebee
+development:
+  mode: release
+
+reference:
+  - title: build and unpack bitfields
+    desc: functions to enable interaction with bitfields
+    contents:
+      - qb_create
+      - qb_grow
+      - qb_harvest
+      - qb_propagate
+  - title: bit builders
+    desc: functions that build a particular bit value
+    contents:
+      - qbb_case
+      - qbb_filter
+      - qbb_match
+      - qbb_na
+      - qbb_range
+  - title: classes
+    desc: new classes that come with this package
+    contents:
+      - bitfield-class
+      - show,bitfield-method
+  - title: helpers
+    contents:
+      - .getBit
+      - .getPrecision
+
+navbar:
+  left:
+    - text: "Get Started"
+      href: articles/queuebee.html
+    - text: "Reference"
+      href: reference/index.html
+    - text: "Changelog"
+      href: news/index.html
+  right:
+    - icon: fa-github
+      href: https://github.com/EhrmannS/queuebee

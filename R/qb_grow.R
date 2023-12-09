@@ -13,8 +13,10 @@
 #' @param bitfield [`bitfield(1)`][bitfield]\cr the bitfield in which the bits
 #'   should be set.
 #'
-#' @importFrom checkmate assertCharacter assertClass assertIntegerish assertTRUE
-#' @importFrom rlang env_bind `:=`
+#' @importFrom checkmate assertCharacter assertClass assertIntegerish
+#'   assertTRUE
+#' @importFrom rlang env_bind
+#' @importFrom dplyr arrange distinct bind_rows
 #' @export
 
 qb_grow <- function(bit, name, desc = NULL, na_val = NULL, pos, bitfield){
@@ -54,10 +56,10 @@ qb_grow <- function(bit, name, desc = NULL, na_val = NULL, pos, bitfield){
   if(is.null(desc)){
     message(paste0("please provide a description for ", name))
   } else {
-    outDesc <- tibble(pos = as.character(pos), description = desc) %>%
-      bind_rows(theDesc, .) %>%
-      distinct() %>%
-      arrange(pos)
+    outDesc <- tibble(pos = as.character(pos), description = desc)
+    outDesc <- bind_rows(theDesc, outDesc)
+    outDesc <- distinct(outDesc)
+    outDesc <- arrange(outDesc, pos)
   }
 
   # assign tentative bit values into the current environment

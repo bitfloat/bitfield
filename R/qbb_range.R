@@ -10,7 +10,7 @@
 #' @importFrom checkmate assertDataFrame assertSubset assertNumeric
 #' @export
 
-qb_range <- function(x, test, min, max){
+qbb_range <- function(x, test, min, max){
 
   assertDataFrame(x = x)
   assertSubset(x = test, choices = names(x))
