@@ -2,7 +2,7 @@
 % Please edit documentation in R/qbb_filter.R
 \name{qbb_filter}
 \alias{qbb_filter}
-\title{Build a bit by checking for a match with an external vector}
+\title{Build a bit by checking for a match with an external vector (not working yet)}
 \usage{
 qbb_filter(x, test, condition)
 }
@@ -16,5 +16,5 @@ contains \code{test}.}
 \item{condition}{\cr any statement that results in a logical return value}
 }
 \description{
-Build a bit by checking for a match with an external vector
+Build a bit by checking for a match with an external vector (not working yet)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/1bitfield.R
 \name{show,bitfield-method}
 \alias{show,bitfield-method}
-\title{Print geom in the console}
+\title{Print bitfield in the console (not working yet)}
 \usage{
 \S4method{show}{bitfield}(object)
 }
@@ -10,5 +10,5 @@
 \item{object}{\code{\link[=bitfield]{bitfield(1)}}\cr object to \code{show}.}
 }
 \description{
-Print geom in the console
+Print bitfield in the console (not working yet)
 }
