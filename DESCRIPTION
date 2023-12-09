@@ -21,7 +21,6 @@ Imports:
     checkmate,
     crayon,
     dplyr,
-    magrittr,
     methods,
     purrr,
     rlang,
