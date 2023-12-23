@@ -9,7 +9,7 @@
 #' @importFrom checkmate assertDataFrame assertSubset assertClass
 #' @export
 
-qbb_filter <- function(x, test, condition){
+bf_filter <- function(x, test, condition){
 
   assertDataFrame(x = x)
   assertSubset(x = test, choices = names(x))

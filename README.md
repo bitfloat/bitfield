@@ -61,9 +61,9 @@ devtools::install_github("luckinet/bitfield")
 library(bitfield)
 #> 
 #> Attache Paket: 'bitfield'
-#> Die folgenden Objekte sind maskiert von 'package:queuebee':
+#> Das folgende Objekt ist maskiert 'package:queuebee':
 #> 
-#>     .getBit, qb_create, qb_grow
+#>     .getBit
 
 library(dplyr, warn.conflicts = FALSE)
 library(CoordinateCleaner)
@@ -97,21 +97,21 @@ kable(input)
 
 |     x |    y | year  | commodity | some_other |
 |------:|-----:|:------|:----------|-----------:|
-|  27.7 | 58.8 | 2021  | soybean   |  0.0459235 |
-|  26.2 | 58.0 | NA    | maize     |  0.2133662 |
-|  27.8 | 58.2 | 2021r | NA        |  1.1520725 |
-|  25.6 | 59.4 | 2021  | maize     |  1.1636828 |
-| 259.0 | 58.5 | 2021  | honey     | -1.0385096 |
-|  25.2 | 58.1 | 2021  | maize     |  0.3648299 |
-|  25.8 | 57.5 | 2021  | soybean   | -0.2093071 |
-|  24.7 | 58.3 | 2021  | maize     |  0.4786660 |
-|   0.0 |  0.0 | 2021  | soybean   | -1.5963287 |
-|  25.4 |   NA | 2021  | maize     |  0.7565213 |
+|  24.4 | 59.0 | 2021  | soybean   |  0.8834056 |
+|  26.2 | 58.2 | NA    | maize     |  0.9024483 |
+|  25.4 | 58.3 | 2021r | NA        |  0.3908307 |
+|  27.2 | 59.4 | 2021  | maize     |  1.8953247 |
+| 259.0 | 57.7 | 2021  | honey     | -0.0853311 |
+|  24.3 | 59.2 | 2021  | maize     | -0.7325346 |
+|  23.4 | 57.5 | 2021  | soybean   | -0.7107163 |
+|  28.0 | 58.1 | 2021  | maize     |  0.8927890 |
+|   0.0 |  0.0 | 2021  | soybean   |  0.4569510 |
+|  24.2 |   NA | 2021  | maize     | -0.0877933 |
 
 The first step in yielding quality bits is in creating a bitfield with
 
 ``` r
-newBitfield <- qb_create(width = 10, length = dim(input)[1])
+newBitfield <- bf_create(width = 10, length = dim(input)[1])
 ```
 
 1.  The `width =` specifies how many bits are in the bitfield.
@@ -144,45 +144,45 @@ are important to keep in mind
 ``` r
 newBitfield <- newBitfield %>%
   # explicit tests for coordinates ...
-  qb_grow(bit = qbb_na(x = input, test = "x"), name = "not_na_x",
+  bf_grow(bit = bf_na(x = input, test = "x"), name = "not_na_x",
           desc = c("x-coordinate values do not contain any NAs"),
           pos = 1, bitfield = .) %>%
-  qb_grow(bit =  qbb_range(x = input, test = "x", min = -180, max = 180), name = "range_1_x",
+  bf_grow(bit =  bf_range(x = input, test = "x", min = -180, max = 180), name = "range_1_x",
           desc = c("x-coordinate values are numeric and within the valid WGS84 range"),
           pos = 2, bitfield = .) %>%
   
   # ... or override NA test
-  qb_grow(bit = qbb_range(x = input, test = "y", min = -90, max = 90), name = "range_1_y",
+  bf_grow(bit = bf_range(x = input, test = "y", min = -90, max = 90), name = "range_1_y",
           desc = c("y-coordinate values are numeric and within the valid WGS84 range, NAs are FALSE"),
           pos = 3, na_val = FALSE, bitfield = .) %>%
   
   # it is also possible to use other functions that give flags, such as from CoordinateCleaner ...
-  qb_grow(bit = cc_equ(x = input, lon = "x", lat = "y", value = "flagged"), name = "distinct_coords",
+  bf_grow(bit = cc_equ(x = input, lon = "x", lat = "y", value = "flagged"), name = "distinct_coords",
           desc = c("x and y coordinates are not identical, NAs are FALSE"),
           pos = 4, na_val = FALSE, bitfield = .) %>%
   
   # ... or stringr ...
-  qb_grow(bit = str_detect(input$year, "r"), name = "flag_year",
+  bf_grow(bit = str_detect(input$year, "r"), name = "flag_year",
           desc = c("year values do have a flag, NAs are FALSE"),
           pos = 5, na_val = FALSE, bitfield = .) %>%
   
   # ... or even base R
-  qb_grow(bit = !is.na(as.integer(input$year)), name = "valid_year",
+  bf_grow(bit = !is.na(as.integer(input$year)), name = "valid_year",
           desc = c("year values are valid integers"),
           pos = 6, bitfield = .)  %>%
   
   # test for matches with an external vector
-  qb_grow(bit = qbb_match(x = input, test = "commodity", against = validComm), name = "match_commodities",
+  bf_grow(bit = bf_match(x = input, test = "commodity", against = validComm), name = "match_commodities",
           desc = c("commodity values are part of 'soybean' or 'maize'"),
           pos = 7, na_val = FALSE, bitfield = .) %>%
   
   # define cases
-  qb_grow(bit = qbb_case(x = input, some_other > 0.5, some_other > 0, some_other < 0, exclusive = FALSE), name = "cases_some_other",
+  bf_grow(bit = bf_case(x = input, some_other > 0.5, some_other > 0, some_other < 0, exclusive = FALSE), name = "cases_some_other",
           desc = c("some_other values are distinguished into large (. > 0.5), medium (. > 0) and small (. < 0)"),
           pos = 8:9, bitfield = .)
 #> Testing equal lat/lon
 #> Flagged NA records.
-#> Warning in qb_grow(bit = !is.na(as.integer(input$year)), name = "valid_year", :
+#> Warning in bf_grow(bit = !is.na(as.integer(input$year)), name = "valid_year", :
 #> NAs durch Umwandlung erzeugt
 ```
 
@@ -193,12 +193,12 @@ grown on the bitfield, but so far nothing has happened
 newBitfield
 ```
 
-Finally the bitfield needs to be harvested (note: input datasets have
+Finally the bitfield needs to be combined (note: input datasets have
 been stored into the environment `qb_env`). This will result in an
 output table (with one column that has the name `QB`).
 
 ``` r
-(QB_int <- qb_harvest(bitfield = newBitfield))
+(QB_int <- bf_combine(bitfield = newBitfield))
 #> # A tibble: 10 × 1
 #>       QB
 #>    <int>
@@ -207,11 +207,11 @@ output table (with one column that has the name `QB`).
 #>  3   287
 #>  4   367
 #>  5   429
-#>  6   367
+#>  6   495
 #>  7   495
 #>  8   367
-#>  9   487
-#> 10   355
+#>  9   359
+#> 10   483
 ```
 
 As mentioned above, the bitfield is a record of things, which is
@@ -220,7 +220,7 @@ legend, the bit flags can then be converted back to human readable text
 or used in any downstream workflow.
 
 ``` r
-QB_chr <- qb_propagate(x = QB_int, bitfield = newBitfield, sep = "|")
+QB_chr <- bf_unpack(x = QB_int, bitfield = newBitfield, sep = "|")
 #> # A tibble: 8 × 4
 #>   name              flags pos   description                                     
 #>   <chr>             <int> <chr> <chr>                                           
@@ -242,16 +242,16 @@ input %>%
 
 |     x |    y | year  | commodity | some_other |  QB | QB_flags                |
 |------:|-----:|:------|:----------|-----------:|----:|:------------------------|
-|  27.7 | 58.8 | 2021  | soybean   |  0.0459235 | 367 | 1\|1\|1\|1\|0\|1\|1\|01 |
-|  26.2 | 58.0 | NA    | maize     |  0.2133662 | 335 | 1\|1\|1\|1\|0\|0\|1\|01 |
-|  27.8 | 58.2 | 2021r | NA        |  1.1520725 | 287 | 1\|1\|1\|1\|1\|0\|0\|01 |
-|  25.6 | 59.4 | 2021  | maize     |  1.1636828 | 367 | 1\|1\|1\|1\|0\|1\|1\|01 |
-| 259.0 | 58.5 | 2021  | honey     | -1.0385096 | 429 | 1\|0\|1\|1\|0\|1\|0\|11 |
-|  25.2 | 58.1 | 2021  | maize     |  0.3648299 | 367 | 1\|1\|1\|1\|0\|1\|1\|01 |
-|  25.8 | 57.5 | 2021  | soybean   | -0.2093071 | 495 | 1\|1\|1\|1\|0\|1\|1\|11 |
-|  24.7 | 58.3 | 2021  | maize     |  0.4786660 | 367 | 1\|1\|1\|1\|0\|1\|1\|01 |
-|   0.0 |  0.0 | 2021  | soybean   | -1.5963287 | 487 | 1\|1\|1\|0\|0\|1\|1\|11 |
-|  25.4 |   NA | 2021  | maize     |  0.7565213 | 355 | 1\|1\|0\|0\|0\|1\|1\|01 |
+|  24.4 | 59.0 | 2021  | soybean   |  0.8834056 | 367 | 1\|1\|1\|1\|0\|1\|1\|01 |
+|  26.2 | 58.2 | NA    | maize     |  0.9024483 | 335 | 1\|1\|1\|1\|0\|0\|1\|01 |
+|  25.4 | 58.3 | 2021r | NA        |  0.3908307 | 287 | 1\|1\|1\|1\|1\|0\|0\|01 |
+|  27.2 | 59.4 | 2021  | maize     |  1.8953247 | 367 | 1\|1\|1\|1\|0\|1\|1\|01 |
+| 259.0 | 57.7 | 2021  | honey     | -0.0853311 | 429 | 1\|0\|1\|1\|0\|1\|0\|11 |
+|  24.3 | 59.2 | 2021  | maize     | -0.7325346 | 495 | 1\|1\|1\|1\|0\|1\|1\|11 |
+|  23.4 | 57.5 | 2021  | soybean   | -0.7107163 | 495 | 1\|1\|1\|1\|0\|1\|1\|11 |
+|  28.0 | 58.1 | 2021  | maize     |  0.8927890 | 367 | 1\|1\|1\|1\|0\|1\|1\|01 |
+|   0.0 |  0.0 | 2021  | soybean   |  0.4569510 | 359 | 1\|1\|1\|0\|0\|1\|1\|01 |
+|  24.2 |   NA | 2021  | maize     | -0.0877933 | 483 | 1\|1\|0\|0\|0\|1\|1\|11 |
 
 ## Bitfields for other data-types
 
@@ -291,5 +291,13 @@ different (distinct) parts of the workflow to build one overall QB.
 # To Do
 
 - [ ] write bitfield show method
-- [ ] write qb_filter
-- [ ] other pre-made quality flag functions?!
+- [ ] write fb_filter
+- [ ] include MD5 sum for a bitfield and update it each time the
+  bitfield is grown further
+- [ ] check the provenance functions and what I can learn from it
+- [ ] bf_decimals: could be used to determine the decimal points of
+  provided values. This is also a small set of integers and it could be
+  used, amongst other things, for precision of geographic coordinates
+- [ ] bf_type: to test for the type of a variable (character, numeric,
+  perhaps even the bitvalue?)
+- \[ \]

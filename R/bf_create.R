@@ -12,7 +12,7 @@
 #' @importFrom methods new
 #' @export
 
-qb_create <- function(width, length, name = NULL){
+bf_create <- function(width, length, name = NULL){
 
   assertIntegerish(x = width, len = 1, lower = 2, any.missing = FALSE, )
   assertIntegerish(x = length, len = 1, any.missing = FALSE)
@@ -20,11 +20,11 @@ qb_create <- function(width, length, name = NULL){
 
   # set a name, in case none is provided
   if(is.null(name)){
-    name <- paste0("qb_", paste0(sample(c(LETTERS, letters), 7, TRUE), collapse = ""), format(Sys.Date(), "%Y%m%d"))
+    name <- paste0("bf_", paste0(sample(c(LETTERS, letters), 7, TRUE), collapse = ""), format(Sys.Date(), "%Y%m%d"))
   }
 
   # open a new environment
-  .GlobalEnv[["qb_env"]] <- new_environment()
+  .GlobalEnv[["bf_env"]] <- new_environment()
 
   # put together the intial bitfield
   out <- new(Class = "bitfield",
@@ -38,7 +38,7 @@ qb_create <- function(width, length, name = NULL){
   oldOptions <- options()
   on.exit(options(oldOptions))
 
-  options(qb_env = name)
+  options(bf_env = name)
 
   return(out)
 

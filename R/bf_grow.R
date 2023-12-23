@@ -19,7 +19,7 @@
 #' @importFrom dplyr arrange distinct bind_rows
 #' @export
 
-qb_grow <- function(bit, name, desc = NULL, na_val = NULL, pos, bitfield){
+bf_grow <- function(bit, name, desc = NULL, na_val = NULL, pos, bitfield){
 
   # assertions
   assertCharacter(x = name, len = 1, any.missing = FALSE)
@@ -63,7 +63,7 @@ qb_grow <- function(bit, name, desc = NULL, na_val = NULL, pos, bitfield){
   }
 
   # assign tentative bit values into the current environment
-  env_bind(.env = qb_env, !!name := theValues)
+  env_bind(.env = bf_env, !!name := theValues)
 
   # and store everything in the bitfield
   temp <- list(values = outValues,

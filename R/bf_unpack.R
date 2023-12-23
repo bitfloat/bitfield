@@ -13,7 +13,7 @@
 #' @importFrom tidyr separate unite
 #' @export
 
-qb_propagate <- function(x, bitfield, sep = "."){
+bf_unpack <- function(x, bitfield, sep = "."){
 
   assertDataFrame(x = x, ncols = 1)
   assertNames(x = names(x), identical.to = "QB")
@@ -56,7 +56,7 @@ qb_propagate <- function(x, bitfield, sep = "."){
   lut <- select(lut, -split)
 
   # assign look-up table to the environment as well
-  env_bind(.env = qb_env, legend = lut)
+  env_bind(.env = bf_env, legend = lut)
 
   print(lut)
 

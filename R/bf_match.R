@@ -11,7 +11,7 @@
 #' @importFrom checkmate assertDataFrame assertSubset assertClass
 #' @export
 
-qbb_match <- function(x, test, against){
+bf_match <- function(x, test, against){
 
   assertDataFrame(x = x)
   assertSubset(x = test, choices = names(x))

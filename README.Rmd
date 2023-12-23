@@ -94,7 +94,7 @@ kable(input)
 The first step in yielding quality bits is in creating a bitfield with 
 
 ```{r}
-newBitfield <- qb_create(width = 10, length = dim(input)[1])
+newBitfield <- bf_create(width = 10, length = dim(input)[1])
 ```
 
   1. The `width = ` specifies how many bits are in the bitfield.
@@ -110,40 +110,40 @@ Then, individual bits need to be grown by specifying a mapping function and whic
 ```{r}
 newBitfield <- newBitfield %>%
   # explicit tests for coordinates ...
-  qb_grow(bit = qbb_na(x = input, test = "x"), name = "not_na_x",
+  bf_grow(bit = bf_na(x = input, test = "x"), name = "not_na_x",
           desc = c("x-coordinate values do not contain any NAs"),
           pos = 1, bitfield = .) %>%
-  qb_grow(bit =  qbb_range(x = input, test = "x", min = -180, max = 180), name = "range_1_x",
+  bf_grow(bit =  bf_range(x = input, test = "x", min = -180, max = 180), name = "range_1_x",
           desc = c("x-coordinate values are numeric and within the valid WGS84 range"),
           pos = 2, bitfield = .) %>%
   
   # ... or override NA test
-  qb_grow(bit = qbb_range(x = input, test = "y", min = -90, max = 90), name = "range_1_y",
+  bf_grow(bit = bf_range(x = input, test = "y", min = -90, max = 90), name = "range_1_y",
           desc = c("y-coordinate values are numeric and within the valid WGS84 range, NAs are FALSE"),
           pos = 3, na_val = FALSE, bitfield = .) %>%
   
   # it is also possible to use other functions that give flags, such as from CoordinateCleaner ...
-  qb_grow(bit = cc_equ(x = input, lon = "x", lat = "y", value = "flagged"), name = "distinct_coords",
+  bf_grow(bit = cc_equ(x = input, lon = "x", lat = "y", value = "flagged"), name = "distinct_coords",
           desc = c("x and y coordinates are not identical, NAs are FALSE"),
           pos = 4, na_val = FALSE, bitfield = .) %>%
   
   # ... or stringr ...
-  qb_grow(bit = str_detect(input$year, "r"), name = "flag_year",
+  bf_grow(bit = str_detect(input$year, "r"), name = "flag_year",
           desc = c("year values do have a flag, NAs are FALSE"),
           pos = 5, na_val = FALSE, bitfield = .) %>%
   
   # ... or even base R
-  qb_grow(bit = !is.na(as.integer(input$year)), name = "valid_year",
+  bf_grow(bit = !is.na(as.integer(input$year)), name = "valid_year",
           desc = c("year values are valid integers"),
           pos = 6, bitfield = .)  %>%
   
   # test for matches with an external vector
-  qb_grow(bit = qbb_match(x = input, test = "commodity", against = validComm), name = "match_commodities",
+  bf_grow(bit = bf_match(x = input, test = "commodity", against = validComm), name = "match_commodities",
           desc = c("commodity values are part of 'soybean' or 'maize'"),
           pos = 7, na_val = FALSE, bitfield = .) %>%
   
   # define cases
-  qb_grow(bit = qbb_case(x = input, some_other > 0.5, some_other > 0, some_other < 0, exclusive = FALSE), name = "cases_some_other",
+  bf_grow(bit = bf_case(x = input, some_other > 0.5, some_other > 0, some_other < 0, exclusive = FALSE), name = "cases_some_other",
           desc = c("some_other values are distinguished into large (. > 0.5), medium (. > 0) and small (. < 0)"),
           pos = 8:9, bitfield = .)
 ```
@@ -154,16 +154,16 @@ The resulting strcuture is basically a record of all the things that are grown o
 newBitfield
 ```
 
-Finally the bitfield needs to be harvested (note: input datasets have been stored into the environment `qb_env`). This will result in an output table (with one column that has the name `QB`).
+Finally the bitfield needs to be combined (note: input datasets have been stored into the environment `qb_env`). This will result in an output table (with one column that has the name `QB`).
 
 ```{r}
-(QB_int <- qb_harvest(bitfield = newBitfield))
+(QB_int <- bf_combine(bitfield = newBitfield))
 ```
 
 As mentioned above, the bitfield is a record of things, which is required to decode the quality bit (similar to a key). Together with the legend, the bit flags can then be converted back to human readable text or used in any downstream workflow.
 
 ```{r}
-QB_chr <- qb_propagate(x = QB_int, bitfield = newBitfield, sep = "|")
+QB_chr <- bf_unpack(x = QB_int, bitfield = newBitfield, sep = "|")
 
 # -> prints legend by default, but it is also available in qb_env$legend
 
@@ -203,5 +203,9 @@ Complex workflows do not only contain raster data, but a mix of tabular and rast
 # To Do
 
 - [ ] write bitfield show method
-- [ ] write qb_filter
-- [ ] other pre-made quality flag functions?!
+- [ ] write fb_filter
+- [ ] include MD5 sum for a bitfield and update it each time the bitfield is grown further
+- [ ] check the provenance functions and what I can learn from it
+- [ ] bf_decimals: could be used to determine the decimal points of provided values. This is also a small set of integers and it could be used, amongst other things, for precision of geographic coordinates
+- [ ] bf_type: to test for the type of a variable (character, numeric, perhaps even the bitvalue?)
+- [ ] 

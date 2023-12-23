@@ -10,7 +10,7 @@
 #' @importFrom stringr str_split str_split_i
 #' @export
 
-qb_harvest <- function(bitfield){
+bf_combine <- function(bitfield){
 
   assertClass(x = bitfield, classes = "bitfield")
 
@@ -29,7 +29,7 @@ qb_harvest <- function(bitfield){
 
     theName <- theBits$name[i]
     theBit <- bitfield@bits[[theName]]
-    theVals <- qb_env[[theName]]
+    theVals <- bf_env[[theName]]
 
     if(is.logical(theBit$values)){
       # insert logical values as is
