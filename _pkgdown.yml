@@ -10,18 +10,18 @@ reference:
   - title: build and unpack bitfields
     desc: functions to enable interaction with bitfields
     contents:
-      - qb_create
-      - qb_grow
-      - qb_harvest
-      - qb_propagate
+      - bf_create
+      - bf_grow
+      - bf_harvest
+      - bf_propagate
   - title: bit builders
     desc: functions that build a particular bit value
     contents:
-      - qbb_case
-      - qbb_filter
-      - qbb_match
-      - qbb_na
-      - qbb_range
+      - bf_case
+      - bf_filter
+      - bf_match
+      - bf_na
+      - bf_range
   - title: classes
     desc: new classes that come with this package
     contents:

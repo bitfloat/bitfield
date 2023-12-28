@@ -143,7 +143,11 @@ newBitfield <- newBitfield %>%
           pos = 7, na_val = FALSE, bitfield = .) %>%
   
   # define cases
-  bf_grow(bit = bf_case(x = input, some_other > 0.5, some_other > 0, some_other < 0, exclusive = FALSE), name = "cases_some_other",
+  bf_grow(bit = bf_case(x = input, exclusive = FALSE, 
+                        large = some_other > 0.5, 
+                        medium = some_other > 0, 
+                        small = some_other < 0), 
+          name = "cases_some_other",
           desc = c("some_other values are distinguished into large (. > 0.5), medium (. > 0) and small (. < 0)"),
           pos = 8:9, bitfield = .)
 ```
@@ -203,9 +207,10 @@ Complex workflows do not only contain raster data, but a mix of tabular and rast
 # To Do
 
 - [ ] write bitfield show method
-- [ ] write fb_filter
+- [ ] write bf_filter
 - [ ] include MD5 sum for a bitfield and update it each time the bitfield is grown further
 - [ ] check the provenance functions and what I can learn from it
 - [ ] bf_decimals: could be used to determine the decimal points of provided values. This is also a small set of integers and it could be used, amongst other things, for precision of geographic coordinates
 - [ ] bf_type: to test for the type of a variable (character, numeric, perhaps even the bitvalue?)
-- [ ] 
+- [ ] make it so that the bf_* functions provide a name and description and make that clear in the documentation; it's then only required for other functions to set name and desc manually (and this should also result in a warning, if a non bf_* function is used and no values are provided)
+- [ ] allow using a "look up table" in bf_case with cols "name" and "test"
