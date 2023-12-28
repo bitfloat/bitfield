@@ -1,7 +1,7 @@
 #' Build a bit by checking
 #'
 #' @param x [`data.frame(1)`][data.frame]\cr the table that contains
-#'   \code{test}.
+#'   tests defined in \code{...}.
 #' @param ... \cr any set of (mutually exclusive) statements that results in a
 #'   logical return value
 #' @param exclusive [`logical(1)`][logical]\cr whether the function should check
@@ -20,7 +20,7 @@ bf_case <- function(x, ..., exclusive = TRUE){
   assertDataFrame(x = x)
   assertLogical(x = exclusive, len = 1)
 
-  cases <- enquos(...)
+  cases <- enquos(..., .named = TRUE)
 
   temp <- bind_cols(map(cases, function(ix){
     blubb <- eval_tidy(expr = ix, data = x)

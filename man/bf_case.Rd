@@ -8,7 +8,7 @@ bf_case(x, ..., exclusive = TRUE)
 }
 \arguments{
 \item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the table that contains
-\code{test}.}
+tests defined in \code{...}.}
 
 \item{...}{\cr any set of (mutually exclusive) statements that results in a
 logical return value}
