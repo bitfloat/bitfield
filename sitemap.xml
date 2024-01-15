@@ -22,45 +22,42 @@
     <loc>http://EhrmannS.github.io/queuebee/news/index.html</loc>
   </url>
   <url>
-    <loc>http://EhrmannS.github.io/queuebee/reference/bitfield-class.html</loc>
+    <loc>http://EhrmannS.github.io/queuebee/reference/bf_case.html</loc>
   </url>
   <url>
-    <loc>http://EhrmannS.github.io/queuebee/reference/dot-getBit.html</loc>
+    <loc>http://EhrmannS.github.io/queuebee/reference/bf_combine.html</loc>
   </url>
   <url>
-    <loc>http://EhrmannS.github.io/queuebee/reference/dot-getPrecision.html</loc>
+    <loc>http://EhrmannS.github.io/queuebee/reference/bf_create.html</loc>
+  </url>
+  <url>
+    <loc>http://EhrmannS.github.io/queuebee/reference/bf_decimals.html</loc>
+  </url>
+  <url>
+    <loc>http://EhrmannS.github.io/queuebee/reference/bf_grow.html</loc>
+  </url>
+  <url>
+    <loc>http://EhrmannS.github.io/queuebee/reference/bf_match.html</loc>
+  </url>
+  <url>
+    <loc>http://EhrmannS.github.io/queuebee/reference/bf_na.html</loc>
+  </url>
+  <url>
+    <loc>http://EhrmannS.github.io/queuebee/reference/bf_range.html</loc>
+  </url>
+  <url>
+    <loc>http://EhrmannS.github.io/queuebee/reference/bf_unpack.html</loc>
+  </url>
+  <url>
+    <loc>http://EhrmannS.github.io/queuebee/reference/dot-makeFlag.html</loc>
   </url>
   <url>
     <loc>http://EhrmannS.github.io/queuebee/reference/index.html</loc>
   </url>
   <url>
-    <loc>http://EhrmannS.github.io/queuebee/reference/qb_create.html</loc>
+    <loc>http://EhrmannS.github.io/queuebee/reference/registry-class.html</loc>
   </url>
   <url>
-    <loc>http://EhrmannS.github.io/queuebee/reference/qb_grow.html</loc>
-  </url>
-  <url>
-    <loc>http://EhrmannS.github.io/queuebee/reference/qb_harvest.html</loc>
-  </url>
-  <url>
-    <loc>http://EhrmannS.github.io/queuebee/reference/qb_propagate.html</loc>
-  </url>
-  <url>
-    <loc>http://EhrmannS.github.io/queuebee/reference/qbb_case.html</loc>
-  </url>
-  <url>
-    <loc>http://EhrmannS.github.io/queuebee/reference/qbb_filter.html</loc>
-  </url>
-  <url>
-    <loc>http://EhrmannS.github.io/queuebee/reference/qbb_match.html</loc>
-  </url>
-  <url>
-    <loc>http://EhrmannS.github.io/queuebee/reference/qbb_na.html</loc>
-  </url>
-  <url>
-    <loc>http://EhrmannS.github.io/queuebee/reference/qbb_range.html</loc>
-  </url>
-  <url>
-    <loc>http://EhrmannS.github.io/queuebee/reference/show-bitfield-method.html</loc>
+    <loc>http://EhrmannS.github.io/queuebee/reference/show-registry-method.html</loc>
   </url>
 </urlset>

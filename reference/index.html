@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">queuebee</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -54,69 +54,65 @@
           <p class="section-desc"></p><p>functions to enable interaction with bitfields</p>
         </th>
       </tr></tbody><tbody><tr><td>
-          <p><code><a href="qb_create.html">qb_create()</a></code> </p>
+          <p><code><a href="bf_create.html">bf_create()</a></code> </p>
         </td>
         <td><p>Create a new bitfield</p></td>
       </tr><tr><td>
-          <p><code><a href="qb_grow.html">qb_grow()</a></code> </p>
+          <p><code><a href="bf_grow.html">bf_grow()</a></code> </p>
         </td>
-        <td><p>Add bits to a bitfield</p></td>
+        <td><p>Add flags to a registry</p></td>
       </tr><tr><td>
-          <p><code><a href="qb_harvest.html">qb_harvest()</a></code> </p>
+          <p><code><a href="bf_combine.html">bf_combine()</a></code> </p>
         </td>
-        <td><p>Combine the bitfield into a quality bit (QB)</p></td>
+        <td><p>Build a bitfield from a bit registry</p></td>
       </tr><tr><td>
-          <p><code><a href="qb_propagate.html">qb_propagate()</a></code> </p>
+          <p><code><a href="bf_unpack.html">bf_unpack()</a></code> </p>
         </td>
-        <td><p>Unpack the integer representation of QB</p></td>
+        <td><p>Unpack a bitfield</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="bit-builders">bit builders <a href="#bit-builders" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p><p>functions that build a particular bit value</p>
         </th>
       </tr></tbody><tbody><tr><td>
-          <p><code><a href="qbb_case.html">qbb_case()</a></code> </p>
+          <p><code><a href="bf_case.html">bf_case()</a></code> </p>
         </td>
-        <td><p>Build a bit by checking</p></td>
+        <td><p>Build a bit flag by checking for cases</p></td>
       </tr><tr><td>
-          <p><code><a href="qbb_filter.html">qbb_filter()</a></code> </p>
+          <p><code><a href="bf_decimals.html">bf_decimals()</a></code> </p>
         </td>
-        <td><p>Build a bit by checking for a match with an external vector (not working yet)</p></td>
+        <td><p>Build a bit flag by counting the number of decimals</p></td>
       </tr><tr><td>
-          <p><code><a href="qbb_match.html">qbb_match()</a></code> </p>
+          <p><code><a href="bf_match.html">bf_match()</a></code> </p>
         </td>
-        <td><p>Build a bit by checking for a match with an external vector</p></td>
+        <td><p>Build a bit flag by checking for a match with an external vector</p></td>
       </tr><tr><td>
-          <p><code><a href="qbb_na.html">qbb_na()</a></code> </p>
+          <p><code><a href="bf_na.html">bf_na()</a></code> </p>
         </td>
-        <td><p>Build a bit by checking that values are not NA</p></td>
+        <td><p>Build a bit flag by checking that values are not NA</p></td>
       </tr><tr><td>
-          <p><code><a href="qbb_range.html">qbb_range()</a></code> </p>
+          <p><code><a href="bf_range.html">bf_range()</a></code> </p>
         </td>
-        <td><p>Build a bit by checking for a range</p></td>
+        <td><p>Build a bit flag by checking for a range</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="classes">classes <a href="#classes" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p><p>new classes that come with this package</p>
         </th>
       </tr></tbody><tbody><tr><td>
-          <p><code><a href="bitfield-class.html">bitfield-class</a></code> <code><a href="bitfield-class.html">bitfield</a></code> </p>
+          <p><code><a href="registry-class.html">registry-class</a></code> <code><a href="registry-class.html">registry</a></code> </p>
         </td>
-        <td><p>Bitfield class (S4) and methods</p></td>
+        <td><p>Bit registry class (S4) and methods</p></td>
       </tr><tr><td>
-          <p><code><a href="show-bitfield-method.html">show(<i>&lt;bitfield&gt;</i>)</a></code> </p>
+          <p><code><a href="show-registry-method.html">show(<i>&lt;registry&gt;</i>)</a></code> </p>
         </td>
-        <td><p>Print bitfield in the console (not working yet)</p></td>
+        <td><p>Print registry in the console (not working yet)</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="helpers">helpers <a href="#helpers" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p>
         </th>
       </tr></tbody><tbody><tr><td>
-          <p><code><a href="dot-getBit.html">.getBit()</a></code> </p>
+          <p><code><a href="dot-makeFlag.html">.makeFlag()</a></code> </p>
         </td>
-        <td><p>Extract bit values from integers</p></td>
-      </tr><tr><td>
-          <p><code><a href="dot-getPrecision.html">.getPrecision()</a></code> </p>
-        </td>
-        <td><p>Build a bit by checking</p></td>
+        <td><p>Make a bit flag from an integer</p></td>
       </tr></tbody></table></div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
