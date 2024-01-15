@@ -76,7 +76,7 @@ input <- tibble(x = sample(seq(23.3, 28.1, 0.1), 10),
 validComm <- c("soybean", "maize")
 ```
 
-And make it have some unordinary values
+And make it have some non-ordinary values
 
 ``` r
 input$x[5] <- 259
@@ -92,16 +92,16 @@ kable(input)
 
 |     x |    y | commodity |     yield | year  |
 |------:|-----:|:----------|----------:|:------|
-|  23.9 | 58.7 | soybean   | 13.433170 | 2021  |
-|  23.7 | 59.5 | maize     |  7.702426 | NA    |
-|  24.5 | 57.6 | NA        | 11.300058 | 2021r |
-|  24.0 | 58.3 | maize     |  8.922000 | 2021  |
-| 259.0 | 57.7 | honey     |  9.911468 | 2021  |
-|  24.7 | 58.2 | maize     | 10.292415 | 2021  |
-|  26.8 | 58.9 | soybean   |  7.211000 | 2021  |
-|  26.4 | 59.2 | maize     |  7.509846 | 2021  |
-|   0.0 |  0.0 | soybean   |  6.627607 | 2021  |
-|  23.5 |   NA | maize     | 10.584207 | 2021  |
+|  24.1 | 59.4 | soybean   | 10.109169 | 2021  |
+|  24.0 | 58.8 | maize     | 10.617382 | NA    |
+|  27.3 | 58.4 | NA        |  9.268043 | 2021r |
+|  26.8 | 58.1 | maize     |  8.948955 | 2021  |
+| 259.0 | 57.9 | honey     |  9.859947 | 2021  |
+|  23.7 | 59.1 | maize     |  6.318179 | 2021  |
+|  24.2 | 58.7 | soybean   | 11.860984 | 2021  |
+|  25.1 | 59.0 | maize     | 11.278150 | 2021  |
+|   0.0 |  0.0 | soybean   |  9.949784 | 2021  |
+|  24.7 |   NA | maize     |  9.670879 | 2021  |
 
 The first step is in creating what is called registry in `bitfield`.
 This registry captures all the information required to build the
@@ -121,7 +121,7 @@ newRegistry <- bf_create(width = 12, length = dim(input)[1])
 
 Then, individual bit flags need to be grown by specifying a mapping
 function and which position of the bitfield should be modified. To help
-with growing bits, various aspects are important to keep in mind
+with growing bits, various naming-rules are important to keep in mind
 
 1.  if your mapping function returns a boolean value, the bit flags will
     be `FALSE == 0` and `TRUE == 1`.
@@ -130,6 +130,12 @@ with growing bits, various aspects are important to keep in mind
     representation, i.e. if there are 3 cases (which takes up 2 bits),
     the bit flags will be `case 1 = 00`, `case 2 == 01` and
     `case 3 == 10`, and so on.
+
+A flag is declared by calling a suitable function, some of which are
+provided here, but some of which are already available elsewhere (more
+below). For example `bf_na(x = input, test = "x")` will test whether the
+column `x` in the table `input` has `NA`-values. These functions are
+provided to `bf_grow()`, where the bitfield is characterised.
 
 ``` r
 newRegistry <- newRegistry %>%
@@ -195,23 +201,23 @@ newRegistry <- newRegistry %>%
 ```
 
 The resulting strcuture is basically a record of all the things that are
-grown on the bitfield, but so far nothing has happened
+grown on the bitfield.
 
 ``` r
 newRegistry
 ```
 
-Finally the bitfield needs to be combined (note: input datasets have
-been stored into the environment `qb_env`). This will result in an
-output table (with one column that has the name `QB`).
+Finally the registry needs to be combined (note: input data vectors have
+been stored into the environment `bf_env`). This will result in a vector
+of integers.
 
 ``` r
 (intBit <- bf_combine(registry = newRegistry))
-#>  [1] 735 927 695 479 341 863 991 991 463 843
+#>  [1] 735 159 695 863 213 863 607 607 207 715
 ```
 
-As mentioned above, the bitfield is a record of things, which is
-required to decode the quality bit (similar to a key). Together with the
+As mentioned above, the registry is a record of things, which is
+required to decode the bitfield (similar to a key). Together with the
 legend, the bit flags can then be converted back to human readable text
 or used in any downstream workflow.
 
@@ -239,16 +245,24 @@ input %>%
 
 |     x |    y | commodity |     yield | year  | bf_int | bf_binary           |
 |------:|-----:|:----------|----------:|:------|-------:|:--------------------|
-|  23.9 | 58.7 | soybean   | 13.433170 | 2021  |    735 | 1-1-1-1-1-0-1-10-10 |
-|  23.7 | 59.5 | maize     |  7.702426 | NA    |    927 | 1-1-1-1-1-0-0-11-10 |
-|  24.5 | 57.6 | NA        | 11.300058 | 2021r |    695 | 1-1-1-0-1-1-0-10-10 |
-|  24.0 | 58.3 | maize     |  8.922000 | 2021  |    479 | 1-1-1-1-1-0-1-11-00 |
-| 259.0 | 57.7 | honey     |  9.911468 | 2021  |    341 | 1-0-1-0-1-0-1-01-00 |
-|  24.7 | 58.2 | maize     | 10.292415 | 2021  |    863 | 1-1-1-1-1-0-1-01-10 |
-|  26.8 | 58.9 | soybean   |  7.211000 | 2021  |    991 | 1-1-1-1-1-0-1-11-10 |
-|  26.4 | 59.2 | maize     |  7.509846 | 2021  |    991 | 1-1-1-1-1-0-1-11-10 |
-|   0.0 |  0.0 | soybean   |  6.627607 | 2021  |    463 | 1-1-1-1-0-0-1-11-00 |
-|  23.5 |   NA | maize     | 10.584207 | 2021  |    843 | 1-1-0-1-0-0-1-01-10 |
+|  24.1 | 59.4 | soybean   | 10.109169 | 2021  |    735 | 1-1-1-1-1-0-1-10-10 |
+|  24.0 | 58.8 | maize     | 10.617382 | NA    |    159 | 1-1-1-1-1-0-0-10-00 |
+|  27.3 | 58.4 | NA        |  9.268043 | 2021r |    695 | 1-1-1-0-1-1-0-10-10 |
+|  26.8 | 58.1 | maize     |  8.948955 | 2021  |    863 | 1-1-1-1-1-0-1-01-10 |
+| 259.0 | 57.9 | honey     |  9.859947 | 2021  |    213 | 1-0-1-0-1-0-1-10-00 |
+|  23.7 | 59.1 | maize     |  6.318179 | 2021  |    863 | 1-1-1-1-1-0-1-01-10 |
+|  24.2 | 58.7 | soybean   | 11.860984 | 2021  |    607 | 1-1-1-1-1-0-1-00-10 |
+|  25.1 | 59.0 | maize     | 11.278150 | 2021  |    607 | 1-1-1-1-1-0-1-00-10 |
+|   0.0 |  0.0 | soybean   |  9.949784 | 2021  |    207 | 1-1-1-1-0-0-1-10-00 |
+|  24.7 |   NA | maize     |  9.670879 | 2021  |    715 | 1-1-0-1-0-0-1-10-10 |
+
+Together with the rules mentioned above, we can read the binary
+representation on step at a time. For example, considering the second
+position, with the description
+`the values in column 'x' range between [-180,180]`, we see that row
+five has the value `0`, which means according to naming-rule 1
+(`FALSE == 0`), that the x-value here should be outside of the range of
+\[-180, 180\], which we can confirm.
 
 ## Bitfields for other data-types
 
@@ -270,11 +284,12 @@ input <- values(raster) %>%
   bind_cols(crds(raster), .)
 
 # from here we can continue creating a bitfield and growing bits on it just like shown above...
+intBit <- bf_combine(...)
 
 # ... and then converting it back to a raster
 QB_rast <- crds(raster) %>% 
-  bind_cols(QB_int) %>% 
-  rast(type="xyz", crs = crs(raster), extent = ext(raster))
+  bind_cols(intBit) %>% 
+  rast(type = "xyz", crs = crs(raster), extent = ext(raster))
 ```
 
 # To Do

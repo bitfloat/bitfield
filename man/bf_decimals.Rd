@@ -17,8 +17,8 @@ decimals are checked.}
 separates the decimals from the numeric value.}
 
 \item{fill}{\code{\link[=logical]{logical(1)}}\cr whether the function should consider
-decimals from 0 through the maximum number in \code{x[[test]]}, or whether it
-should only document existing decimal lengths.}
+decimals lengths from 0 through the maximum length in \code{x[[test]]}, or
+whether it should only document existing decimal lengths.}
 }
 \description{
 Build a bit flag by counting the number of decimals
@@ -27,7 +27,7 @@ Build a bit flag by counting the number of decimals
 The show method of various classes shows decimals that may not
 really be present, and that even includes ordinary numeric vectors. In
 these cases, what is printed in the R console may be misleading.
-Doublecheck with \code{\link{str}}
+Doublecheck with \code{\link{str}}.
 
 Determine the number of decimals of coordinates to determine their
 precision:
