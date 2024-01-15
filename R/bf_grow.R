@@ -45,7 +45,7 @@ bf_grow <- function(flags, name = NULL, desc = NULL, na_val = NULL, pos = NULL, 
     outValues <- c(TRUE, FALSE)
   } else if(is.numeric(theValues) | is.integer(theValues)) {
     nFlags <- max(c(max(theValues), length(unique(theValues))))
-    outValues <- 1:nFlags
+    outValues <- (1:nFlags)-1
   } else {
     nFlags <- length(unique(theValues))
     outValues <- seq_along(unique(theValues))

@@ -47,6 +47,7 @@ bf_case <- function(x, ..., exclusive = TRUE){
   out <- reduce(status, function(first, second){
     if_else(second != 0, second, first)
   })
+  out <- out - 1
 
   case_expr <- map(seq_along(cases), function(ix){
     get_expr(cases[[ix]])
