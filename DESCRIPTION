@@ -1,7 +1,7 @@
 Package: bitfield
 Type: Package
 Title: Handle Bitfields to record Data-Quality
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: c(
     person("Steffen", "Ehrmann", role = c("aut", "cre"), 
            email = "steffen.ehrmann@posteo.de", 
