@@ -1,4 +1,4 @@
-#' Build a bit by checking for a range
+#' Build a bit flag by checking for a range
 #'
 #' @param x [`data.frame(1)`][data.frame]\cr the table that contains
 #'   \code{test}.
@@ -18,6 +18,9 @@ bf_range <- function(x, test, min, max){
   assertNumeric(x = max, len = 1, finite = TRUE)
 
   out <- x[[test]] > min & x[[test]] < max
+
+  attr(out, which = "name") <- paste0("range_", test)
+  attr(out, which = "desc") <- paste0("the values in column '", test, "' range between [", min, ",", max, "]")
 
   return(out)
 

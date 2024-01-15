@@ -27,12 +27,12 @@ bf_create <- function(width, length, name = NULL){
   .GlobalEnv[["bf_env"]] <- new_environment()
 
   # put together the intial bitfield
-  out <- new(Class = "bitfield",
+  out <- new(Class = "registry",
              width = as.integer(width),
              length = as.integer(length),
              name = name,
              desc = tibble(pos = character(), description = character()),
-             bits = list())
+             flags = list())
 
   # store the environment name in the options
   oldOptions <- options()

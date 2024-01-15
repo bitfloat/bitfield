@@ -1,4 +1,4 @@
-#' Build a bit by checking for a match with an external vector
+#' Build a bit flag by checking for a match with an external vector
 #'
 #' @param x [`data.frame(1)`][data.frame]\cr the table that
 #'   contains \code{test}.
@@ -18,6 +18,9 @@ bf_match <- function(x, test, against){
   assertClass(x = against, classes = class(x[[test]]))
 
   out <- x[[test]] %in% against
+
+  attr(out, which = "name") <- paste0("match_", test)
+  attr(out, which = "desc") <- paste0("the values in column '", test, "' are contained in the values (", paste0(against, collapse = "|"), ")")
 
   return(out)
 

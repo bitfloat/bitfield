@@ -1,4 +1,4 @@
-#' Build a bit by checking that values are not NA
+#' Build a bit flag by checking that values are not NA
 #'
 #' @param x [`data.frame(1)`][data.frame]\cr the table that contains
 #'   \code{test}.
@@ -14,6 +14,9 @@ bf_na <- function(x, test){
   assertSubset(x = test, choices = names(x))
 
   out <- !is.na(x[[test]])
+
+  attr(out, which = "name") <- paste0("not_na_", test)
+  attr(out, which = "desc") <- paste0("the values in column '", test, "' do not contain any NAs")
 
   return(out)
 

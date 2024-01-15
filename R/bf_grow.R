@@ -1,34 +1,37 @@
-#' Add bits to a bitfield
+#' Add flags to a registry
 #'
-#' @param bit [`numeric(.)`][numeric] | [`character(.)`][character] |
-#'   [`logical(1)`][logical]\cr a function that returns a vector that shall be
-#'   stored as bit.
-#' @param name [`character(.)`][character]\cr the internal name of the bit(s).
-#' @param desc [`character(.)`][character]\cr the description of the bit(s).
+#' @param flags [`function(.)`][function]\cr a function that returns a vector
+#'   that shall be stored as bit.
+#' @param name [`character(.)`][character]\cr the internal name of the bit
+#'   flag(s).
+#' @param desc [`character(.)`][character]\cr the description of the bit
+#'   flag(s).
 #' @param na_val [`numeric(.)`][numeric] | [`character(.)`][character] |
-#'   [`logical(1)`][logical]\cr which value NAs in the output of .bit should
-#'   have in the bitfield.
+#'   [`logical(1)`][logical]\cr which value NAs in the output of \code{flags}
+#'   should have in the registry.
 #' @param pos [`integerish(1)`][integer]\cr the position in the bitfield that
 #'   should be set.
-#' @param bitfield [`bitfield(1)`][bitfield]\cr the bitfield in which the bits
-#'   should be set.
+#' @param registry [`registry(1)`][registry]\cr the registry in which the bit
+#'   flag(s) should be stored.
 #'
-#' @importFrom checkmate assertCharacter assertClass assertIntegerish
-#'   assertTRUE
+#' @importFrom checkmate assertCharacter assertClass assertIntegerish assertTRUE
 #' @importFrom rlang env_bind
 #' @importFrom dplyr arrange distinct bind_rows
 #' @export
 
-bf_grow <- function(bit, name, desc = NULL, na_val = NULL, pos, bitfield){
+bf_grow <- function(flags, name = NULL, desc = NULL, na_val = NULL, pos = NULL, registry){
 
   # assertions
-  assertCharacter(x = name, len = 1, any.missing = FALSE)
-  assertCharacter(x = desc, null.ok = TRUE)
-  assertIntegerish(x = pos, lower = 1, min.len = 1, unique = TRUE)
-  assertClass(x = bitfield, classes = "bitfield")
+  assertCharacter(x = name, len = 1, null.ok = TRUE)
+  assertCharacter(x = desc, len = 1, null.ok = TRUE)
+  assertIntegerish(x = pos, lower = 1, min.len = 1, unique = TRUE, null.ok = TRUE)
+  assertClass(x = registry, classes = "registry")
 
   # test whether the number of flags corresponds to the number of positions provided
-  theValues <- bit
+  theValues <- flags
+
+  if(is.null(name)) name <- attr(flags, "name")
+  if(is.null(desc)) desc <- attr(flags, "desc")
 
   # replace NA values in theValues
   if(any(is.na(theValues))){
@@ -41,7 +44,7 @@ bf_grow <- function(bit, name, desc = NULL, na_val = NULL, pos, bitfield){
     nFlags <- 2
     outValues <- c(TRUE, FALSE)
   } else if(is.numeric(theValues) | is.integer(theValues)) {
-    nFlags <- max(theValues)
+    nFlags <- max(c(max(theValues), length(unique(theValues))))
     outValues <- 1:nFlags
   } else {
     nFlags <- length(unique(theValues))
@@ -49,10 +52,10 @@ bf_grow <- function(bit, name, desc = NULL, na_val = NULL, pos, bitfield){
   }
   nBits <- ceiling(log2(nFlags))
 
-  assertTRUE(x = nBits == length(pos))
+  assertTRUE(x = nBits <= length(pos))
 
   # handle descriptions
-  theDesc <- bitfield@desc
+  theDesc <- registry@desc
   if(is.null(desc)){
     message(paste0("please provide a description for ", name))
   } else {
@@ -62,16 +65,16 @@ bf_grow <- function(bit, name, desc = NULL, na_val = NULL, pos, bitfield){
     outDesc <- arrange(outDesc, pos)
   }
 
-  # assign tentative bit values into the current environment
+  # assign tentative flags values into the current environment
   env_bind(.env = bf_env, !!name := theValues)
 
-  # and store everything in the bitfield
+  # and store everything in the registry
   temp <- list(values = outValues,
                position = pos)
 
-  bitfield@bits[[name]] <- temp
-  bitfield@desc <- outDesc
+  registry@flags[[name]] <- temp
+  registry@desc <- outDesc
 
-  return(bitfield)
+  return(registry)
 
 }

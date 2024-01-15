@@ -1,7 +1,7 @@
-#' Build a bit by checking
+#' Build a bit flag by checking for cases
 #'
-#' @param x [`data.frame(1)`][data.frame]\cr the table that contains
-#'   tests defined in \code{...}.
+#' @param x [`data.frame(1)`][data.frame]\cr the table that contains tests
+#'   defined in \code{...}.
 #' @param ... \cr any set of (mutually exclusive) statements that results in a
 #'   logical return value
 #' @param exclusive [`logical(1)`][logical]\cr whether the function should check
@@ -9,7 +9,8 @@
 #'   defined later in the sequence overwrite cases earlier in the sequence.
 #'
 #' @importFrom checkmate assertDataFrame assertLogical assertTRUE
-#' @importFrom rlang enquos eval_tidy as_label `:=`
+#' @importFrom rlang enquos eval_tidy as_label `:=` get_expr quo_get_expr quos
+#'   parse_expr quo_set_env quo
 #' @importFrom purrr map reduce
 #' @importFrom tibble as_tibble
 #' @importFrom dplyr rename bind_cols filter if_else
@@ -28,6 +29,7 @@ bf_case <- function(x, ..., exclusive = TRUE){
     rename(blubb, !!as_label(ix) := value)
   }))
 
+
   if(exclusive){
 
     test <- filter(temp, rowSums(temp) != 1)
@@ -35,14 +37,23 @@ bf_case <- function(x, ..., exclusive = TRUE){
 
   }
 
-  status <- bind_cols(map(seq_along(temp), function(ix){
-    temp[[ix]][temp[[ix]]] <- ix
-    as_tibble(temp[ix])
-  }))
+  status <- bind_cols(
+    map(seq_along(temp), function(ix){
+      temp[[ix]][temp[[ix]]] <- ix
+      as_tibble(temp[ix])
+    })
+  )
 
   out <- reduce(status, function(first, second){
     if_else(second != 0, second, first)
   })
+
+  case_expr <- map(seq_along(cases), function(ix){
+    get_expr(cases[[ix]])
+  })
+
+  attr(out, which = "name") <- paste0("cases")
+  attr(out, which = "desc") <- paste0("the values are split into the following cases [", paste0(paste0(seq_along(cases), ": ", case_expr), collapse = " | "), "]")
 
   return(out)
 

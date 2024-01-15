@@ -1,8 +1,9 @@
-#' Unpack the integer representation of QB
+#' Unpack a bitfield
 #'
-#' @param x description
-#' @param bitfield  [`bitfield(1)`][bitfield]\cr the bitfield that should be
-#'   unpacked into a quality bit (QB).
+#' @param x [`integerish(1)`][integer]\cr table of the integer representation of
+#'   the bitfield.
+#' @param registry  [`registry(1)`][registry]\cr the registry that should be
+#'   used to unpack the bitfield into a binary representation.
 #' @param sep the value by which the distinct fields shall be separated
 #'
 #' @importFrom checkmate assertDataFrame assertNames assertClass assertCharacter
@@ -13,11 +14,10 @@
 #' @importFrom tidyr separate unite
 #' @export
 
-bf_unpack <- function(x, bitfield, sep = "."){
+bf_unpack <- function(x, registry, sep = "."){
 
-  assertDataFrame(x = x, ncols = 1)
-  assertNames(x = names(x), identical.to = "QB")
-  assertClass(x = bitfield, classes = "bitfield")
+  assertIntegerish(x = x, any.missing = FALSE, min.len = 1)
+  assertClass(x = registry, classes = "registry")
   assertCharacter(x = sep, len = 1, any.missing = FALSE)
 
   .insertSep <- function(x, pos, insert){
@@ -27,10 +27,10 @@ bf_unpack <- function(x, bitfield, sep = "."){
   }
 
   # get the bits ...
-  theBits <- bind_rows(map(seq_along(bitfield@bits), function(ix){
-    tibble(pos = bitfield@bits[[ix]]$position,
-           name = names(bitfield@bits)[ix],
-           flags = length(bitfield@bits[[ix]]$values))
+  theBits <- bind_rows(map(seq_along(registry@flags), function(ix){
+    tibble(pos = registry@flags[[ix]]$position,
+           name = names(registry@flags)[ix],
+           flags = length(registry@flags[[ix]]$values))
   }))
   theBits <- arrange(theBits, pos)
 
@@ -45,14 +45,14 @@ bf_unpack <- function(x, bitfield, sep = "."){
   tempTab <- arrange(tempTab, split)
 
   # process bits
-  out <- rowwise(x)
-  out <- mutate(out, bit = .getBit(x = QB, len = bitfield@width))
+  out <- rowwise(tibble(bf_int = x))
+  out <- mutate(out, bit = .makeFlag(x = bf_int, len = registry@width))
   out <- separate(out, col = bit, into = paste0("b", tempTab$split), sep = tempTab$split)
-  out <- unite(out, col = "QB_flags", paste0("b", tempTab$split), sep = sep)
+  out <- unite(out, col = "bf_binary", paste0("b", tempTab$split), sep = sep)
 
   # create look-up table for what the bits stand for
   lut <- mutate(tempTab, split = as.character(split))
-  lut <- left_join(lut, bitfield@desc, c("split" = "pos"))
+  lut <- left_join(lut, registry@desc, c("split" = "pos"))
   lut <- select(lut, -split)
 
   # assign look-up table to the environment as well

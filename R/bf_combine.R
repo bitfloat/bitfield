@@ -1,34 +1,40 @@
-#' Combine the bitfield into a quality bit (QB)
+#' Build a bitfield from a bit registry
 #'
-#' @param bitfield [`bitfield(1)`][bitfield]\cr the bitfield that should be
-#'   combined into a quality bit (QB).
+#' @param registry [`registry(1)`][registry]\cr the bit registry that should be
+#'   combined into a bitfield.
 #'
 #' @importFrom checkmate assertClass assertCharacter assertLogical
 #' @importFrom tibble tibble
-#' @importFrom purrr map
+#' @importFrom purrr map map_int
 #' @importFrom dplyr bind_rows arrange bind_cols select
-#' @importFrom stringr str_split str_split_i
+#' @importFrom stringr str_split str_split_i str_sub
 #' @export
 
-bf_combine <- function(bitfield){
+bf_combine <- function(registry){
 
-  assertClass(x = bitfield, classes = "bitfield")
+  assertClass(x = registry, classes = "registry")
 
-  # open the bitfield
-  theBitfield <- tibble(.rows = bitfield@length)
+  # open the registry
+  theBitfield <- tibble(.rows = registry@length)
 
   # arrange them by position of the bit ...
-  theBits <- bind_rows(map(seq_along(bitfield@bits), function(ix){
-    tibble(pos = bitfield@bits[[ix]]$position,
-           name = names(bitfield@bits)[ix])
+  theBits <- bind_rows(map(seq_along(registry@flags), function(ix){
+    tibble(pos = registry@flags[[ix]]$position,
+           name = names(registry@flags)[ix])
   }))
   theBits <- arrange(theBits, pos)
 
-  # ... and write into the bitfield
-  for(i in seq_along(unique(theBits$name))){
+  # ... and write into the registry
+  for(i in seq_along(theBits$name)){
+
+    if(i != 1){
+      if(theBits$name[i] == theName){
+        next
+      }
+    }
 
     theName <- theBits$name[i]
-    theBit <- bitfield@bits[[theName]]
+    theBit <- registry@flags[[theName]]
     theVals <- bf_env[[theName]]
 
     if(is.logical(theBit$values)){
@@ -40,26 +46,22 @@ bf_combine <- function(bitfield){
       # build new bit representations from integer values
 
       bitVals <- unlist(map(seq_along(theVals), function(ix){
-        temp <- .getBit(theVals[ix])
-
-        paste0(temp[1:length(theBit$position)], collapse = "")
+        .makeFlag(x = theVals[ix], len = length(theBit$position))
       }))
 
       theBitfield <- bind_cols(theBitfield, bitVals, .name_repair = "minimal")
-
     }
 
   }
 
-  out <- bind_rows(map(1:dim(theBitfield)[1], function(ix){
+  # build the integer representation
+  out <- map_int(1:dim(theBitfield)[1], function(ix){
 
     temp <- paste0(theBitfield[ix, ], collapse = "")
     int <- str_split(temp, "")[[1]]
-    int <- sum(+(int == "1") * 2^(seq(int)-1))
+    sum(+(int == "1") * 2^(seq(int)-1))
 
-    tibble(QB = as.integer(int))
-
-  }))
+  })
 
   return(out)
 
