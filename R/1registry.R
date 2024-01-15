@@ -1,6 +1,6 @@
-#' Bitfield class (S4) and methods
+#' Bit registry class (S4) and methods
 #'
-#' A \code{bitfield} stores ...
+#' A \code{registry} stores ...
 #'
 #'
 #' @slot width [`integerish(1)`][integer]\cr
@@ -9,21 +9,21 @@
 #' @slot desc [`data.frame(1)`][data.frame]\cr
 #' @slot bits [`list(.)`][list]\cr
 
-bitfield <- setClass(Class = "bitfield",
-                 slots = c(width = "integer",
-                           length = "integer",
-                           name = "character",
-                           desc = "data.frame",
-                           bits = "list"
-                 )
+registry <- setClass(Class = "registry",
+                     slots = c(width = "integer",
+                               length = "integer",
+                               name = "character",
+                               desc = "data.frame",
+                               flags = "list"
+                     )
 )
 
-setValidity("bitfield", function(object){
+setValidity("registry", function(object){
 
   errors = character()
 
   if(!.hasSlot(object = object, name = "width")){
-    errors = c(errors, "the bitfield does not have a 'width' slot.")
+    errors = c(errors, "the registry does not have a 'width' slot.")
   } else {
     if(!is.integer(object@width)){
       errors = c(errors, "the slot 'width' is not a integer.")
@@ -32,7 +32,7 @@ setValidity("bitfield", function(object){
   }
 
   if(!.hasSlot(object = object, name = "length")){
-    errors = c(errors, "the bitfield does not have a 'length' slot.")
+    errors = c(errors, "the registry does not have a 'length' slot.")
   } else {
     if(!is.integer(object@length)){
       errors = c(errors, "the slot 'length' is not a integer.")
@@ -41,7 +41,7 @@ setValidity("bitfield", function(object){
   }
 
   if(!.hasSlot(object = object, name = "name")){
-    errors = c(errors, "the bitfield does not have a 'name' slot.")
+    errors = c(errors, "the registry does not have a 'name' slot.")
   } else {
     if(!is.character(object@name)){
       errors = c(errors, "the slot 'name' is not a character.")
@@ -50,7 +50,7 @@ setValidity("bitfield", function(object){
   }
 
   if(!.hasSlot(object = object, name = "desc")){
-    errors = c(errors, "the bitfield does not have a 'desc' slot.")
+    errors = c(errors, "the registry does not have a 'desc' slot.")
   } else {
     if(!is.data.frame(object@desc)){
       errors = c(errors, "the slot 'desc' is not a data.frame.")
@@ -58,11 +58,11 @@ setValidity("bitfield", function(object){
 
   }
 
-  if(!.hasSlot(object = object, name = "bits")){
-    errors = c(errors, "the bitfield does not have a 'bits' slot.")
+  if(!.hasSlot(object = object, name = "flags")){
+    errors = c(errors, "the registry does not have a 'flags' slot.")
   } else {
-    if(!is.list(object@bits)){
-      errors = c(errors, "the slot 'bits' is not a list")
+    if(!is.list(object@flags)){
+      errors = c(errors, "the slot 'flags' is not a list")
     }
 
   }
@@ -177,14 +177,14 @@ setValidity("bitfield", function(object){
 
 })
 
-#' Print bitfield in the console (not working yet)
+#' Print registry in the console (not working yet)
 #'
-#' @param object [`bitfield(1)`][bitfield]\cr object to \code{show}.
+#' @param object [`registry(1)`][registry]\cr object to \code{show}.
 #' @importFrom utils head
 #' @importFrom crayon yellow red cyan
 
 setMethod(f = "show",
-          signature = "bitfield",
+          signature = "registry",
           definition = function(object){
 
           #   theType <- object@type
