@@ -121,7 +121,7 @@
 <span>                year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2021</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">validComm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"soybean"</span>, <span class="st">"maize"</span><span class="op">)</span></span></code></pre></div>
-<p>And make it have some unordinary values</p>
+<p>And make it have some non-ordinary values</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">input</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">5</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">259</span></span>
 <span><span class="va">input</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">9</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
@@ -142,73 +142,73 @@
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">23.9</td>
-<td align="right">58.7</td>
+<td align="right">24.1</td>
+<td align="right">59.4</td>
 <td align="left">soybean</td>
-<td align="right">13.433170</td>
+<td align="right">10.109169</td>
 <td align="left">2021</td>
 </tr>
 <tr class="even">
-<td align="right">23.7</td>
-<td align="right">59.5</td>
+<td align="right">24.0</td>
+<td align="right">58.8</td>
 <td align="left">maize</td>
-<td align="right">7.702426</td>
+<td align="right">10.617382</td>
 <td align="left">NA</td>
 </tr>
 <tr class="odd">
-<td align="right">24.5</td>
-<td align="right">57.6</td>
+<td align="right">27.3</td>
+<td align="right">58.4</td>
 <td align="left">NA</td>
-<td align="right">11.300058</td>
+<td align="right">9.268043</td>
 <td align="left">2021r</td>
 </tr>
 <tr class="even">
-<td align="right">24.0</td>
-<td align="right">58.3</td>
+<td align="right">26.8</td>
+<td align="right">58.1</td>
 <td align="left">maize</td>
-<td align="right">8.922000</td>
+<td align="right">8.948955</td>
 <td align="left">2021</td>
 </tr>
 <tr class="odd">
 <td align="right">259.0</td>
-<td align="right">57.7</td>
+<td align="right">57.9</td>
 <td align="left">honey</td>
-<td align="right">9.911468</td>
+<td align="right">9.859947</td>
+<td align="left">2021</td>
+</tr>
+<tr class="even">
+<td align="right">23.7</td>
+<td align="right">59.1</td>
+<td align="left">maize</td>
+<td align="right">6.318179</td>
+<td align="left">2021</td>
+</tr>
+<tr class="odd">
+<td align="right">24.2</td>
+<td align="right">58.7</td>
+<td align="left">soybean</td>
+<td align="right">11.860984</td>
+<td align="left">2021</td>
+</tr>
+<tr class="even">
+<td align="right">25.1</td>
+<td align="right">59.0</td>
+<td align="left">maize</td>
+<td align="right">11.278150</td>
+<td align="left">2021</td>
+</tr>
+<tr class="odd">
+<td align="right">0.0</td>
+<td align="right">0.0</td>
+<td align="left">soybean</td>
+<td align="right">9.949784</td>
 <td align="left">2021</td>
 </tr>
 <tr class="even">
 <td align="right">24.7</td>
-<td align="right">58.2</td>
-<td align="left">maize</td>
-<td align="right">10.292415</td>
-<td align="left">2021</td>
-</tr>
-<tr class="odd">
-<td align="right">26.8</td>
-<td align="right">58.9</td>
-<td align="left">soybean</td>
-<td align="right">7.211000</td>
-<td align="left">2021</td>
-</tr>
-<tr class="even">
-<td align="right">26.4</td>
-<td align="right">59.2</td>
-<td align="left">maize</td>
-<td align="right">7.509846</td>
-<td align="left">2021</td>
-</tr>
-<tr class="odd">
-<td align="right">0.0</td>
-<td align="right">0.0</td>
-<td align="left">soybean</td>
-<td align="right">6.627607</td>
-<td align="left">2021</td>
-</tr>
-<tr class="even">
-<td align="right">23.5</td>
 <td align="right">NA</td>
 <td align="left">maize</td>
-<td align="right">10.584207</td>
+<td align="right">9.670879</td>
 <td align="left">2021</td>
 </tr>
 </tbody>
@@ -221,11 +221,12 @@
 <li>The <code>lenght =</code> specifies how long the output table is. This is usually taken from an input.</li>
 <li>The <code>name =</code> specifies the label of the registry, which becomes very important when publishing, because registry and output table are stored in different files and it must be possible to unambiguously associate them to one another.</li>
 </ol>
-<p>Then, individual bit flags need to be grown by specifying a mapping function and which position of the bitfield should be modified. To help with growing bits, various aspects are important to keep in mind</p>
+<p>Then, individual bit flags need to be grown by specifying a mapping function and which position of the bitfield should be modified. To help with growing bits, various naming-rules are important to keep in mind</p>
 <ol style="list-style-type: decimal">
 <li>if your mapping function returns a boolean value, the bit flags will be <code>FALSE == 0</code> and <code>TRUE == 1</code>.</li>
 <li>if your mapping function returns cases, they will be assigned a sequence of numbers that are encoded by their respective binary representation, i.e. if there are 3 cases (which takes up 2 bits), the bit flags will be <code>case 1 = 00</code>, <code>case 2 == 01</code> and <code>case 3 == 10</code>, and so on.</li>
 </ol>
+<p>A flag is declared by calling a suitable function, some of which are provided here, but some of which are already available elsewhere (more below). For example <code>bf_na(x = input, test = "x")</code> will test whether the column <code>x</code> in the table <code>input</code> has <code>NA</code>-values. These functions are provided to <code><a href="reference/bf_grow.html">bf_grow()</a></code>, where the bitfield is characterised.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">newRegistry</span> <span class="op">&lt;-</span> <span class="va">newRegistry</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="co"># tests for coordinates ...</span></span>
@@ -275,14 +276,14 @@
 <span><span class="co">#&gt; Flagged NA records.</span></span>
 <span><span class="co">#&gt; Warning in bf_grow(flags = !is.na(as.integer(input$year)), name = "valid_year",</span></span>
 <span><span class="co">#&gt; : NAs durch Umwandlung erzeugt</span></span></code></pre></div>
-<p>The resulting strcuture is basically a record of all the things that are grown on the bitfield, but so far nothing has happened</p>
+<p>The resulting strcuture is basically a record of all the things that are grown on the bitfield.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">newRegistry</span></span></code></pre></div>
-<p>Finally the bitfield needs to be combined (note: input datasets have been stored into the environment <code>qb_env</code>). This will result in an output table (with one column that has the name <code>QB</code>).</p>
+<p>Finally the registry needs to be combined (note: input data vectors have been stored into the environment <code>bf_env</code>). This will result in a vector of integers.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="op">(</span><span class="va">intBit</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/bf_combine.html">bf_combine</a></span><span class="op">(</span>registry <span class="op">=</span> <span class="va">newRegistry</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  [1] 735 927 695 479 341 863 991 991 463 843</span></span></code></pre></div>
-<p>As mentioned above, the bitfield is a record of things, which is required to decode the quality bit (similar to a key). Together with the legend, the bit flags can then be converted back to human readable text or used in any downstream workflow.</p>
+<span><span class="co">#&gt;  [1] 735 159 695 863 213 863 607 607 207 715</span></span></code></pre></div>
+<p>As mentioned above, the registry is a record of things, which is required to decode the bitfield (similar to a key). Together with the legend, the bit flags can then be converted back to human readable text or used in any downstream workflow.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bitfield</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/bf_unpack.html">bf_unpack</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">intBit</span>, registry <span class="op">=</span> <span class="va">newRegistry</span>, sep <span class="op">=</span> <span class="st">"-"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 9 × 4</span></span>
@@ -324,97 +325,98 @@
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="right">23.9</td>
-<td align="right">58.7</td>
+<td align="right">24.1</td>
+<td align="right">59.4</td>
 <td align="left">soybean</td>
-<td align="right">13.433170</td>
+<td align="right">10.109169</td>
 <td align="left">2021</td>
 <td align="right">735</td>
 <td align="left">1-1-1-1-1-0-1-10-10</td>
 </tr>
 <tr class="even">
-<td align="right">23.7</td>
-<td align="right">59.5</td>
+<td align="right">24.0</td>
+<td align="right">58.8</td>
 <td align="left">maize</td>
-<td align="right">7.702426</td>
+<td align="right">10.617382</td>
 <td align="left">NA</td>
-<td align="right">927</td>
-<td align="left">1-1-1-1-1-0-0-11-10</td>
+<td align="right">159</td>
+<td align="left">1-1-1-1-1-0-0-10-00</td>
 </tr>
 <tr class="odd">
-<td align="right">24.5</td>
-<td align="right">57.6</td>
+<td align="right">27.3</td>
+<td align="right">58.4</td>
 <td align="left">NA</td>
-<td align="right">11.300058</td>
+<td align="right">9.268043</td>
 <td align="left">2021r</td>
 <td align="right">695</td>
 <td align="left">1-1-1-0-1-1-0-10-10</td>
 </tr>
 <tr class="even">
-<td align="right">24.0</td>
-<td align="right">58.3</td>
+<td align="right">26.8</td>
+<td align="right">58.1</td>
 <td align="left">maize</td>
-<td align="right">8.922000</td>
-<td align="left">2021</td>
-<td align="right">479</td>
-<td align="left">1-1-1-1-1-0-1-11-00</td>
-</tr>
-<tr class="odd">
-<td align="right">259.0</td>
-<td align="right">57.7</td>
-<td align="left">honey</td>
-<td align="right">9.911468</td>
-<td align="left">2021</td>
-<td align="right">341</td>
-<td align="left">1-0-1-0-1-0-1-01-00</td>
-</tr>
-<tr class="even">
-<td align="right">24.7</td>
-<td align="right">58.2</td>
-<td align="left">maize</td>
-<td align="right">10.292415</td>
+<td align="right">8.948955</td>
 <td align="left">2021</td>
 <td align="right">863</td>
 <td align="left">1-1-1-1-1-0-1-01-10</td>
 </tr>
 <tr class="odd">
-<td align="right">26.8</td>
-<td align="right">58.9</td>
-<td align="left">soybean</td>
-<td align="right">7.211000</td>
+<td align="right">259.0</td>
+<td align="right">57.9</td>
+<td align="left">honey</td>
+<td align="right">9.859947</td>
 <td align="left">2021</td>
-<td align="right">991</td>
-<td align="left">1-1-1-1-1-0-1-11-10</td>
+<td align="right">213</td>
+<td align="left">1-0-1-0-1-0-1-10-00</td>
 </tr>
 <tr class="even">
-<td align="right">26.4</td>
-<td align="right">59.2</td>
+<td align="right">23.7</td>
+<td align="right">59.1</td>
 <td align="left">maize</td>
-<td align="right">7.509846</td>
+<td align="right">6.318179</td>
 <td align="left">2021</td>
-<td align="right">991</td>
-<td align="left">1-1-1-1-1-0-1-11-10</td>
+<td align="right">863</td>
+<td align="left">1-1-1-1-1-0-1-01-10</td>
+</tr>
+<tr class="odd">
+<td align="right">24.2</td>
+<td align="right">58.7</td>
+<td align="left">soybean</td>
+<td align="right">11.860984</td>
+<td align="left">2021</td>
+<td align="right">607</td>
+<td align="left">1-1-1-1-1-0-1-00-10</td>
+</tr>
+<tr class="even">
+<td align="right">25.1</td>
+<td align="right">59.0</td>
+<td align="left">maize</td>
+<td align="right">11.278150</td>
+<td align="left">2021</td>
+<td align="right">607</td>
+<td align="left">1-1-1-1-1-0-1-00-10</td>
 </tr>
 <tr class="odd">
 <td align="right">0.0</td>
 <td align="right">0.0</td>
 <td align="left">soybean</td>
-<td align="right">6.627607</td>
+<td align="right">9.949784</td>
 <td align="left">2021</td>
-<td align="right">463</td>
-<td align="left">1-1-1-1-0-0-1-11-00</td>
+<td align="right">207</td>
+<td align="left">1-1-1-1-0-0-1-10-00</td>
 </tr>
 <tr class="even">
-<td align="right">23.5</td>
+<td align="right">24.7</td>
 <td align="right">NA</td>
 <td align="left">maize</td>
-<td align="right">10.584207</td>
+<td align="right">9.670879</td>
 <td align="left">2021</td>
-<td align="right">843</td>
-<td align="left">1-1-0-1-0-0-1-01-10</td>
+<td align="right">715</td>
+<td align="left">1-1-0-1-0-0-1-10-10</td>
 </tr>
 </tbody>
 </table>
+<p>Together with the rules mentioned above, we can read the binary representation on step at a time. For example, considering the second position, with the description <code>the values in column 'x' range between [-180,180]</code>, we see that row five has the value <code>0</code>, which means according to naming-rule 1 (<code>FALSE == 0</code>), that the x-value here should be outside of the range of [-180, 180], which we can confirm.</p>
 </div>
 <div class="section level2">
 <h2 id="bitfields-for-other-data-types">Bitfields for other data-types<a class="anchor" aria-label="anchor" href="#bitfields-for-other-data-types"></a>
@@ -431,11 +433,12 @@
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_cols.html" class="external-link">bind_cols</a></span><span class="op">(</span><span class="fu">crds</span><span class="op">(</span><span class="va">raster</span><span class="op">)</span>, <span class="va">.</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># from here we can continue creating a bitfield and growing bits on it just like shown above...</span></span>
+<span><span class="va">intBit</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/bf_combine.html">bf_combine</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># ... and then converting it back to a raster</span></span>
 <span><span class="va">QB_rast</span> <span class="op">&lt;-</span> <span class="fu">crds</span><span class="op">(</span><span class="va">raster</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_cols.html" class="external-link">bind_cols</a></span><span class="op">(</span><span class="va">QB_int</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu">rast</span><span class="op">(</span>type<span class="op">=</span><span class="st">"xyz"</span>, crs <span class="op">=</span> <span class="fu">crs</span><span class="op">(</span><span class="va">raster</span><span class="op">)</span>, extent <span class="op">=</span> <span class="fu">ext</span><span class="op">(</span><span class="va">raster</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_cols.html" class="external-link">bind_cols</a></span><span class="op">(</span><span class="va">intBit</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu">rast</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"xyz"</span>, crs <span class="op">=</span> <span class="fu">crs</span><span class="op">(</span><span class="va">raster</span><span class="op">)</span>, extent <span class="op">=</span> <span class="fu">ext</span><span class="op">(</span><span class="va">raster</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level1">
