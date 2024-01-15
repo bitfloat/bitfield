@@ -2,13 +2,13 @@
 % Please edit documentation in R/bf_case.R
 \name{bf_case}
 \alias{bf_case}
-\title{Build a bit by checking}
+\title{Build a bit flag by checking for cases}
 \usage{
 bf_case(x, ..., exclusive = TRUE)
 }
 \arguments{
-\item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the table that contains
-tests defined in \code{...}.}
+\item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the table that contains tests
+defined in \code{...}.}
 
 \item{...}{\cr any set of (mutually exclusive) statements that results in a
 logical return value}
@@ -18,5 +18,5 @@ that the cases are mutually exclusive, or whether it would allow that cases
 defined later in the sequence overwrite cases earlier in the sequence.}
 }
 \description{
-Build a bit by checking
+Build a bit flag by checking for cases
 }

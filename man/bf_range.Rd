@@ -2,7 +2,7 @@
 % Please edit documentation in R/bf_range.R
 \name{bf_range}
 \alias{bf_range}
-\title{Build a bit by checking for a range}
+\title{Build a bit flag by checking for a range}
 \usage{
 bf_range(x, test, min, max)
 }
@@ -18,5 +18,5 @@ range is checked.}
 \item{max}{\code{\link[=numeric]{numeric(1)}}\cr the maximum allowed value.}
 }
 \description{
-Build a bit by checking for a range
+Build a bit flag by checking for a range
 }

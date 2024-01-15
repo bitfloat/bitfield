@@ -2,18 +2,19 @@
 % Please edit documentation in R/bf_unpack.R
 \name{bf_unpack}
 \alias{bf_unpack}
-\title{Unpack the integer representation of QB}
+\title{Unpack a bitfield}
 \usage{
-bf_unpack(x, bitfield, sep = ".")
+bf_unpack(x, registry, sep = ".")
 }
 \arguments{
-\item{x}{description}
+\item{x}{\code{\link[=integer]{integerish(1)}}\cr table of the integer representation of
+the bitfield.}
 
-\item{bitfield}{\code{\link[=bitfield]{bitfield(1)}}\cr the bitfield that should be
-unpacked into a quality bit (QB).}
+\item{registry}{\code{\link[=registry]{registry(1)}}\cr the registry that should be
+used to unpack the bitfield into a binary representation.}
 
 \item{sep}{the value by which the distinct fields shall be separated}
 }
 \description{
-Unpack the integer representation of QB
+Unpack a bitfield
 }

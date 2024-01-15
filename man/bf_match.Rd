@@ -2,7 +2,7 @@
 % Please edit documentation in R/bf_match.R
 \name{bf_match}
 \alias{bf_match}
-\title{Build a bit by checking for a match with an external vector}
+\title{Build a bit flag by checking for a match with an external vector}
 \usage{
 bf_match(x, test, against)
 }
@@ -18,5 +18,5 @@ contains \code{test}.}
 against which a match is performed.}
 }
 \description{
-Build a bit by checking for a match with an external vector
+Build a bit flag by checking for a match with an external vector
 }

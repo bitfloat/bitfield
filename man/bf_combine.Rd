@@ -2,14 +2,14 @@
 % Please edit documentation in R/bf_combine.R
 \name{bf_combine}
 \alias{bf_combine}
-\title{Combine the bitfield into a quality bit (QB)}
+\title{Build a bitfield from a bit registry}
 \usage{
-bf_combine(bitfield)
+bf_combine(registry)
 }
 \arguments{
-\item{bitfield}{\code{\link[=bitfield]{bitfield(1)}}\cr the bitfield that should be
-combined into a quality bit (QB).}
+\item{registry}{\code{\link[=registry]{registry(1)}}\cr the bit registry that should be
+combined into a bitfield.}
 }
 \description{
-Combine the bitfield into a quality bit (QB)
+Build a bitfield from a bit registry
 }

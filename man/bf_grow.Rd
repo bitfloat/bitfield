@@ -2,29 +2,30 @@
 % Please edit documentation in R/bf_grow.R
 \name{bf_grow}
 \alias{bf_grow}
-\title{Add bits to a bitfield}
+\title{Add flags to a registry}
 \usage{
-bf_grow(bit, name, desc = NULL, na_val = NULL, pos, bitfield)
+bf_grow(flags, name = NULL, desc = NULL, na_val = NULL, pos = NULL, registry)
 }
 \arguments{
-\item{bit}{\code{\link[=numeric]{numeric(.)}} | \code{\link[=character]{character(.)}} |
-\code{\link[=logical]{logical(1)}}\cr a function that returns a vector that shall be
-stored as bit.}
+\item{flags}{\code{\link[=function]{function(.)}}\cr a function that returns a vector
+that shall be stored as bit.}
 
-\item{name}{\code{\link[=character]{character(.)}}\cr the internal name of the bit(s).}
+\item{name}{\code{\link[=character]{character(.)}}\cr the internal name of the bit
+flag(s).}
 
-\item{desc}{\code{\link[=character]{character(.)}}\cr the description of the bit(s).}
+\item{desc}{\code{\link[=character]{character(.)}}\cr the description of the bit
+flag(s).}
 
 \item{na_val}{\code{\link[=numeric]{numeric(.)}} | \code{\link[=character]{character(.)}} |
-\code{\link[=logical]{logical(1)}}\cr which value NAs in the output of .bit should
-have in the bitfield.}
+\code{\link[=logical]{logical(1)}}\cr which value NAs in the output of \code{flags}
+should have in the registry.}
 
 \item{pos}{\code{\link[=integer]{integerish(1)}}\cr the position in the bitfield that
 should be set.}
 
-\item{bitfield}{\code{\link[=bitfield]{bitfield(1)}}\cr the bitfield in which the bits
-should be set.}
+\item{registry}{\code{\link[=registry]{registry(1)}}\cr the registry in which the bit
+flag(s) should be stored.}
 }
 \description{
-Add bits to a bitfield
+Add flags to a registry
 }

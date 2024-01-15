@@ -2,7 +2,7 @@
 % Please edit documentation in R/bf_na.R
 \name{bf_na}
 \alias{bf_na}
-\title{Build a bit by checking that values are not NA}
+\title{Build a bit flag by checking that values are not NA}
 \usage{
 bf_na(x, test)
 }
@@ -14,5 +14,5 @@ bf_na(x, test)
 checked for NA values.}
 }
 \description{
-Build a bit by checking that values are not NA
+Build a bit flag by checking that values are not NA
 }
