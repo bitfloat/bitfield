@@ -12,26 +12,24 @@ reference:
     contents:
       - bf_create
       - bf_grow
-      - bf_harvest
-      - bf_propagate
+      - bf_combine
+      - bf_unpack
   - title: bit builders
     desc: functions that build a particular bit value
     contents:
       - bf_case
       - bf_decimals
-      - bf_filter
       - bf_match
       - bf_na
       - bf_range
   - title: classes
     desc: new classes that come with this package
     contents:
-      - bitfield-class
-      - show,bitfield-method
+      - registry-class
+      - show,registry-method
   - title: helpers
     contents:
-      - .getBit
-      - .getPrecision
+      - .makeFlag
 
 navbar:
   left:
