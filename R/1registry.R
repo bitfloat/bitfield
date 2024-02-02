@@ -13,7 +13,7 @@ registry <- setClass(Class = "registry",
                      slots = c(width = "integer",
                                length = "integer",
                                name = "character",
-                               desc = "data.frame",
+                               # desc = "data.frame",
                                flags = "list"
                      )
 )
@@ -49,14 +49,14 @@ setValidity("registry", function(object){
 
   }
 
-  if(!.hasSlot(object = object, name = "desc")){
-    errors = c(errors, "the registry does not have a 'desc' slot.")
-  } else {
-    if(!is.data.frame(object@desc)){
-      errors = c(errors, "the slot 'desc' is not a data.frame.")
-    }
-
-  }
+  # if(!.hasSlot(object = object, name = "desc")){
+  #   errors = c(errors, "the registry does not have a 'desc' slot.")
+  # } else {
+  #   if(!is.data.frame(object@desc)){
+  #     errors = c(errors, "the slot 'desc' is not a data.frame.")
+  #   }
+  #
+  # }
 
   if(!.hasSlot(object = object, name = "flags")){
     errors = c(errors, "the registry does not have a 'flags' slot.")

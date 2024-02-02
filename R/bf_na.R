@@ -13,10 +13,10 @@ bf_na <- function(x, test){
   assertDataFrame(x = x)
   assertSubset(x = test, choices = names(x))
 
-  out <- !is.na(x[[test]])
+  out <- is.na(x[[test]])
 
-  attr(out, which = "name") <- paste0("not_na_", test)
-  attr(out, which = "desc") <- paste0("the values in column '", test, "' do not contain any NAs")
+  attr(out, which = "name") <- paste0("na_", test)
+  attr(out, which = "desc") <- paste0("the value in column '", test, "' is NA.")
 
   return(out)
 

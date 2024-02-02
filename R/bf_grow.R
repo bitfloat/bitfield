@@ -45,7 +45,7 @@ bf_grow <- function(flags, name = NULL, desc = NULL, na_val = NULL, pos = NULL, 
     outValues <- c(TRUE, FALSE)
   } else if(is.numeric(theValues) | is.integer(theValues)) {
     nFlags <- max(c(max(theValues), length(unique(theValues))))
-    outValues <- (1:nFlags)-1
+    outValues <- 1:nFlags
   } else {
     nFlags <- length(unique(theValues))
     outValues <- seq_along(unique(theValues))
@@ -55,14 +55,8 @@ bf_grow <- function(flags, name = NULL, desc = NULL, na_val = NULL, pos = NULL, 
   assertTRUE(x = nBits <= length(pos))
 
   # handle descriptions
-  theDesc <- registry@desc
   if(is.null(desc)){
     message(paste0("please provide a description for ", name))
-  } else {
-    outDesc <- tibble(pos = as.character(pos), description = desc)
-    outDesc <- bind_rows(theDesc, outDesc)
-    outDesc <- distinct(outDesc)
-    outDesc <- arrange(outDesc, pos)
   }
 
   # assign tentative flags values into the current environment
@@ -70,10 +64,11 @@ bf_grow <- function(flags, name = NULL, desc = NULL, na_val = NULL, pos = NULL, 
 
   # and store everything in the registry
   temp <- list(values = outValues,
-               position = pos)
+               position = pos,
+               description = desc)
 
   registry@flags[[name]] <- temp
-  registry@desc <- outDesc
+  # registry@desc <- outDesc
 
   return(registry)
 

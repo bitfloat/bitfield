@@ -20,7 +20,7 @@ bf_range <- function(x, test, min, max){
   out <- x[[test]] > min & x[[test]] < max
 
   attr(out, which = "name") <- paste0("range_", test)
-  attr(out, which = "desc") <- paste0("the values in column '", test, "' range between [", min, ",", max, "]")
+  attr(out, which = "desc") <- paste0("the value in column '", test, "' ranges between [", min, ",", max, "].")
 
   return(out)
 

@@ -20,7 +20,7 @@ bf_match <- function(x, test, against){
   out <- x[[test]] %in% against
 
   attr(out, which = "name") <- paste0("match_", test)
-  attr(out, which = "desc") <- paste0("the values in column '", test, "' are contained in the values (", paste0(against, collapse = "|"), ")")
+  attr(out, which = "desc") <- paste0("the value in column '", test, "' is contained in the set [", paste0(against, collapse = "|"), "].")
 
   return(out)
 
