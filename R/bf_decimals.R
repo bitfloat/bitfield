@@ -63,6 +63,7 @@ bf_decimals <- function(x, test, sep = "\\.", fill = TRUE){
 
   attr(out, which = "name") <- paste0("decimals_", test)
   attr(out, which = "desc") <- paste0("the value in '", test, "' has [", paste0(tempDec, collapse = ", "), "] decimals.")
+  attr(out, which = "triple") <- paste0(test, "|has_decimals|[", paste0(tempDec, collapse = ", "), "]")
 
   return(out)
 }

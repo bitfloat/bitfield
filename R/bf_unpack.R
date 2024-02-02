@@ -30,7 +30,8 @@ bf_unpack <- function(x, registry, sep = "."){
   theBits <- bind_rows(map(seq_along(registry@flags), function(ix){
     tibble(pos = registry@flags[[ix]]$position,
            name = names(registry@flags)[ix],
-           flags = length(registry@flags[[ix]]$values))
+           flags = length(registry@flags[[ix]]$values),
+           desc = registry@flags[[ix]]$description)
   }))
   theBits <- arrange(theBits, pos)
 
@@ -40,7 +41,8 @@ bf_unpack <- function(x, registry, sep = "."){
   tempTab <- summarise(tempTab,
                        flags = max(flags),
                        split = max(pos),
-                       pos = if_else(n() == 1, as.character(split), paste0(min(pos), ":", max(pos)))
+                       pos = if_else(n() == 1, as.character(split), paste0(min(pos), ":", max(pos))),
+                       desc = first(desc)
   )
   tempTab <- arrange(tempTab, split)
 
@@ -51,9 +53,7 @@ bf_unpack <- function(x, registry, sep = "."){
   out <- unite(out, col = "bf_binary", paste0("b", tempTab$split), sep = sep)
 
   # create look-up table for what the bits stand for
-  lut <- mutate(tempTab, split = as.character(split))
-  lut <- left_join(lut, registry@desc, c("split" = "pos"))
-  lut <- select(lut, -split)
+  lut <- select(tempTab, -split)
 
   # assign look-up table to the environment as well
   env_bind(.env = bf_env, legend = lut)

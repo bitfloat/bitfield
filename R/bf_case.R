@@ -54,6 +54,7 @@ bf_case <- function(x, ..., exclusive = TRUE){
 
   attr(out, which = "name") <- paste0("cases")
   attr(out, which = "desc") <- paste0("the observation has one of the cases [", paste0(paste0(seq_along(cases), ": ", case_expr), collapse = " | "), "].")
+  # attr(out, which = "triple") <- paste0(test, "|case_of|[", paste0(tempDec, collapse = ", "), "]")
 
   return(out)
 

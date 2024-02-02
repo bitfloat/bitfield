@@ -32,6 +32,7 @@ bf_grow <- function(flags, name = NULL, desc = NULL, na_val = NULL, pos = NULL, 
 
   if(is.null(name)) name <- attr(flags, "name")
   if(is.null(desc)) desc <- attr(flags, "desc")
+  triple <- attr(flags, "triple")
 
   # replace NA values in theValues
   if(any(is.na(theValues))){
@@ -65,10 +66,10 @@ bf_grow <- function(flags, name = NULL, desc = NULL, na_val = NULL, pos = NULL, 
   # and store everything in the registry
   temp <- list(values = outValues,
                position = pos,
-               description = desc)
+               description = desc,
+               triple = triple)
 
   registry@flags[[name]] <- temp
-  # registry@desc <- outDesc
 
   return(registry)
 

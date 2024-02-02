@@ -16,7 +16,8 @@ bf_na <- function(x, test){
   out <- is.na(x[[test]])
 
   attr(out, which = "name") <- paste0("na_", test)
-  attr(out, which = "desc") <- paste0("the value in column '", test, "' is NA.")
+  attr(out, which = "desc") <- c(paste0("the value in column '", test, "' is NA."), paste0("the value in column '", test, "' is not NA."))
+  attr(out, which = "triple") <- paste0(test, "|has_value|NA")
 
   return(out)
 
