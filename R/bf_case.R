@@ -47,14 +47,13 @@ bf_case <- function(x, ..., exclusive = TRUE){
   out <- reduce(status, function(first, second){
     if_else(second != 0, second, first)
   })
-  out <- out - 1
 
   case_expr <- map(seq_along(cases), function(ix){
     get_expr(cases[[ix]])
   })
 
   attr(out, which = "name") <- paste0("cases")
-  attr(out, which = "desc") <- paste0("the values are split into the following cases [", paste0(paste0(seq_along(cases), ": ", case_expr), collapse = " | "), "]")
+  attr(out, which = "desc") <- paste0("the observation has one of the cases [", paste0(paste0(seq_along(cases), ": ", case_expr), collapse = " | "), "].")
 
   return(out)
 

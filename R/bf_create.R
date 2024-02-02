@@ -31,7 +31,7 @@ bf_create <- function(width, length, name = NULL){
              width = as.integer(width),
              length = as.integer(length),
              name = name,
-             desc = tibble(pos = character(), description = character()),
+             # desc = tibble(pos = integer(), description = character()),
              flags = list())
 
   # store the environment name in the options
