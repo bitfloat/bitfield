@@ -2,21 +2,24 @@
 % Please edit documentation in R/bf_match.R
 \name{bf_match}
 \alias{bf_match}
-\title{Build a bit flag by checking for a match with an external vector}
+\title{Build a bit flag by comparing a columns with a set}
 \usage{
-bf_match(x, test, against)
+bf_match(x, test, set, negate = FALSE)
 }
 \arguments{
-\item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the table that
-contains \code{test}.}
+\item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the table that contains
+\code{test}.}
 
-\item{test}{\code{\link[=character]{character(1)}}\cr the column in
-\code{x} for which a match is checked.}
+\item{test}{\code{\link[=character]{character(1)}}\cr the column in \code{x} for which a
+match is checked.}
 
-\item{against}{\code{\link[=numeric]{numeric(.)}} | \code{\link[=character]{character(.)}} |
-\code{\link[=logical]{logical(1)}}\cr a vector of the same class as in \code{test}
-against which a match is performed.}
+\item{set}{\code{\link[=numeric]{numeric(.)}} | \code{\link[=character]{character(.)}}\cr a vector
+of the same class as in \code{test} against which a set operation is
+performed.}
+
+\item{negate}{\code{\link[=logical]{logical(1)}}\cr whether or not to determine a subset
+or a disjoint match.}
 }
 \description{
-Build a bit flag by checking for a match with an external vector
+Build a bit flag by comparing a columns with a set
 }
