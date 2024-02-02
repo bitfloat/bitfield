@@ -87,16 +87,16 @@ kable(input)
 
 |     x |    y | commodity |     yield | year  |
 |------:|-----:|:----------|----------:|:------|
-|  27.4 | 59.6 | soybean   |  7.073888 | 2021  |
-|  24.9 | 58.3 | maize     |  7.535593 | NA    |
-|  25.3 | 59.2 | NA        |  9.633060 | 2021r |
-|  24.8 | 58.9 | maize     |  5.452585 | 2021  |
-| 259.0 | 58.0 | honey     | 10.396186 | 2021  |
-|  23.6 | 57.8 | maize     | 10.187041 | 2021  |
-|  25.9 | 58.8 | soybean   |  9.964105 | 2021  |
-|  24.4 | 57.6 | maize     | 15.805895 | 2021  |
-|   0.0 |  0.0 | soybean   |  8.515284 | 2021  |
-|  25.4 |   NA | maize     | 10.961044 | 2021  |
+|  26.8 | 58.2 | soybean   | 12.443847 | 2021  |
+|  25.0 | 58.0 | maize     | 11.221110 | NA    |
+|  26.6 | 58.7 | NA        |  8.736348 | 2021r |
+|  27.4 | 57.9 | maize     | 13.399062 | 2021  |
+| 259.0 | 57.7 | honey     | 11.401479 | 2021  |
+|  23.8 | 58.8 | maize     | 13.253872 | 2021  |
+|  24.5 | 59.6 | soybean   | 13.408709 | 2021  |
+|  27.5 | 59.0 | maize     |  9.797158 | 2021  |
+|   0.0 |  0.0 | soybean   |  7.753662 | 2021  |
+|  25.5 |   NA | maize     |  6.192842 | 2021  |
 
 The first step is in creating what is called registry in `bitfield`.
 This registry captures all the information required to build the
@@ -146,7 +146,7 @@ newRegistry <- newRegistry %>%
           pos = 3, na_val = FALSE, registry = .)  %>%
 
   # test for matches with an external vector
-  bf_grow(flags = bf_match(x = input, test = "commodity", against = validComm),
+  bf_grow(flags = bf_match(x = input, test = "commodity", set = validComm),
           pos = 4, na_val = FALSE, registry = .) %>%
   
   # define cases
@@ -207,7 +207,7 @@ of integers.
 
 ``` r
 (intBit <- bf_combine(registry = newRegistry))
-#>  [1] 367 111 215 367 341 351 351 335 303 283
+#>  [1] 350  94 246 350 340 350 350 366 318 314
 ```
 
 As mentioned above, the registry is a record of things, which is
@@ -218,13 +218,13 @@ or used in any downstream workflow.
 ``` r
 bitfield <- bf_unpack(x = intBit, registry = newRegistry, sep = "-")
 #> # A tibble: 8 × 4
-#>   name            flags pos   description                                       
+#>   name            flags pos   desc                                              
 #>   <chr>           <int> <chr> <chr>                                             
-#> 1 not_na_x            2 1     the values in column 'x' do not contain any NAs   
-#> 2 range_x             2 2     the values in column 'x' range between [-180,180] 
-#> 3 range_y             2 3     the values in column 'y' range between [-90,90]   
-#> 4 match_commodity     2 4     the values in column 'commodity' are contained in…
-#> 5 cases               3 5:6   the values are split into the following cases [1:…
+#> 1 na_x                2 1:1   the value in column 'x' is NA.                    
+#> 2 range_x             2 2:2   the value in column 'x' ranges between [-180,180].
+#> 3 range_y             2 3:3   the value in column 'y' ranges between [-90,90].  
+#> 4 match_commodity     2 4:4   the value in column 'commodity' is contained in t…
+#> 5 cases               3 5:6   the observation has one of the cases [1: yield > …
 #> 6 distinct_x_y        2 7     x and y coordinates are not identical, NAs are FA…
 #> 7 flag_year           2 8     year values do have a flag, NAs are FALSE         
 #> 8 valid_year          2 9     year values are valid integers
@@ -238,16 +238,16 @@ input %>%
 
 |     x |    y | commodity |     yield | year  | bf_int | bf_binary        |
 |------:|-----:|:----------|----------:|:------|-------:|:-----------------|
-|  27.4 | 59.6 | soybean   |  7.073888 | 2021  |    367 | 1-1-1-1-01-1-0-1 |
-|  24.9 | 58.3 | maize     |  7.535593 | NA    |    111 | 1-1-1-1-01-1-0-0 |
-|  25.3 | 59.2 | NA        |  9.633060 | 2021r |    215 | 1-1-1-0-10-1-1-0 |
-|  24.8 | 58.9 | maize     |  5.452585 | 2021  |    367 | 1-1-1-1-01-1-0-1 |
-| 259.0 | 58.0 | honey     | 10.396186 | 2021  |    341 | 1-0-1-0-10-1-0-1 |
-|  23.6 | 57.8 | maize     | 10.187041 | 2021  |    351 | 1-1-1-1-10-1-0-1 |
-|  25.9 | 58.8 | soybean   |  9.964105 | 2021  |    351 | 1-1-1-1-10-1-0-1 |
-|  24.4 | 57.6 | maize     | 15.805895 | 2021  |    335 | 1-1-1-1-00-1-0-1 |
-|   0.0 |  0.0 | soybean   |  8.515284 | 2021  |    303 | 1-1-1-1-01-0-0-1 |
-|  25.4 |   NA | maize     | 10.961044 | 2021  |    283 | 1-1-0-1-10-0-0-1 |
+|  26.8 | 58.2 | soybean   | 12.443847 | 2021  |    350 | 0-1-1-1-10-1-0-1 |
+|  25.0 | 58.0 | maize     | 11.221110 | NA    |     94 | 0-1-1-1-10-1-0-0 |
+|  26.6 | 58.7 | NA        |  8.736348 | 2021r |    246 | 0-1-1-0-11-1-1-0 |
+|  27.4 | 57.9 | maize     | 13.399062 | 2021  |    350 | 0-1-1-1-10-1-0-1 |
+| 259.0 | 57.7 | honey     | 11.401479 | 2021  |    340 | 0-0-1-0-10-1-0-1 |
+|  23.8 | 58.8 | maize     | 13.253872 | 2021  |    350 | 0-1-1-1-10-1-0-1 |
+|  24.5 | 59.6 | soybean   | 13.408709 | 2021  |    350 | 0-1-1-1-10-1-0-1 |
+|  27.5 | 59.0 | maize     |  9.797158 | 2021  |    366 | 0-1-1-1-01-1-0-1 |
+|   0.0 |  0.0 | soybean   |  7.753662 | 2021  |    318 | 0-1-1-1-11-0-0-1 |
+|  25.5 |   NA | maize     |  6.192842 | 2021  |    314 | 0-1-0-1-11-0-0-1 |
 
 Together with the rules mentioned above, we can read the binary
 representation on step at a time. For example, considering the second

@@ -115,7 +115,7 @@ newRegistry <- newRegistry %>%
           pos = 3, na_val = FALSE, registry = .)  %>%
 
   # test for matches with an external vector
-  bf_grow(flags = bf_match(x = input, test = "commodity", against = validComm),
+  bf_grow(flags = bf_match(x = input, test = "commodity", set = validComm),
           pos = 4, na_val = FALSE, registry = .) %>%
   
   # define cases
@@ -147,7 +147,7 @@ newRegistry <- newRegistry %>%
   # ... or even base R
   bf_grow(flags = !is.na(as.integer(input$year)), 
           name = "valid_year", desc = c("year values are valid integers"),
-          pos = 7, registry = .)
+          pos = 9, registry = .)
 ```
 
 The resulting strcuture is basically a record of all the things that are grown on the bitfield.

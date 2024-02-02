@@ -14,11 +14,17 @@ reference:
       - bf_grow
       - bf_combine
       - bf_unpack
-  - title: bit builders
-    desc: functions that build a particular bit value
+  - title: flag builders
+    desc: functions that build a particular bit flag
     contents:
       - bf_case
       - bf_decimals
+      - bf_disjoint
+      - bf_identical
+      - bf_isCharacter
+      - bf_isInteger
+      - bf_isLogical
+      - bf_isNumeric
       - bf_match
       - bf_na
       - bf_range
