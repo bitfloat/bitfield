@@ -46,11 +46,11 @@ bf_grow <- function(flags, name = NULL, desc = NULL, na_val = NULL, pos = NULL, 
     outValues <- c(TRUE, FALSE)
   } else if(is.numeric(theValues) | is.integer(theValues)) {
     nFlags <- max(c(max(theValues), length(unique(theValues))))
-    outValues <- 1:nFlags
-  } else {
-    nFlags <- length(unique(theValues))
-    outValues <- seq_along(unique(theValues))
-  }
+    outValues <- sort(unique(theValues))
+  } # else {
+  #   nFlags <- length(unique(theValues))
+  #   outValues <- seq_along(unique(theValues))
+  # }
   nBits <- ceiling(log2(nFlags))
 
   assertTRUE(x = nBits <= length(pos))

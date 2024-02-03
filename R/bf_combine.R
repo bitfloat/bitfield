@@ -46,7 +46,7 @@ bf_combine <- function(registry){
       # build new bit representations from integer values
 
       bitVals <- unlist(map(seq_along(theVals), function(ix){
-        .makeFlag(x = theVals[ix], len = length(theBit$position))
+        .makeFlag(x = theVals[ix], len = length(theBit$position), rev = TRUE)
       }))
 
       theBitfield <- bind_cols(theBitfield, bitVals, .name_repair = "minimal")
