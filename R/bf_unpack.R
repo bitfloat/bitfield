@@ -9,9 +9,9 @@
 #' @importFrom checkmate assertDataFrame assertNames assertClass assertCharacter
 #' @importFrom purrr map
 #' @importFrom tibble tibble
-#' @importFrom dplyr bind_rows arrange group_by summarise rowwise mutate
-#'   left_join n
-#' @importFrom tidyr separate unite
+#' @importFrom dplyr bind_rows arrange group_by ungroup summarise rowwise mutate
+#'   left_join n first row_number
+#' @importFrom tidyr separate unite separate_longer_delim
 #' @export
 
 bf_unpack <- function(x, registry, sep = "."){
@@ -31,7 +31,8 @@ bf_unpack <- function(x, registry, sep = "."){
     tibble(pos = registry@flags[[ix]]$position,
            name = names(registry@flags)[ix],
            flags = length(registry@flags[[ix]]$values),
-           desc = registry@flags[[ix]]$description)
+           bits = length(registry@flags[[ix]]$position),
+           desc = paste0(registry@flags[[ix]]$description, collapse = " | "))
   }))
   theBits <- arrange(theBits, pos)
 
@@ -39,11 +40,11 @@ bf_unpack <- function(x, registry, sep = "."){
   tempTab <- theBits
   tempTab <- group_by(theBits, name)
   tempTab <- summarise(tempTab,
-                       flags = max(flags),
                        split = max(pos),
                        pos = if_else(n() == 1, as.character(split), paste0(min(pos), ":", max(pos))),
-                       desc = first(desc)
-  )
+                       flags = max(flags),
+                       bits = max(bits),
+                       desc = first(desc))
   tempTab <- arrange(tempTab, split)
 
   # process bits
@@ -53,7 +54,13 @@ bf_unpack <- function(x, registry, sep = "."){
   out <- unite(out, col = "bf_binary", paste0("b", tempTab$split), sep = sep)
 
   # create look-up table for what the bits stand for
-  lut <- select(tempTab, -split)
+  lut <- separate_longer_delim(data = tempTab, cols = desc, delim = " | ")
+  lut <- group_by(lut, name)
+  lut <- mutate(lut, flags = row_number()-1)
+  lut <- ungroup(lut)
+  lut <- rowwise(lut)
+  lut <- mutate(lut, flag = .makeFlag(x = flags, len = bits, rev = TRUE))
+  lut <- select(lut, bits = pos, name, flag, desc)
 
   # assign look-up table to the environment as well
   env_bind(.env = bf_env, legend = lut)
