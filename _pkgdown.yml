@@ -19,7 +19,6 @@ reference:
     contents:
       - bf_case
       - bf_decimals
-      - bf_disjoint
       - bf_identical
       - bf_isCharacter
       - bf_isInteger

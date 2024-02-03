@@ -66,6 +66,7 @@ library(dplyr, warn.conflicts = FALSE); library(CoordinateCleaner); library(stri
 Let's first build an example dataset
 
 ```{r}
+set.seed(147)
 input <- tibble(x = sample(seq(23.3, 28.1, 0.1), 10),      # coordinates
                 y = sample(seq(57.5, 59.6, 0.1), 10),
                 commodity = rep(c("soybean", "maize"), 5), # some categorial value
@@ -75,11 +76,11 @@ input <- tibble(x = sample(seq(23.3, 28.1, 0.1), 10),      # coordinates
 validComm <- c("soybean", "maize")                         # some valid category values
 
 input$x[5] <- 259                                          # invalid coordinate value
-input$x[9] <- 0                                       # improbable coordinate value ...
-input$y[9] <- 0                                       # ... that appeary to be systematic
-input$y[10] <- NA_real_                               # missing value
-input$commodity[c(3, 5)] <- c(NA_character_, "honey") # mislabeled category 
-input$year[c(2:3)] <- c(NA, "2021r")                  # flagged value
+input$x[9] <- 0                                            # improbable coordinate value ...
+input$y[9] <- 0                                            # ... that appeary to be systematic
+input$y[10] <- NA_real_                                    # missing value
+input$commodity[c(3, 5)] <- c(NA_character_, "honey")      # mislabeled category 
+input$year[c(2:3)] <- c(NA, "2021r")                       # flagged value
 
 kable(input)
 ```
@@ -97,7 +98,7 @@ newRegistry <- bf_create(width = 12, length = dim(input)[1])
 Then, individual bit flags need to be grown by specifying a mapping function and which position of the bitfield should be modified. To help with growing bits, various naming-rules are important to keep in mind
 
   1. if your mapping function returns a boolean value, the bit flags will be `FALSE == 0` and `TRUE == 1`.
-  2. if your mapping function returns cases, they will be assigned a sequence of numbers that are encoded by their respective binary representation, i.e. if there are 3 cases (which takes up 2 bits), the bit flags will be `case 1 = 00`, `case 2 == 01` and `case 3 == 10`, and so on.
+  2. if your mapping function returns cases, they will be assigned a sequence of numbers that are encoded by their respective binary representation, i.e. if there are 3 cases (which takes up 2 bits), the bit flags will be `case 1 = 01`, `case 2 == 10` and `case 3 == 11`, and so on. Any observation that is not part of any case, will be `case 0 == 00`
   
 A flag is declared by calling a suitable function, some of which are provided here, but some of which are already available elsewhere (more below). For example `bf_na(x = input, test = "x")` will test whether the column `x` in the table `input` has `NA`-values. These functions are provided to `bf_grow()`, where the bitfield is characterised.
 
@@ -120,9 +121,7 @@ newRegistry <- newRegistry %>%
   
   # define cases
   bf_grow(flags = bf_case(x = input, exclusive = FALSE, 
-                          high = yield > 11, 
-                          medium = yield < 11 & yield > 9, 
-                          small = yield < 9), 
+                          yield >= 11, yield < 11 & yield > 9, yield < 9 & commodity == "maize"),
           pos = 5:6, registry = .)
 
 ```
