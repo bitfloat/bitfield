@@ -26,12 +26,13 @@
   temp <- intToBits(x)
   temp <- as.character(temp)
   temp <- str_split_i(string = temp, pattern = "", 2)
+  temp <- head(x = temp, n = len)
 
   if(rev){
     temp <- rev(temp)
   }
 
-  out <- paste0(head(x = temp, n = len), collapse = "")
+  out <- paste0(temp, collapse = "")
 
   return(out)
 }
