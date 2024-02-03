@@ -39,6 +39,9 @@ bf_case <- function(x, ..., exclusive = TRUE){
 
   status <- bind_cols(
     map(seq_along(temp), function(ix){
+      if(anyNA(temp[[ix]])){
+        temp[[ix]][which(is.na(temp[[ix]]))] <- FALSE
+      }
       temp[[ix]][temp[[ix]]] <- ix
       as_tibble(temp[ix])
     })
@@ -52,9 +55,13 @@ bf_case <- function(x, ..., exclusive = TRUE){
     get_expr(cases[[ix]])
   })
 
+  if(any(out == 0)){
+    case_expr <- c(list("none"), case_expr)
+  }
+
   attr(out, which = "name") <- paste0("cases")
-  attr(out, which = "desc") <- paste0("the observation has one of the cases [", paste0(paste0(seq_along(cases), ": ", case_expr), collapse = " | "), "].")
-  # attr(out, which = "triple") <- paste0(test, "|case_of|[", paste0(tempDec, collapse = ", "), "]")
+  attr(out, which = "desc") <- paste0("the observation has the case [", case_expr, "].")
+  attr(out, which = "triple") <- paste0("...|case_of|[", paste0(case_expr, collapse = "|"), "]")
 
   return(out)
 
