@@ -22,7 +22,7 @@ bf_identical <- function(x, test, against){
   attr(out, which = "name") <- paste0("identical_", test, "_", against)
   attr(out, which = "desc") <- c(paste0("the value in '", test, "' is identical to the value in '", against, "'."),
                                  paste0("the value in '", test, "' is disjoint from the value in '", against, "'."))
-  attr(out, which = "triple") <- paste0(test, "|identical_to|", against)
+  attr(out, which = "triple") <- paste0(test, "|identical_with|", against)
 
   return(out)
 
