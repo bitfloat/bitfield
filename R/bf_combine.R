@@ -37,6 +37,10 @@ bf_combine <- function(registry){
     theBit <- registry@flags[[theName]]
     theVals <- bf_env[[theName]]
 
+    if(!0L %in% theVals){
+      theVals <- theVals - min(theVals)
+    }
+
     if(is.logical(theBit$values)){
       # insert logical values as is
 
