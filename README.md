@@ -64,40 +64,43 @@ library(bitfield)
 library(dplyr, warn.conflicts = FALSE); library(CoordinateCleaner); library(stringr)
 ```
 
-Let’s first build an example dataset
+Let’s first load an example dataset
 
 ``` r
-set.seed(147)
-input <- tibble(x = sample(seq(23.3, 28.1, 0.1), 10),      # coordinates
-                y = sample(seq(57.5, 59.6, 0.1), 10),
-                commodity = rep(c("soybean", "maize"), 5), # some categorial value
-                yield = rnorm(10, mean = 10, sd = 2),      # some continuous value
-                year = rep(2021, 10))                      # a numeric categorical value
+input <- example_data
 
-validComm <- c("soybean", "maize")                         # some valid category values
+# these data have various deviations:
+input$x                                          # invalid coordinate value (259)
+#>  [1]  25.3  27.9  27.8  27.0 259.0  27.3  26.1  26.5   0.0  25.7
+input$y                                          # improbable coordinate value (0,0)
+#>  [1] 59.5 58.1 57.8 59.2 58.7 59.1 58.4 59.0  0.0   NA
+input$commodity                                  # missing or mislabeled terms ("honey")
+#>  [1] "soybean" "maize"   NA        "maize"   "honey"   "maize"   "soybean"
+#>  [8] "maize"   "soybean" "maize"
+input$yield                                      # too big range?!
+#>  [1] 11.192915 11.986793 13.229386  9.431376 12.997422  8.548882 11.276921
+#>  [8] 10.640715  9.010452 13.169897
+input$year                                       # flags (*r)
+#>  [1] "2021"  NA      "2021r" "2021"  "2021"  "2021"  "2021"  "2021"  "2021" 
+#> [10] "2021"
 
-input$x[5] <- 259                                          # invalid coordinate value
-input$x[9] <- 0                                            # improbable coordinate value ...
-input$y[9] <- 0                                            # ... that appeary to be systematic
-input$y[10] <- NA_real_                                    # missing value
-input$commodity[c(3, 5)] <- c(NA_character_, "honey")      # mislabeled category 
-input$year[c(2:3)] <- c(NA, "2021r")                       # flagged value
+validComm <- c("soybean", "maize")               # some valid category terms
 
 kable(input)
 ```
 
 |     x |    y | commodity |     yield | year  |
 |------:|-----:|:----------|----------:|:------|
-|  24.5 | 59.1 | soybean   |  8.307020 | 2021  |
-|  27.9 | 59.2 | maize     |  9.546225 | NA    |
-|  25.0 | 59.6 | NA        |  9.789503 | 2021r |
-|  26.5 | 57.6 | maize     | 13.315335 | 2021  |
-| 259.0 | 57.9 | honey     |  7.996804 | 2021  |
-|  23.5 | 58.8 | maize     | 11.656034 | 2021  |
-|  26.2 | 58.6 | soybean   |  9.811528 | 2021  |
-|  26.3 | 58.2 | maize     | 10.220370 | 2021  |
-|   0.0 |  0.0 | soybean   | 11.002716 | 2021  |
-|  26.9 |   NA | maize     |  8.312779 | 2021  |
+|  25.3 | 59.5 | soybean   | 11.192915 | 2021  |
+|  27.9 | 58.1 | maize     | 11.986793 | NA    |
+|  27.8 | 57.8 | NA        | 13.229386 | 2021r |
+|  27.0 | 59.2 | maize     |  9.431376 | 2021  |
+| 259.0 | 58.7 | honey     | 12.997422 | 2021  |
+|  27.3 | 59.1 | maize     |  8.548882 | 2021  |
+|  26.1 | 58.4 | soybean   | 11.276921 | 2021  |
+|  26.5 | 59.0 | maize     | 10.640715 | 2021  |
+|   0.0 |  0.0 | soybean   |  9.010452 | 2021  |
+|  25.7 |   NA | maize     | 13.169897 | 2021  |
 
 The first step is in creating what is called registry in `bitfield`.
 This registry captures all the information required to build the
@@ -207,7 +210,7 @@ of integers.
 
 ``` r
 (intBit <- bf_combine(registry = newRegistry))
-#>  [1] 335  95 215 367 325 367 351 351 303 315
+#>  [1] 334  78 198 366 324 350 334 366 302 266
 ```
 
 As mentioned above, the registry is a record of things, which is
@@ -217,7 +220,7 @@ or used in any downstream workflow.
 
 ``` r
 bitfield <- bf_unpack(x = intBit, registry = newRegistry, sep = "-")
-#> # A tibble: 15 × 4
+#> # A tibble: 14 × 4
 #> # Rowwise: 
 #>    bits  name            flag  desc                                             
 #>    <chr> <chr>           <chr> <chr>                                            
@@ -229,13 +232,12 @@ bitfield <- bf_unpack(x = intBit, registry = newRegistry, sep = "-")
 #>  6 3     range_y         1     "the value in column 'y' is outside the range [-…
 #>  7 4     match_commodity 0     "the value in column 'commodity' is contained in…
 #>  8 4     match_commodity 1     "the value in column 'commodity' is not containe…
-#>  9 5:6   cases           00    "the observation has the case [none]."           
-#> 10 5:6   cases           01    "the observation has the case [yield >= 11]."    
-#> 11 5:6   cases           10    "the observation has the case [yield < 11 & yiel…
-#> 12 5:6   cases           11    "the observation has the case [yield < 9 & commo…
-#> 13 7     distinct_x_y    0     "x and y coordinates are not identical, NAs are …
-#> 14 8     flag_year       0     "year values do have a flag, NAs are FALSE"      
-#> 15 9     valid_year      0     "year values are valid integers"
+#>  9 5:6   cases           00    "the observation has the case [yield >= 11]."    
+#> 10 5:6   cases           01    "the observation has the case [yield < 11 & yiel…
+#> 11 5:6   cases           10    "the observation has the case [yield < 9 & commo…
+#> 12 7     distinct_x_y    0     "x and y coordinates are not identical, NAs are …
+#> 13 8     flag_year       0     "year values do have a flag, NAs are FALSE"      
+#> 14 9     valid_year      0     "year values are valid integers"
 
 # -> prints legend by default, which is also available in bf_env$legend
 
@@ -246,16 +248,16 @@ input %>%
 
 |     x |    y | commodity |     yield | year  | bf_int | bf_binary        |
 |------:|-----:|:----------|----------:|:------|-------:|:-----------------|
-|  24.5 | 59.1 | soybean   |  8.307020 | 2021  |    335 | 1-1-1-1-00-1-0-1 |
-|  27.9 | 59.2 | maize     |  9.546225 | NA    |     95 | 1-1-1-1-10-1-0-0 |
-|  25.0 | 59.6 | NA        |  9.789503 | 2021r |    215 | 1-1-1-0-10-1-1-0 |
-|  26.5 | 57.6 | maize     | 13.315335 | 2021  |    367 | 1-1-1-1-01-1-0-1 |
-| 259.0 | 57.9 | honey     |  7.996804 | 2021  |    325 | 1-0-1-0-00-1-0-1 |
-|  23.5 | 58.8 | maize     | 11.656034 | 2021  |    367 | 1-1-1-1-01-1-0-1 |
-|  26.2 | 58.6 | soybean   |  9.811528 | 2021  |    351 | 1-1-1-1-10-1-0-1 |
-|  26.3 | 58.2 | maize     | 10.220370 | 2021  |    351 | 1-1-1-1-10-1-0-1 |
-|   0.0 |  0.0 | soybean   | 11.002716 | 2021  |    303 | 1-1-1-1-01-0-0-1 |
-|  26.9 |   NA | maize     |  8.312779 | 2021  |    315 | 1-1-0-1-11-0-0-1 |
+|  25.3 | 59.5 | soybean   | 11.192915 | 2021  |    334 | 0-1-1-1-00-1-0-1 |
+|  27.9 | 58.1 | maize     | 11.986793 | NA    |     78 | 0-1-1-1-00-1-0-0 |
+|  27.8 | 57.8 | NA        | 13.229386 | 2021r |    198 | 0-1-1-0-00-1-1-0 |
+|  27.0 | 59.2 | maize     |  9.431376 | 2021  |    366 | 0-1-1-1-01-1-0-1 |
+| 259.0 | 58.7 | honey     | 12.997422 | 2021  |    324 | 0-0-1-0-00-1-0-1 |
+|  27.3 | 59.1 | maize     |  8.548882 | 2021  |    350 | 0-1-1-1-10-1-0-1 |
+|  26.1 | 58.4 | soybean   | 11.276921 | 2021  |    334 | 0-1-1-1-00-1-0-1 |
+|  26.5 | 59.0 | maize     | 10.640715 | 2021  |    366 | 0-1-1-1-01-1-0-1 |
+|   0.0 |  0.0 | soybean   |  9.010452 | 2021  |    302 | 0-1-1-1-01-0-0-1 |
+|  25.7 |   NA | maize     | 13.169897 | 2021  |    266 | 0-1-0-1-00-0-0-1 |
 
 Together with the rules mentioned above, we can read the binary
 representation on step at a time. For example, considering the second

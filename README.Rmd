@@ -63,24 +63,19 @@ library(bitfield)
 library(dplyr, warn.conflicts = FALSE); library(CoordinateCleaner); library(stringr)
 ```
 
-Let's first build an example dataset
+Let's first load an example dataset
 
 ```{r}
-set.seed(147)
-input <- tibble(x = sample(seq(23.3, 28.1, 0.1), 10),      # coordinates
-                y = sample(seq(57.5, 59.6, 0.1), 10),
-                commodity = rep(c("soybean", "maize"), 5), # some categorial value
-                yield = rnorm(10, mean = 10, sd = 2),      # some continuous value
-                year = rep(2021, 10))                      # a numeric categorical value
+input <- example_data
 
-validComm <- c("soybean", "maize")                         # some valid category values
+# these data have various deviations:
+input$x                                          # invalid coordinate value (259)
+input$y                                          # improbable coordinate value (0,0)
+input$commodity                                  # missing or mislabeled terms ("honey")
+input$yield                                      # too big range?!
+input$year                                       # flags (*r)
 
-input$x[5] <- 259                                          # invalid coordinate value
-input$x[9] <- 0                                            # improbable coordinate value ...
-input$y[9] <- 0                                            # ... that appeary to be systematic
-input$y[10] <- NA_real_                                    # missing value
-input$commodity[c(3, 5)] <- c(NA_character_, "honey")      # mislabeled category 
-input$year[c(2:3)] <- c(NA, "2021r")                       # flagged value
+validComm <- c("soybean", "maize")               # some valid category terms
 
 kable(input)
 ```
