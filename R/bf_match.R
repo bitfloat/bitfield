@@ -1,12 +1,11 @@
-#' Build a bit flag by comparing a columns with a set
+#' Build a bit flag by comparing a column with a set
 #'
 #' @param x [`data.frame(1)`][data.frame]\cr the table that contains
 #'   \code{test}.
 #' @param test [`character(1)`][character]\cr the column in \code{x} for which a
 #'   match is checked.
-#' @param set [`numeric(.)`][numeric] | [`character(.)`][character]\cr a vector
-#'   of the same class as in \code{test} against which a set operation is
-#'   performed.
+#' @param set a vector of the same class as in \code{test} against which a set
+#'   operation is performed.
 #' @param negate [`logical(1)`][logical]\cr whether or not to determine a subset
 #'   or a disjoint match.
 #'
