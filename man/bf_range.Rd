@@ -4,7 +4,7 @@
 \alias{bf_range}
 \title{Build a bit flag by checking for a range}
 \usage{
-bf_range(x, test, min, max)
+bf_range(x, test, min = NULL, max = NULL)
 }
 \arguments{
 \item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the table that contains
@@ -19,4 +19,8 @@ range is checked.}
 }
 \description{
 Build a bit flag by checking for a range
+}
+\details{
+when leaving either \code{min} or \code{max} at NULL, a "less than
+max" or "greater than min" operation is carried out.
 }

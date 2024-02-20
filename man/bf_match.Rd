@@ -2,7 +2,7 @@
 % Please edit documentation in R/bf_match.R
 \name{bf_match}
 \alias{bf_match}
-\title{Build a bit flag by comparing a columns with a set}
+\title{Build a bit flag by comparing a column with a set}
 \usage{
 bf_match(x, test, set, negate = FALSE)
 }
@@ -13,13 +13,12 @@ bf_match(x, test, set, negate = FALSE)
 \item{test}{\code{\link[=character]{character(1)}}\cr the column in \code{x} for which a
 match is checked.}
 
-\item{set}{\code{\link[=numeric]{numeric(.)}} | \code{\link[=character]{character(.)}}\cr a vector
-of the same class as in \code{test} against which a set operation is
-performed.}
+\item{set}{a vector of the same class as in \code{test} against which a set
+operation is performed.}
 
 \item{negate}{\code{\link[=logical]{logical(1)}}\cr whether or not to determine a subset
 or a disjoint match.}
 }
 \description{
-Build a bit flag by comparing a columns with a set
+Build a bit flag by comparing a column with a set
 }

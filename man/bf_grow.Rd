@@ -10,17 +10,17 @@ bf_grow(flags, name = NULL, desc = NULL, na_val = NULL, pos = NULL, registry)
 \item{flags}{\code{\link[=function]{function(.)}}\cr a function that returns a vector
 that shall be stored as bit.}
 
-\item{name}{\code{\link[=character]{character(.)}}\cr the internal name of the bit
+\item{name}{\code{\link[=character]{character(1)}}\cr the internal name of the bit
 flag(s).}
 
-\item{desc}{\code{\link[=character]{character(.)}}\cr the description of the bit
+\item{desc}{\code{\link[=character]{character(1)}}\cr the description of the bit
 flag(s).}
 
-\item{na_val}{\code{\link[=numeric]{numeric(.)}} | \code{\link[=character]{character(.)}} |
+\item{na_val}{\code{\link[=numeric]{numeric(1)}} | \code{\link[=character]{character(1)}} |
 \code{\link[=logical]{logical(1)}}\cr which value NAs in the output of \code{flags}
 should have in the registry.}
 
-\item{pos}{\code{\link[=integer]{integerish(1)}}\cr the position in the bitfield that
+\item{pos}{\code{\link[=integer]{integerish(.)}}\cr the position(s) in the bitfield that
 should be set.}
 
 \item{registry}{\code{\link[=registry]{registry(1)}}\cr the registry in which the bit
@@ -28,4 +28,24 @@ flag(s) should be stored.}
 }
 \description{
 Add flags to a registry
+}
+\details{
+The following set of flags can be built with \code{bitfield}
+operators: \itemize{
+\item flags where a column is tested against some condition, such as
+\code{\link{bf_na}}, \code{\link{bf_nan}}, \code{\link{bf_null}} and
+\code{\link{bf_inf}} (output length 1).
+\item flags where an attribute is identified from a small set of possible
+choices, such as \code{\link{bf_decimals}} or \code{\link{bf_type}} (output
+length 1).
+\item flags where a column is compared with another column (of the same
+length) or a set of values (of another length), such as
+\code{\link{bf_identical}}, \code{\link{bf_match}} and
+\code{\link{bf_range}} (output length 1).
+\item flags where a test that results in a small set of categorical values
+that are combined into a compound flag, such as \code{\link{bf_case}}
+(output length > 1)
+\item flags where relation between objects is recorded, including the output
+of other bitfield operators.
+}
 }
