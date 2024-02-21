@@ -15,10 +15,14 @@ A \code{registry} stores ...
 
 \item{\code{length}}{\code{\link[=integer]{integerish(1)}}\cr}
 
-\item{\code{name}}{\code{\link[=character]{character(.)}}\cr}
+\item{\code{name}}{\code{\link[=character]{character(1)}}\cr}
 
-\item{\code{desc}}{\code{\link[=data.frame]{data.frame(1)}}\cr}
+\item{\code{version}}{\code{\link[=character]{character(1)}}\cr}
 
-\item{\code{bits}}{\code{\link[=list]{list(.)}}\cr}
+\item{\code{md5}}{\code{\link[=character]{character(1)}}\cr}
+
+\item{\code{description}}{\code{\link[=character]{character(1)}}\cr}
+
+\item{\code{flags}}{\code{\link[=list]{list(.)}}\cr}
 }}
 

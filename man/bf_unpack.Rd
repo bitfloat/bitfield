@@ -4,7 +4,7 @@
 \alias{bf_unpack}
 \title{Unpack a bitfield}
 \usage{
-bf_unpack(x, registry, sep = ".")
+bf_unpack(x, registry, merge = NULL)
 }
 \arguments{
 \item{x}{\code{\link[=integer]{integerish(1)}}\cr table of the integer representation of
@@ -13,7 +13,8 @@ the bitfield.}
 \item{registry}{\code{\link[=registry]{registry(1)}}\cr the registry that should be
 used to unpack the bitfield into a binary representation.}
 
-\item{sep}{the value by which the distinct fields shall be separated}
+\item{merge}{\code{\link[=character]{character(1)}}\cr a symbol with which, if given,
+the distinct fields shall be merged.}
 }
 \description{
 Unpack a bitfield

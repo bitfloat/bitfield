@@ -19,3 +19,6 @@ to round the numeric value.}
 \description{
 Build a bit flag from a numeric value
 }
+\examples{
+bf_numeric(x = example_data, source = "y", digits = 1)
+}

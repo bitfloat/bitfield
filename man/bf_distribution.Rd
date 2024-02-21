@@ -4,13 +4,13 @@
 \alias{bf_distribution}
 \title{Build a bit flag from a (probability density) distribution}
 \usage{
-bf_distribution(x, ..., familiy = NULL)
+bf_distribution(x, ..., family = NULL)
 }
 \arguments{
-\item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the table that contains
-\code{source}.}
+\item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the table that contains columns
+with the distribution parameters.}
 
-\item{...}{description}
+\item{...}{bla}
 
 \item{family}{\code{\link[=character]{character(1)}}\cr the family of the density
 distribution.}

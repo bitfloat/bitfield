@@ -2,19 +2,19 @@
 % Please edit documentation in R/bf_create.R
 \name{bf_create}
 \alias{bf_create}
-\title{Create a new bitfield}
+\title{Create a new registry}
 \usage{
-bf_create(width, length, name = NULL)
+bf_create(length = NULL, name = NULL, description = NULL)
 }
 \arguments{
-\item{width}{\code{\link[=integer]{integerish(1)}}\cr the table that contains
-\code{test}.}
+\item{length}{\code{\link[=integer]{integerish(1)}}\cr how many observation there shall
+be in the bitfield encoded by this registry.}
 
-\item{length}{\code{\link[=integer]{integerish(1)}}\cr the column in \code{x} for which
-a range is checked.}
+\item{name}{\code{\link[=character]{character(1)}}\cr the name of the bitfield.}
 
-\item{name}{\code{\link[=character]{character(1)}}\cr the minimum allowed value.}
+\item{description}{\code{\link[=character]{character(1)}}\cr the description of the
+bitfield.}
 }
 \description{
-Create a new bitfield
+Create a new registry
 }

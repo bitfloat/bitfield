@@ -51,8 +51,5 @@ values \code{0L} and \code{1L}. For all other values, including \code{NA},
 this function returns \code{FALSE}. }
 }
 \examples{
-bf_type(x = example_data,
-        test = "y",
-        type = "character",
-        coerce = TRUE)
+bf_type(x = example_data, test = "y", type = "character", coerce = TRUE)
 }
