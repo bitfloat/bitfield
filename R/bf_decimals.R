@@ -12,7 +12,7 @@
 #' @details The show method of various classes shows decimals that may not
 #'   really be present, and that even includes ordinary numeric vectors. In
 #'   these cases, what is printed in the R console may be misleading.
-#'   Doublecheck with \code{\link{str}}.
+#'   Double check with \code{\link{str}}.
 #'
 #'   Determine the number of decimals of coordinates to determine their
 #'   precision:

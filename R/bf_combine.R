@@ -37,23 +37,26 @@ bf_combine <- function(registry){
     theBit <- registry@flags[[theName]]
     theVals <- bf_env[[theName]]
 
-    if(!0L %in% theVals){
-      theVals <- theVals - min(theVals)
-    }
-
     if(is.logical(theBit$values)){
       # insert logical values as is
 
       theBitfield <- bind_cols(theBitfield, as.character(as.integer(theVals)), .name_repair = "minimal")
 
-    } else {
-      # build new bit representations from integer values
+    } else if(is.integer(theBit$values)) {
+      # build bit representations from integer values
 
       bitVals <- unlist(map(seq_along(theVals), function(ix){
         .makeFlag(x = theVals[ix], len = length(theBit$position), rev = TRUE)
       }))
 
       theBitfield <- bind_cols(theBitfield, bitVals, .name_repair = "minimal")
+
+    } else if(is.numeric(theBit$values)){
+      # build bit representations from numeric values
+
+      # https://stackoverflow.com/questions/872544/what-range-of-numbers-can-be-represented-in-a-16-32-and-64-bit-ieee-754-syste
+      # https://en.wikipedia.org/wiki/Half-precision_floating-point_format
+
     }
 
   }
