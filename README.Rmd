@@ -69,9 +69,9 @@ Let's first load an example dataset
 input <- example_data
 
 # these data have various deviations:
-input$x                                          # invalid coordinate value (259)
-input$y                                          # improbable coordinate value (0,0)
-input$commodity                                  # missing or mislabeled terms ("honey")
+input$x                                          # invalid (259) and improbable (0) coordinate value
+input$y                                          # Inf and NaN value
+input$commodity                                  # NA value or mislabeled term ("honey")
 input$yield                                      # too big range?!
 input$year                                       # flags (*r)
 
@@ -80,22 +80,16 @@ validComm <- c("soybean", "maize")               # some valid category terms
 kable(input)
 ```
 
-The first step is in creating what is called registry in `bitfield`. This registry captures all the information required to build the bitfield
+The first step is in creating what is called `registry` in `bitfield`. This registry captures all the information required to build the bitfield
 
 ```{r}
-newRegistry <- bf_create(width = 12, length = dim(input)[1])
+newRegistry <- bf_create(name = "yield_errors", 
+                         description = "this bitfield documents errors in a table of yield data.")
 ```
 
-  1. The `width = ` specifies how many bits are in the registry.
-  2. The `lenght = ` specifies how long the output table is. This is usually taken from an input.
-  3. The `name = ` specifies the label of the registry, which becomes very important when publishing, because registry and output table are stored in different files and it must be possible to unambiguously associate them to one another.
-
-Then, individual bit flags need to be grown by specifying a mapping function and which position of the bitfield should be modified. To help with growing bits, various naming-rules are important to keep in mind
-
-  1. if your mapping function returns a boolean value, the bit flags will be `FALSE == 0` and `TRUE == 1`.
-  2. if your mapping function returns cases, they will be assigned a sequence of numbers that are encoded by their respective binary representation, i.e. if there are 3 cases (which takes up 2 bits), the bit flags will be `case 1 = 01`, `case 2 == 10` and `case 3 == 11`, and so on. Any observation that is not part of any case, will be `case 0 == 00`
+Then, individual bit flags need to be grown by specifying a mapping function and which position of the bitfield should be modified. The functions coming with `bitfield` have attributes containing the correct setup. 
   
-A flag is declared by calling a suitable function, some of which are provided here, but some of which are already available elsewhere (more below). For example `bf_na(x = input, test = "x")` will test whether the column `x` in the table `input` has `NA`-values. These functions are provided to `bf_grow()`, where the bitfield is characterised.
+The mapping functions are provided to `bf_grow()`, where the bitfield is grown. A flag is declared by calling, for example, `bf_na(x = input, test = "x")`, which will test whether the column `x` in the table `input` has `NA`-values. 
 
 ```{r}
 newRegistry <- newRegistry %>%
@@ -108,11 +102,11 @@ newRegistry <- newRegistry %>%
 
   # ... or override NA test
   bf_grow(flags = bf_range(x = input, test = "y", min = -90, max = 90),
-          pos = 3, na_val = FALSE, registry = .)  %>%
+          pos = 3, na = FALSE, registry = .)  %>%
 
   # test for matches with an external vector
   bf_grow(flags = bf_match(x = input, test = "commodity", set = validComm),
-          pos = 4, na_val = FALSE, registry = .) %>%
+          pos = 4, na = FALSE, registry = .) %>%
   
   # define cases
   bf_grow(flags = bf_case(x = input, exclusive = FALSE, 
@@ -121,9 +115,11 @@ newRegistry <- newRegistry %>%
 
 ```
 
-It is also possible to use other functions that return flags, where it is required to provide a name and a concise yet expressive description, which is otherwise automatically provided by the `bf_*` function. Then you need to keep in mind:
+It is also possible to use other functions that return flags, where it is required to provide a name and a concise yet expressive description, which is otherwise automatically provided by the `bf_*` function. To help with growing bits from other functions, various naming-rules are important to keep in mind:
 
-  3. chose name and description so that they reflect the outcome of the mapping function. If the function tests whether a value is `NA` and returns `TRUE` if the value is `NA`, the name and description should indicate that the bit flag is `TRUE == 1` when an `NA` value has been found.
+  1. if you are mapping a boolean value, the bit flags will be `FALSE == 0` and `TRUE == 1`.
+  2. if you are mapping cases, they will be assigned a sequence of numbers that are encoded by their respective binary representation, i.e. if there are 3 cases (which takes up 2 bits), the bit flags will be `case 1 = 01`, `case 2 == 10` and `case 3 == 11`, and so on. Any observation that is not part of any case, will be `case 0 == 00`.
+  3. if you are mapping a numeric value, the bit flag will be determined by the (floating-point) precision (i.e., the total number of digits of the integer and the decimal part), where a higher precision consumes more bits.
   4. A concise rule to name flags should follow the same rule used by the `bf_*` functions, where the functional aspect is followed by the variable that is tested, for example `distinct_x_y` when columns `x` and `y` shall have distinct values.
 
 ```{r}
@@ -131,12 +127,12 @@ newRegistry <- newRegistry %>%
   # use external functions, such as from CoordinateCleaner ...
   bf_grow(flags = cc_equ(x = input, lon = "x", lat = "y", value = "flagged"), 
           name = "distinct_x_y", desc = c("x and y coordinates are not identical, NAs are FALSE"),
-          pos = 7, na_val = FALSE, registry = .) %>%
+          pos = 7, na = FALSE, registry = .) %>%
   
   # ... or stringr ...
   bf_grow(flags = str_detect(input$year, "r"), 
           name = "flag_year", desc = c("year values do have a flag, NAs are FALSE"),
-          pos = 8, na_val = FALSE, registry = .) %>%
+          pos = 8, na = FALSE, registry = .) %>%
   
   # ... or even base R
   bf_grow(flags = !is.na(as.integer(input$year)), 
@@ -159,7 +155,7 @@ Finally the registry needs to be combined (note: input data vectors have been st
 As mentioned above, the registry is a record of things, which is required to decode the bitfield (similar to a key). Together with the legend, the bit flags can then be converted back to human readable text or used in any downstream workflow.
 
 ```{r}
-bitfield <- bf_unpack(x = intBit, registry = newRegistry, sep = "-")
+bitfield <- bf_unpack(x = intBit, registry = newRegistry, merge = "-")
 
 # -> prints legend by default, which is also available in bf_env$legend
 

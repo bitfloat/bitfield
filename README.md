@@ -70,11 +70,11 @@ Let’s first load an example dataset
 input <- example_data
 
 # these data have various deviations:
-input$x                                          # invalid coordinate value (259)
+input$x                                          # invalid (259) and improbable (0) coordinate value
 #>  [1]  25.3  27.9  27.8  27.0 259.0  27.3  26.1  26.5   0.0  25.7
-input$y                                          # improbable coordinate value (0,0)
-#>  [1] 59.5 58.1 57.8 59.2 58.7 59.1 58.4 59.0  0.0   NA
-input$commodity                                  # missing or mislabeled terms ("honey")
+input$y                                          # Inf and NaN value
+#>  [1] 59.5 58.1 57.8 59.2  Inf 59.1 58.4 59.0  0.0  NaN
+input$commodity                                  # NA value or mislabeled term ("honey")
 #>  [1] "soybean" "maize"   NA        "maize"   "honey"   "maize"   "soybean"
 #>  [8] "maize"   "soybean" "maize"
 input$yield                                      # too big range?!
@@ -95,47 +95,31 @@ kable(input)
 |  27.9 | 58.1 | maize     | 11.986793 | NA    |
 |  27.8 | 57.8 | NA        | 13.229386 | 2021r |
 |  27.0 | 59.2 | maize     |  9.431376 | 2021  |
-| 259.0 | 58.7 | honey     | 12.997422 | 2021  |
+| 259.0 |  Inf | honey     | 12.997422 | 2021  |
 |  27.3 | 59.1 | maize     |  8.548882 | 2021  |
 |  26.1 | 58.4 | soybean   | 11.276921 | 2021  |
 |  26.5 | 59.0 | maize     | 10.640715 | 2021  |
 |   0.0 |  0.0 | soybean   |  9.010452 | 2021  |
-|  25.7 |   NA | maize     | 13.169897 | 2021  |
+|  25.7 |  NaN | maize     | 13.169897 | 2021  |
 
-The first step is in creating what is called registry in `bitfield`.
+The first step is in creating what is called `registry` in `bitfield`.
 This registry captures all the information required to build the
 bitfield
 
 ``` r
-newRegistry <- bf_create(width = 12, length = dim(input)[1])
+newRegistry <- bf_create(name = "yield_errors", 
+                         description = "this bitfield documents errors in a table of yield data.")
 ```
 
-1.  The `width =` specifies how many bits are in the registry.
-2.  The `lenght =` specifies how long the output table is. This is
-    usually taken from an input.
-3.  The `name =` specifies the label of the registry, which becomes very
-    important when publishing, because registry and output table are
-    stored in different files and it must be possible to unambiguously
-    associate them to one another.
-
 Then, individual bit flags need to be grown by specifying a mapping
-function and which position of the bitfield should be modified. To help
-with growing bits, various naming-rules are important to keep in mind
+function and which position of the bitfield should be modified. The
+functions coming with `bitfield` have attributes containing the correct
+setup.
 
-1.  if your mapping function returns a boolean value, the bit flags will
-    be `FALSE == 0` and `TRUE == 1`.
-2.  if your mapping function returns cases, they will be assigned a
-    sequence of numbers that are encoded by their respective binary
-    representation, i.e. if there are 3 cases (which takes up 2 bits),
-    the bit flags will be `case 1 = 01`, `case 2 == 10` and
-    `case 3 == 11`, and so on. Any observation that is not part of any
-    case, will be `case 0 == 00`
-
-A flag is declared by calling a suitable function, some of which are
-provided here, but some of which are already available elsewhere (more
-below). For example `bf_na(x = input, test = "x")` will test whether the
-column `x` in the table `input` has `NA`-values. These functions are
-provided to `bf_grow()`, where the bitfield is characterised.
+The mapping functions are provided to `bf_grow()`, where the bitfield is
+grown. A flag is declared by calling, for example,
+`bf_na(x = input, test = "x")`, which will test whether the column `x`
+in the table `input` has `NA`-values.
 
 ``` r
 newRegistry <- newRegistry %>%
@@ -148,11 +132,11 @@ newRegistry <- newRegistry %>%
 
   # ... or override NA test
   bf_grow(flags = bf_range(x = input, test = "y", min = -90, max = 90),
-          pos = 3, na_val = FALSE, registry = .)  %>%
+          pos = 3, na = FALSE, registry = .)  %>%
 
   # test for matches with an external vector
   bf_grow(flags = bf_match(x = input, test = "commodity", set = validComm),
-          pos = 4, na_val = FALSE, registry = .) %>%
+          pos = 4, na = FALSE, registry = .) %>%
   
   # define cases
   bf_grow(flags = bf_case(x = input, exclusive = FALSE, 
@@ -162,14 +146,22 @@ newRegistry <- newRegistry %>%
 
 It is also possible to use other functions that return flags, where it
 is required to provide a name and a concise yet expressive description,
-which is otherwise automatically provided by the `bf_*` function. Then
-you need to keep in mind:
+which is otherwise automatically provided by the `bf_*` function. To
+help with growing bits from other functions, various naming-rules are
+important to keep in mind:
 
-3.  chose name and description so that they reflect the outcome of the
-    mapping function. If the function tests whether a value is `NA` and
-    returns `TRUE` if the value is `NA`, the name and description should
-    indicate that the bit flag is `TRUE == 1` when an `NA` value has
-    been found.
+1.  if you are mapping a boolean value, the bit flags will be
+    `FALSE == 0` and `TRUE == 1`.
+2.  if you are mapping cases, they will be assigned a sequence of
+    numbers that are encoded by their respective binary representation,
+    i.e. if there are 3 cases (which takes up 2 bits), the bit flags
+    will be `case 1 = 01`, `case 2 == 10` and `case 3 == 11`, and so on.
+    Any observation that is not part of any case, will be
+    `case 0 == 00`.
+3.  if you are mapping a numeric value, the bit flag will be determined
+    by the (floating-point) precision (i.e., the total number of digits
+    of the integer and the decimal part), where a higher precision
+    consumes more bits.
 4.  A concise rule to name flags should follow the same rule used by the
     `bf_*` functions, where the functional aspect is followed by the
     variable that is tested, for example `distinct_x_y` when columns `x`
@@ -180,12 +172,12 @@ newRegistry <- newRegistry %>%
   # use external functions, such as from CoordinateCleaner ...
   bf_grow(flags = cc_equ(x = input, lon = "x", lat = "y", value = "flagged"), 
           name = "distinct_x_y", desc = c("x and y coordinates are not identical, NAs are FALSE"),
-          pos = 7, na_val = FALSE, registry = .) %>%
+          pos = 7, na = FALSE, registry = .) %>%
   
   # ... or stringr ...
   bf_grow(flags = str_detect(input$year, "r"), 
           name = "flag_year", desc = c("year values do have a flag, NAs are FALSE"),
-          pos = 8, na_val = FALSE, registry = .) %>%
+          pos = 8, na = FALSE, registry = .) %>%
   
   # ... or even base R
   bf_grow(flags = !is.na(as.integer(input$year)), 
@@ -210,7 +202,7 @@ of integers.
 
 ``` r
 (intBit <- bf_combine(registry = newRegistry))
-#>  [1] 334  78 198 366 324 350 334 366 302 266
+#>  [1] 335  79 199 367 321 351 335 367 303 267
 ```
 
 As mentioned above, the registry is a record of things, which is
@@ -219,9 +211,8 @@ legend, the bit flags can then be converted back to human readable text
 or used in any downstream workflow.
 
 ``` r
-bitfield <- bf_unpack(x = intBit, registry = newRegistry, sep = "-")
-#> # A tibble: 14 × 4
-#> # Rowwise: 
+bitfield <- bf_unpack(x = intBit, registry = newRegistry, merge = "-")
+#> # A tibble: 17 × 4
 #>    bits  name            flag  desc                                             
 #>    <chr> <chr>           <chr> <chr>                                            
 #>  1 1     na_x            0     "the value in column 'x' is NA."                 
@@ -236,8 +227,11 @@ bitfield <- bf_unpack(x = intBit, registry = newRegistry, sep = "-")
 #> 10 5:6   cases           01    "the observation has the case [yield < 11 & yiel…
 #> 11 5:6   cases           10    "the observation has the case [yield < 9 & commo…
 #> 12 7     distinct_x_y    0     "x and y coordinates are not identical, NAs are …
-#> 13 8     flag_year       0     "year values do have a flag, NAs are FALSE"      
-#> 14 9     valid_year      0     "year values are valid integers"
+#> 13 7     distinct_x_y    1     "x and y coordinates are not identical, NAs are …
+#> 14 8     flag_year       0     "year values do have a flag, NAs are FALSE"      
+#> 15 8     flag_year       1     "year values do have a flag, NAs are FALSE"      
+#> 16 9     valid_year      0     "year values are valid integers"                 
+#> 17 9     valid_year      1     "year values are valid integers"
 
 # -> prints legend by default, which is also available in bf_env$legend
 
@@ -248,16 +242,16 @@ input %>%
 
 |     x |    y | commodity |     yield | year  | bf_int | bf_binary        |
 |------:|-----:|:----------|----------:|:------|-------:|:-----------------|
-|  25.3 | 59.5 | soybean   | 11.192915 | 2021  |    334 | 0-1-1-1-00-1-0-1 |
-|  27.9 | 58.1 | maize     | 11.986793 | NA    |     78 | 0-1-1-1-00-1-0-0 |
-|  27.8 | 57.8 | NA        | 13.229386 | 2021r |    198 | 0-1-1-0-00-1-1-0 |
-|  27.0 | 59.2 | maize     |  9.431376 | 2021  |    366 | 0-1-1-1-01-1-0-1 |
-| 259.0 | 58.7 | honey     | 12.997422 | 2021  |    324 | 0-0-1-0-00-1-0-1 |
-|  27.3 | 59.1 | maize     |  8.548882 | 2021  |    350 | 0-1-1-1-10-1-0-1 |
-|  26.1 | 58.4 | soybean   | 11.276921 | 2021  |    334 | 0-1-1-1-00-1-0-1 |
-|  26.5 | 59.0 | maize     | 10.640715 | 2021  |    366 | 0-1-1-1-01-1-0-1 |
-|   0.0 |  0.0 | soybean   |  9.010452 | 2021  |    302 | 0-1-1-1-01-0-0-1 |
-|  25.7 |   NA | maize     | 13.169897 | 2021  |    266 | 0-1-0-1-00-0-0-1 |
+|  25.3 | 59.5 | soybean   | 11.192915 | 2021  |    335 | 1-1-1-1-00-1-0-1 |
+|  27.9 | 58.1 | maize     | 11.986793 | NA    |     79 | 1-1-1-1-00-1-0-0 |
+|  27.8 | 57.8 | NA        | 13.229386 | 2021r |    199 | 1-1-1-0-00-1-1-0 |
+|  27.0 | 59.2 | maize     |  9.431376 | 2021  |    367 | 1-1-1-1-01-1-0-1 |
+| 259.0 |  Inf | honey     | 12.997422 | 2021  |    321 | 1-0-0-0-00-1-0-1 |
+|  27.3 | 59.1 | maize     |  8.548882 | 2021  |    351 | 1-1-1-1-10-1-0-1 |
+|  26.1 | 58.4 | soybean   | 11.276921 | 2021  |    335 | 1-1-1-1-00-1-0-1 |
+|  26.5 | 59.0 | maize     | 10.640715 | 2021  |    367 | 1-1-1-1-01-1-0-1 |
+|   0.0 |  0.0 | soybean   |  9.010452 | 2021  |    303 | 1-1-1-1-01-0-0-1 |
+|  25.7 |  NaN | maize     | 13.169897 | 2021  |    267 | 1-1-0-1-00-0-0-1 |
 
 Together with the rules mentioned above, we can read the binary
 representation on step at a time. For example, considering the second
