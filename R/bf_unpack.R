@@ -4,7 +4,8 @@
 #'   the bitfield.
 #' @param registry  [`registry(1)`][registry]\cr the registry that should be
 #'   used to unpack the bitfield into a binary representation.
-#' @param sep the value by which the distinct fields shall be separated
+#' @param merge [`character(1)`][character]\cr a symbol with which, if given,
+#'   the distinct fields shall be merged.
 #'
 #' @importFrom checkmate assertDataFrame assertNames assertClass assertCharacter
 #' @importFrom purrr map
@@ -14,17 +15,11 @@
 #' @importFrom tidyr separate unite separate_longer_delim
 #' @export
 
-bf_unpack <- function(x, registry, sep = "."){
+bf_unpack <- function(x, registry, merge = NULL){
 
   assertIntegerish(x = x, any.missing = FALSE, min.len = 1)
   assertClass(x = registry, classes = "registry")
-  assertCharacter(x = sep, len = 1, any.missing = FALSE)
-
-  .insertSep <- function(x, pos, insert){
-    gsub(paste0("^(.{", pos, "})(.*)$"),
-         paste0("\\1", insert, "\\2"),
-         x)
-  }
+  assertCharacter(x = merge, len = 1, null.ok = TRUE)
 
   # get the bits ...
   theBits <- bind_rows(map(seq_along(registry@flags), function(ix){
@@ -51,7 +46,12 @@ bf_unpack <- function(x, registry, sep = "."){
   out <- rowwise(tibble(bf_int = x))
   out <- mutate(out, bit = .makeFlag(x = bf_int, len = registry@width))
   out <- separate(out, col = bit, into = paste0("b", tempTab$split), sep = tempTab$split)
-  out <- unite(out, col = "bf_binary", paste0("b", tempTab$split), sep = sep)
+
+  if(!is.null(merge)){
+    out <- unite(out, col = "bf_binary", paste0("b", tempTab$split), sep = merge)
+  } else {
+    colnames(out)[-1] <- tempTab$name
+  }
 
   # create look-up table for what the bits stand for
   lut <- separate_longer_delim(data = tempTab, cols = desc, delim = " | ")
@@ -60,6 +60,7 @@ bf_unpack <- function(x, registry, sep = "."){
   lut <- ungroup(lut)
   lut <- rowwise(lut)
   lut <- mutate(lut, flag = .makeFlag(x = flags, len = bits, rev = TRUE))
+  lut <- ungroup(lut)
   lut <- select(lut, bits = pos, name, flag, desc)
 
   # assign look-up table to the environment as well
