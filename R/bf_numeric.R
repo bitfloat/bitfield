@@ -6,7 +6,8 @@
 #'   which to take the numeric value.
 #' @param digits [`integerish(1)`][integer]\cr the number of decimals to which
 #'   to round the numeric value.
-#'
+#' @examples
+#' bf_numeric(x = example_data, source = "y", digits = 1)
 #' @importFrom checkmate assertDataFrame assertSubset assertNumeric
 #' @export
 
@@ -20,16 +21,7 @@ bf_numeric <- function(x, source, digits = 0){
 
   attr(out, which = "name") <- paste0("numeric_", source)
   attr(out, which = "desc") <- paste0("the bit-representaiton decodes to the numeric value [...] in column '", source, "'.")
-  attr(out, which = "triple") <- paste0("[...]|decodes_to|", source)
+  attr(out, which = "triple") <- paste0("BIT|decodes_to|", source)
 
-  # newRegistry <- newRegistry %>%
-  #   bf_grow(flags = bf_numeric(x = input, source = x, digits = 0),
-  #           name = "normal_distribution.mean",
-  #           desc = "the bit-representation decodes to a numeric value in column 'soandso' that represents the mean of a normal distribution",
-  #           pos = 1:8, registry = .) %>%
-  #   bf_grow(flags = bf_numeric(x = input, source = x, digits = 0),
-  #           name = "normal_distribution.standard_deviation",
-  #           desc = "the bit-representation decodes to a numeric value in column 'thisandthat' that represents the standard deviation of a normal distribution",
-  #           pos = 9:16, registry = .)
-
+  return(out)
 }
