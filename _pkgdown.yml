@@ -2,31 +2,37 @@ authors:
   Steffen Ehrmann:
     href:  https://orcid.org/0000-0002-2958-0796
 title: queuebee
-url: http://EhrmannS.github.io/queuebee
+url: http://luckinet.github.io/bitfield
 development:
   mode: release
 
 reference:
-  - title: build and unpack bitfields
-    desc: functions to enable interaction with bitfields
+  - title: create, grow and unpack registry, combine into bitfield
+    desc: housekeeping functions
     contents:
       - bf_create
       - bf_grow
       - bf_combine
       - bf_unpack
-  - title: flag builders
-    desc: functions that build a particular bit flag
+  - title: flag mappers
+    desc: functions that provide all information to build the flags
     contents:
       - bf_case
       - bf_decimals
+      - bf_distribution
       - bf_identical
-      - bf_isCharacter
-      - bf_isInteger
-      - bf_isLogical
-      - bf_isNumeric
+      - bf_inf
+      - bf_length
       - bf_match
       - bf_na
+      - bf_nan
+      - bf_null
+      - bf_numeric
+      - bf_origin
       - bf_range
+      - bf_residuals
+      - bf_summarise
+      - bf_type
   - title: classes
     desc: new classes that come with this package
     contents:
@@ -35,15 +41,18 @@ reference:
   - title: helpers
     contents:
       - .makeFlag
+  - title: example data
+    contents:
+      - example_data
 
 navbar:
   left:
     - text: "Get Started"
-      href: articles/queuebee.html
+      href: articles/bitfield.html
     - text: "Reference"
       href: reference/index.html
     - text: "Changelog"
       href: news/index.html
   right:
     - icon: fa-github
-      href: https://github.com/EhrmannS/queuebee
+      href: https://github.com/luckinet/bitfield
