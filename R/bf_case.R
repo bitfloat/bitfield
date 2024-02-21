@@ -57,11 +57,13 @@ bf_case <- function(x, ..., exclusive = TRUE){
 
   if(any(out == 0)){
     case_expr <- c(list("none"), case_expr)
+  } else {
+    out <- out - min(out)
   }
 
   attr(out, which = "name") <- paste0("cases")
   attr(out, which = "desc") <- paste0("the observation has the case [", case_expr, "].")
-  attr(out, which = "triple") <- paste0("...|is_case|[", paste0(case_expr, collapse = "|"), "]")
+  attr(out, which = "triple") <- paste0("OBS|is_case|[", paste0(case_expr, collapse = "|"), "]")
 
   return(out)
 
