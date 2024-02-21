@@ -5,15 +5,19 @@
 #'
 #' @slot width [`integerish(1)`][integer]\cr
 #' @slot length [`integerish(1)`][integer]\cr
-#' @slot name [`character(.)`][character]\cr
-#' @slot desc [`data.frame(1)`][data.frame]\cr
-#' @slot bits [`list(.)`][list]\cr
+#' @slot name [`character(1)`][character]\cr
+#' @slot version [`character(1)`][character]\cr
+#' @slot md5 [`character(1)`][character]\cr
+#' @slot description [`character(1)`][character]\cr
+#' @slot flags [`list(.)`][list]\cr
 
 registry <- setClass(Class = "registry",
                      slots = c(width = "integer",
                                length = "integer",
                                name = "character",
-                               # desc = "data.frame",
+                               version = "character",
+                               md5 = "character",
+                               description = "character",
                                flags = "list"
                      )
 )
@@ -49,14 +53,32 @@ setValidity("registry", function(object){
 
   }
 
-  # if(!.hasSlot(object = object, name = "desc")){
-  #   errors = c(errors, "the registry does not have a 'desc' slot.")
-  # } else {
-  #   if(!is.data.frame(object@desc)){
-  #     errors = c(errors, "the slot 'desc' is not a data.frame.")
-  #   }
-  #
-  # }
+  if(!.hasSlot(object = object, name = "version")){
+    errors = c(errors, "the registry does not have a 'version' slot.")
+  } else {
+    if(!is.character(object@version)){
+      errors = c(errors, "the slot 'version' is not a character.")
+    }
+
+  }
+
+  if(!.hasSlot(object = object, name = "md5")){
+    errors = c(errors, "the registry does not have a 'md5' slot.")
+  } else {
+    if(!is.character(object@md5)){
+      errors = c(errors, "the slot 'md5' is not a character.")
+    }
+
+  }
+
+  if(!.hasSlot(object = object, name = "description")){
+    errors = c(errors, "the registry does not have a 'description' slot.")
+  } else {
+    if(!is.character(object@description)){
+      errors = c(errors, "the slot 'description' is not a character.")
+    }
+
+  }
 
   if(!.hasSlot(object = object, name = "flags")){
     errors = c(errors, "the registry does not have a 'flags' slot.")
@@ -66,108 +88,6 @@ setValidity("registry", function(object){
     }
 
   }
-
-  # if(!.hasSlot(object = object, name = "type")){
-  #   errors = c(errors, "the geom does not have a 'type' slot.")
-  # } else {
-  #   if(!any(object@type %in% c("point", "line", "polygon", "grid"))){
-  #     errors = c(errors, "the geom must either be of type 'point', 'line', 'polygon' or 'grid'.")
-  #   } else if(object@type == "line"){
-  #     if(dim(object@point)[1] < 2){
-  #       errors = c(errors, "a geom of type 'line' must have at least 2 points.")
-  #     }
-  #   } else if(object@type == "polygon"){
-  #     if(dim(object@point)[1] < 3){
-  #       errors = c(errors, "a geom of type 'polygon' must have at least 3 points.")
-  #     }
-  #   } else if(object@type == "grid"){
-  #     if(dim(object@point)[1] != 3){
-  #       errors = c(errors, "a geom of type 'grid' must have three rows ('origin' and 'cell number' extent and 'cell size').")
-  #     }
-  #   }
-  # }
-  #
-  # if(!.hasSlot(object = object, name = "point")){
-  #   errors = c(errors, "the geom does not have a 'name' slot.")
-  # }
-  #
-  # if(!.hasSlot(object = object, name = "point")){
-  #   errors = c(errors, "the geom does not have a 'point' slot.")
-  # } else {
-  #   if(!is.data.frame(object@point)){
-  #     errors = c(errors, "the slot 'point' is not a data.frame.")
-  #   }
-  #   if(object@type == "grid"){
-  #     if(!all(c("x" ,"y") %in% names(object@point))){
-  #       errors = c(errors, "the geom must have a grid table with the columns 'x' and 'y'.")
-  #     }
-  #   } else {
-  #     if(!all(c("fid", "x" ,"y") %in% names(object@point))){
-  #       errors = c(errors, "the geom must have a point table with the columns 'x', 'y' and 'fid'.")
-  #     }
-  #   }
-  # }
-  #
-  # if(!.hasSlot(object = object, name = "feature")){
-  #   errors = c(errors, "the geom does not have a 'feature' slot.")
-  # } else {
-  #   if(!is.list(object@feature)){
-  #     errors = c(errors, "the slot 'feature' is not a list")
-  #   }
-  #   if(is.null(names(object@feature))){
-  #     errors = c(errors, "the slot 'feature' must contain named lists.")
-  #   }
-  #   if(object@type != "grid"){
-  #     # for(i in seq_along(object@feature)){
-  #       if(!all(c("fid", "gid") %in% names(object@feature))){
-  #         errors = c(errors, "the geom must have a features table with at least the columns 'fid' and 'gid'.")
-  #       }
-  #     # }
-  #   }
-  # }
-  #
-  # if(!.hasSlot(object = object, name = "group")){
-  #   errors = c(errors, "the geom does not have a 'group' slot.")
-  # } else {
-  #   if(!is.list(object@group)){
-  #     errors = c(errors, "the slot 'group' is not a list.")
-  #   }
-  #   if(is.null(names(object@group))){
-  #     errors = c(errors, "the slot 'group' must contain named lists.")
-  #   }
-  #   # for(i in seq_along(object@group)){
-  #     # if(!any(c("value", "gid") %in% names(object@group))){
-  #     #   errors = c(errors, "the geom must have a group table with the column 'value'.")
-  #     # }
-  #   # }
-  # }
-  #
-  # if(!.hasSlot(object = object, name = "window")){
-  #   errors = c(errors, "the geom does not have a 'window' slot.")
-  # } else {
-  #   if(!is.data.frame(object@window)){
-  #     errors = c(errors, "the slot 'window' is not a data.frame.")
-  #   }
-  #   if(!all(c("x" ,"y") %in% names(object@window))){
-  #     errors = c(errors, "the geom must have a window table with columns 'x' and 'y'.")
-  #   }
-  # }
-  #
-  # if(!.hasSlot(object = object, name = "crs")){
-  #   errors = c(errors, "the geom does not have a 'crs' slot.")
-  # } else {
-  #   if(!is.character(object@crs)){
-  #     errors = c(errors, "the slot 'crs' is not a character vector.")
-  #   }
-  # }
-  #
-  # if(!.hasSlot(object = object, name = "history")){
-  #   errors = c(errors, "the geom does not have a 'history' slot.")
-  # } else {
-  #   if(!is.list(object@history)){
-  #     errors = c(errors, "the slot 'history' is not a list.")
-  #   }
-  # }
 
   if(length(errors) == 0){
     return(TRUE)
