@@ -202,7 +202,7 @@ of integers.
 
 ``` r
 (intBit <- bf_combine(registry = newRegistry))
-#>  [1] 335  79 199 367 321 351 335 367 303 267
+#>  [1] 334  78 198 366 320 350 334 366 302 266
 ```
 
 As mentioned above, the registry is a record of things, which is
@@ -215,14 +215,14 @@ bitfield <- bf_unpack(x = intBit, registry = newRegistry, merge = "-")
 #> # A tibble: 17 × 4
 #>    bits  name            flag  desc                                             
 #>    <chr> <chr>           <chr> <chr>                                            
-#>  1 1     na_x            0     "the value in column 'x' is NA."                 
-#>  2 1     na_x            1     "the value in column 'x' is not NA."             
+#>  1 1     na_x            0     "{FALSE} the value in column 'x' is not NA."     
+#>  2 1     na_x            1     "{TRUE}  the value in column 'x' is NA."         
 #>  3 2     range_x         0     "the value in column 'x' ranges between [-180,18…
 #>  4 2     range_x         1     "the value in column 'x' is outside the range [-…
 #>  5 3     range_y         0     "the value in column 'y' ranges between [-90,90]…
 #>  6 3     range_y         1     "the value in column 'y' is outside the range [-…
-#>  7 4     match_commodity 0     "the value in column 'commodity' is contained in…
-#>  8 4     match_commodity 1     "the value in column 'commodity' is not containe…
+#>  7 4     match_commodity 0     "{FALSE} the value in column 'commodity' is not …
+#>  8 4     match_commodity 1     "{TRUE}  the value in column 'commodity' is infl…
 #>  9 5:6   cases           00    "the observation has the case [yield >= 11]."    
 #> 10 5:6   cases           01    "the observation has the case [yield < 11 & yiel…
 #> 11 5:6   cases           10    "the observation has the case [yield < 9 & commo…
@@ -242,16 +242,16 @@ input %>%
 
 |     x |    y | commodity |     yield | year  | bf_int | bf_binary        |
 |------:|-----:|:----------|----------:|:------|-------:|:-----------------|
-|  25.3 | 59.5 | soybean   | 11.192915 | 2021  |    335 | 1-1-1-1-00-1-0-1 |
-|  27.9 | 58.1 | maize     | 11.986793 | NA    |     79 | 1-1-1-1-00-1-0-0 |
-|  27.8 | 57.8 | NA        | 13.229386 | 2021r |    199 | 1-1-1-0-00-1-1-0 |
-|  27.0 | 59.2 | maize     |  9.431376 | 2021  |    367 | 1-1-1-1-01-1-0-1 |
-| 259.0 |  Inf | honey     | 12.997422 | 2021  |    321 | 1-0-0-0-00-1-0-1 |
-|  27.3 | 59.1 | maize     |  8.548882 | 2021  |    351 | 1-1-1-1-10-1-0-1 |
-|  26.1 | 58.4 | soybean   | 11.276921 | 2021  |    335 | 1-1-1-1-00-1-0-1 |
-|  26.5 | 59.0 | maize     | 10.640715 | 2021  |    367 | 1-1-1-1-01-1-0-1 |
-|   0.0 |  0.0 | soybean   |  9.010452 | 2021  |    303 | 1-1-1-1-01-0-0-1 |
-|  25.7 |  NaN | maize     | 13.169897 | 2021  |    267 | 1-1-0-1-00-0-0-1 |
+|  25.3 | 59.5 | soybean   | 11.192915 | 2021  |    334 | 0-1-1-1-00-1-0-1 |
+|  27.9 | 58.1 | maize     | 11.986793 | NA    |     78 | 0-1-1-1-00-1-0-0 |
+|  27.8 | 57.8 | NA        | 13.229386 | 2021r |    198 | 0-1-1-0-00-1-1-0 |
+|  27.0 | 59.2 | maize     |  9.431376 | 2021  |    366 | 0-1-1-1-01-1-0-1 |
+| 259.0 |  Inf | honey     | 12.997422 | 2021  |    320 | 0-0-0-0-00-1-0-1 |
+|  27.3 | 59.1 | maize     |  8.548882 | 2021  |    350 | 0-1-1-1-10-1-0-1 |
+|  26.1 | 58.4 | soybean   | 11.276921 | 2021  |    334 | 0-1-1-1-00-1-0-1 |
+|  26.5 | 59.0 | maize     | 10.640715 | 2021  |    366 | 0-1-1-1-01-1-0-1 |
+|   0.0 |  0.0 | soybean   |  9.010452 | 2021  |    302 | 0-1-1-1-01-0-0-1 |
+|  25.7 |  NaN | maize     | 13.169897 | 2021  |    266 | 0-1-0-1-00-0-0-1 |
 
 Together with the rules mentioned above, we can read the binary
 representation on step at a time. For example, considering the second
