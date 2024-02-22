@@ -1,6 +1,7 @@
 #' Add flags to a registry
 #'
-#' @param flags [`function(.)`][function]\cr a function that returns a vector of flags.
+#' @param flags [`function(.)`][function]\cr a function that returns a vector of
+#'   flags.
 #' @param name [`character(1)`][character]\cr the internal name of the bit
 #'   flag(s).
 #' @param desc [`character(1)`][character]\cr the description of the bit
@@ -13,14 +14,14 @@
 #' @param registry [`registry(1)`][registry]\cr the registry in which the bit
 #'   flag(s) should be stored.
 #' @details In case you don't use a native function to build flags, to end up
-#' with useful triples, the \code{name} should be formulated in one of three
+#'   with useful triples, the \code{name} should be formulated in one of three
 #' ways: \enumerate{
 #' \item in case the function has a logical return value, the name will be
-#'   paired with \code{'...|is|[TRUE,FALSE]'}
+#'   paired with \code{'...|value|[TRUE,FALSE]'}
 #' \item in case the function has a integer return value, the name will be
-#'   paired with \code{'...|is_case|[case1:caseN]'} and
+#'   paired with \code{'...|case|[case1:caseN]'} and
 #' \item in case the function has a numeric return value, the name will be
-#'   paired with \code{'BIT|decodes_to|...'}
+#'   paired with \code{'BIT|encodes|...'}
 #' }
 #'
 #' The following set of flags can be built with \code{bitfield} operators:
@@ -29,17 +30,20 @@
 #'   \code{\link{bf_na}}, \code{\link{bf_nan}}, \code{\link{bf_null}} and
 #'   \code{\link{bf_inf}} (output length 1).
 #' \item flags where an attribute is identified from a small set of possible
-#'   choices, such as \code{\link{bf_decimals}}, \code{\link{bf_length}} or
-#'   \code{\link{bf_type}} (output length 1).
+#'   choices, such as \code{\link{bf_length}} or \code{\link{bf_type}} (output
+#'   length 1).
 #' \item flags where a column is compared with another column (of the same
 #'   length) or a set of values (of another length), such as
 #'   \code{\link{bf_identical}}, \code{\link{bf_match}} and
 #'   \code{\link{bf_range}} (output length 1).
 #' \item flags where the categorical values of a test are combined into a
-#'   compound flag, such as \code{\link{bf_case}} (output length > 1)
-#' \item flags where a particular numeric value is encoded as bit value, such as
-#'   \code{\link{bf_distribution}} and \code{\link{bf_residuals}}. (output
-#'   length depending on floating-point precision)
+#'   compound flag. These are functions that are derived from
+#'   \code{\link{bf_case}}, such as \code{\link{bf_origin}} (output length > 1)
+#' \item flags where a numeric value is encoded as bit value. These are
+#'   functions that are derived from \code{\link{bf_numeric}}, such as
+#'   \code{\link{bf_distribution}}, \code{\link{bf_histogram}},
+#'   \code{\link{bf_residuals}} and \code{\link{summarise}}. (output length
+#'   depending on floating-point precision)
 #' \item flags where relation between objects is recorded, including the output
 #'   of other bitfield operators.
 #' }
@@ -92,7 +96,7 @@ bf_grow <- function(flags, name = NULL, desc = NULL, na = NULL, pos = NULL,
     outValues <- sort(unique(theValues))
 
     if(is.null(triple)){
-      triple <- paste0(name, "|is_case|[", paste0("case", seq_along(outValues), collapse = ","), "]")
+      triple <- paste0(name, "|case|[", paste0("case", seq_along(outValues), collapse = ","), "]")
     }
   } else if(is.numeric(theValues)) {
 
@@ -108,7 +112,7 @@ bf_grow <- function(flags, name = NULL, desc = NULL, na = NULL, pos = NULL,
     # pos <-
 
     if(is.null(triple)){
-      triple <- paste0("BIT|decodes_to|[", name, "]")
+      triple <- paste0("BIT|encodes|[", name, "]")
     }
   }
   nBits <- as.integer(ceiling(log2(nFlags)))
