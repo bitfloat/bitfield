@@ -54,8 +54,8 @@ The following set of flags can be built with \code{bitfield} operators:
 \code{\link{bf_na}}, \code{\link{bf_nan}}, \code{\link{bf_null}} and
 \code{\link{bf_inf}} (output length 1).
 \item flags where an attribute is identified from a small set of possible
-choices, such as \code{\link{bf_decimals}}, \code{\link{bf_length}} or
-\code{\link{bf_type}} (output length 1).
+choices, such as \code{\link{bf_length}} or \code{\link{bf_type}} (output
+length 1).
 \item flags where a column is compared with another column (of the same
 length) or a set of values (of another length), such as
 \code{\link{bf_identical}}, \code{\link{bf_match}} and
