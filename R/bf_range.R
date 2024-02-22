@@ -27,7 +27,7 @@ bf_range <- function(x, test, min = NULL, max = NULL){
     name <- paste0("range_", test)
     desc <- c(paste0("the value in column '", test, "' is less than [", max, "]."),
               paste0("the value in column '", test, "' is greater than [", max, "]."))
-    triple <- paste0(test, "|less_than|[", max, "]")
+    triple <- paste0(test, "|less|[", max, "]")
   } else if(is.null(max)){
 
     assertNumeric(x = min, len = 1, finite = TRUE)
@@ -37,7 +37,7 @@ bf_range <- function(x, test, min = NULL, max = NULL){
     name <- paste0("range_", test)
     desc <- c(paste0("the value in column '", test, "' is greater than [", min, "]."),
               paste0("the value in column '", test, "' is less than [", min, "]."))
-    triple <- paste0(test, "|greater_than|[", min, "]")
+    triple <- paste0(test, "|greater|[", min, "]")
   } else {
 
     assertNumeric(x = max, len = 1, finite = TRUE)
@@ -48,7 +48,7 @@ bf_range <- function(x, test, min = NULL, max = NULL){
     name <- paste0("range_", test)
     desc <- c(paste0("the value in column '", test, "' ranges between [", min, ",", max, "]."),
               paste0("the value in column '", test, "' is outside the range [", min, ",", max, "]."))
-    triple <- paste0(test, "|has_range|[", min, ",", max, "]")
+    triple <- paste0(test, "|range|[", min, ",", max, "]")
   }
 
   out <- temp

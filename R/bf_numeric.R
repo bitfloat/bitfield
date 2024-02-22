@@ -6,8 +6,11 @@
 #'   which to take the numeric value.
 #' @param digits [`integerish(1)`][integer]\cr the number of decimals to which
 #'   to round the numeric value.
+#' @details The length of the bitfield depends on the floating point precision
+#'   of the numeric values returned with this function...
+#'
 #' @examples
-#' bf_numeric(x = example_data, source = "y", digits = 1)
+#' bf_numeric(x = example_data, source = "y", digits = 0)
 #' @importFrom checkmate assertDataFrame assertSubset assertNumeric
 #' @export
 
@@ -21,7 +24,7 @@ bf_numeric <- function(x, source, digits = 0){
 
   attr(out, which = "name") <- paste0("numeric_", source)
   attr(out, which = "desc") <- paste0("the bit-representaiton decodes to the numeric value [...] in column '", source, "'.")
-  attr(out, which = "triple") <- paste0("BIT|decodes_to|", source)
+  attr(out, which = "triple") <- paste0("BIT|encodes|", source)
 
   return(out)
 }
