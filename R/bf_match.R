@@ -8,6 +8,8 @@
 #'   operation is performed.
 #' @param negate [`logical(1)`][logical]\cr whether or not to determine a subset
 #'   or a disjoint match.
+#' @examples
+#' bf_match(x = example_data, test = "commodity", set = c("soybean", "maize"))
 #'
 #' @importFrom checkmate assertDataFrame assertSubset assertClass
 #' @export
@@ -20,15 +22,18 @@ bf_match <- function(x, test, set, negate = FALSE){
 
   if(negate){
     out <- !x[[test]] %in% set
-    type_label <- "disjoint_of"
+    type_label <- "disjoint"
+    theDesc <- c(paste0("{FALSE} the value in column '", test, "' is not disjoint from the set [", paste0(set, collapse = "|"), "]."),
+                 paste0("{TRUE}  the value in column '", test, "' is disjoint from the set [", paste0(set, collapse = "|"), "]."))
   } else {
     out <- x[[test]] %in% set
-    type_label <- "subset_of"
+    type_label <- "included"
+    theDesc <- c(paste0("{FALSE} the value in column '", test, "' is not influded in the set [", paste0(set, collapse = "|"), "]."),
+                 paste0("{TRUE}  the value in column '", test, "' is influded in the set [", paste0(set, collapse = "|"), "]."))
   }
 
   attr(out, which = "name") <- paste0("match_", test)
-  attr(out, which = "desc") <- c(paste0("the value in column '", test, "' is contained in the set [", paste0(set, collapse = "|"), "]."),
-                                 paste0("the value in column '", test, "' is not contained in the set [", paste0(set, collapse = "|"), "]."))
+  attr(out, which = "desc") <- theDesc
   attr(out, which = "triple") <- paste0(test, "|", type_label,"|[", paste0(set, collapse = "|"), "]")
 
   return(out)

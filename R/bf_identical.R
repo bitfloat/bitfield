@@ -8,6 +8,8 @@
 #'   checked against \code{test}.
 #' @details This function compares the values of two columns element-wise and
 #'   returns \code{TRUE} when they are identical.
+#' @examples
+#' bf_identical(x = example_data, test = "x", against = "y")
 #' @importFrom checkmate assertDataFrame assertSubset
 #' @export
 
@@ -20,9 +22,9 @@ bf_identical <- function(x, test, against){
   out <- x[[test]] == x[[against]]
 
   attr(out, which = "name") <- paste0("identical_", test, "_", against)
-  attr(out, which = "desc") <- c(paste0("the value in '", test, "' is identical to the value in '", against, "'."),
-                                 paste0("the value in '", test, "' is disjoint from the value in '", against, "'."))
-  attr(out, which = "triple") <- paste0(test, "|identical_with|", against)
+  attr(out, which = "desc") <- c(paste0("{FALSE} the value in '", test, "' is distinct from the value in '", against, "'."),
+                                 paste0("{TRUE}  the value in '", test, "' is identical to the value in '", against, "'."))
+  attr(out, which = "triple") <- paste0(test, "|identical|", against)
 
   return(out)
 
