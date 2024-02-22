@@ -2,7 +2,7 @@
 % Please edit documentation in R/bf_inf.R
 \name{bf_inf}
 \alias{bf_inf}
-\title{Build a bit flag by checking that values are not Inf}
+\title{Build a bit flag by checking whether values are Inf}
 \usage{
 bf_inf(x, test)
 }
@@ -14,5 +14,8 @@ bf_inf(x, test)
 checked for Inf values.}
 }
 \description{
-Build a bit flag by checking that values are not Inf
+Build a bit flag by checking whether values are Inf
+}
+\examples{
+bf_inf(x = example_data, test = "y")
 }

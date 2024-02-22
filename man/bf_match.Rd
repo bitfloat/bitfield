@@ -22,3 +22,7 @@ or a disjoint match.}
 \description{
 Build a bit flag by comparing a column with a set
 }
+\examples{
+bf_match(x = example_data, test = "commodity", set = c("soybean", "maize"))
+
+}

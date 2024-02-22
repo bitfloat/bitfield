@@ -23,3 +23,6 @@ Build a bit flag by checking whether two columns are identical
 This function compares the values of two columns element-wise and
 returns \code{TRUE} when they are identical.
 }
+\examples{
+bf_identical(x = example_data, test = "x", against = "y")
+}

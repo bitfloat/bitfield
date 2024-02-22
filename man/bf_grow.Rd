@@ -14,7 +14,8 @@ bf_grow(
 )
 }
 \arguments{
-\item{flags}{\code{\link[=function]{function(.)}}\cr a function that returns a vector of flags.}
+\item{flags}{\code{\link[=function]{function(.)}}\cr a function that returns a vector of
+flags.}
 
 \item{name}{\code{\link[=character]{character(1)}}\cr the internal name of the bit
 flag(s).}
@@ -40,11 +41,11 @@ In case you don't use a native function to build flags, to end up
 with useful triples, the \code{name} should be formulated in one of three
 ways: \enumerate{
 \item in case the function has a logical return value, the name will be
-paired with \code{'...|is|[TRUE,FALSE]'}
+paired with \code{'...|value|[TRUE,FALSE]'}
 \item in case the function has a integer return value, the name will be
-paired with \code{'...|is_case|[case1:caseN]'} and
+paired with \code{'...|case|[case1:caseN]'} and
 \item in case the function has a numeric return value, the name will be
-paired with \code{'BIT|decodes_to|...'}
+paired with \code{'BIT|encodes|...'}
 }
 
 The following set of flags can be built with \code{bitfield} operators:
@@ -60,10 +61,13 @@ length) or a set of values (of another length), such as
 \code{\link{bf_identical}}, \code{\link{bf_match}} and
 \code{\link{bf_range}} (output length 1).
 \item flags where the categorical values of a test are combined into a
-compound flag, such as \code{\link{bf_case}} (output length > 1)
-\item flags where a particular numeric value is encoded as bit value, such as
-\code{\link{bf_distribution}} and \code{\link{bf_residuals}}. (output
-length depending on floating-point precision)
+compound flag. These are functions that are derived from
+\code{\link{bf_case}}, such as \code{\link{bf_origin}} (output length > 1)
+\item flags where a numeric value is encoded as bit value. These are
+functions that are derived from \code{\link{bf_numeric}}, such as
+\code{\link{bf_distribution}}, \code{\link{bf_histogram}},
+\code{\link{bf_residuals}} and \code{\link{summarise}}. (output length
+depending on floating-point precision)
 \item flags where relation between objects is recorded, including the output
 of other bitfield operators.
 }

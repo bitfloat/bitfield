@@ -7,7 +7,7 @@
 bf_residuals(x, resid)
 }
 \arguments{
-\item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the table that contains columns
+\item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the table that contains a column
 with the residuals.}
 
 \item{resid}{\code{\link[=character]{character(1)}}\cr the column in \code{x} that

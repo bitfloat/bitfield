@@ -2,17 +2,39 @@
 % Please edit documentation in R/bf_length.R
 \name{bf_length}
 \alias{bf_length}
-\title{Build a bit flag by counting the number of characters}
+\title{Build a bit flag by counting aspects of an entity}
 \usage{
-bf_length(x, test)
+bf_length(x, test, dec = NULL, fill = TRUE)
 }
 \arguments{
 \item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the table that contains
 \code{test}.}
 
 \item{test}{\code{\link[=character]{character(1)}}\cr the column in \code{x} for which
-decimals are checked.}
+the length is determined.}
+
+\item{dec}{\code{\link[=character]{character(1)}}\cr regex-compatible symbol that
+separates the decimals from the numeric value (such as \code{\\.} if the
+decimal symbol is a "."). If this is}
+
+\item{fill}{\code{\link[=logical]{logical(1)}}\cr whether the function should consider
+decimals lengths from 0 through the maximum length in \code{x[[test]]}, or
+whether it should only document existing decimal lengths.}
 }
 \description{
-Build a bit flag by counting the number of characters
+Build a bit flag by counting aspects of an entity
+}
+\details{
+The show method of various classes shows decimals that may not
+really be present, and that even includes ordinary numeric vectors. In
+these cases, what is printed in the R console may be misleading. Double
+check with \code{\link{str}}.
+
+Determine the number of decimals of coordinates to determine their
+precision:
+\href{https://en.wikipedia.org/wiki/Decimal_degrees}{https://en.wikipedia.org/wiki/Decimal_degrees}
+}
+\examples{
+bf_length(x = example_data, test = "y")
+bf_length(x = example_data, test = "y", dec = "\\\\.")
 }

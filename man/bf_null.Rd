@@ -2,7 +2,7 @@
 % Please edit documentation in R/bf_null.R
 \name{bf_null}
 \alias{bf_null}
-\title{Build a bit flag by checking that values are not NULL}
+\title{Build a bit flag by checking whether values are NULL}
 \usage{
 bf_null(x, test)
 }
@@ -14,5 +14,8 @@ bf_null(x, test)
 checked for NULL values.}
 }
 \description{
-Build a bit flag by checking that values are not NULL
+Build a bit flag by checking whether values are NULL
+}
+\examples{
+bf_null(x = example_data, test = "z")
 }

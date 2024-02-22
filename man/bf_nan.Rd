@@ -2,7 +2,7 @@
 % Please edit documentation in R/bf_nan.R
 \name{bf_nan}
 \alias{bf_nan}
-\title{Build a bit flag by checking that values are not NaN}
+\title{Build a bit flag by checking whether values are NaN}
 \usage{
 bf_nan(x, test)
 }
@@ -14,5 +14,8 @@ bf_nan(x, test)
 checked for NaN values.}
 }
 \description{
-Build a bit flag by checking that values are not NaN
+Build a bit flag by checking whether values are NaN
+}
+\examples{
+bf_nan(x = example_data, test = "y")
 }

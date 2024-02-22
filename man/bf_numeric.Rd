@@ -19,6 +19,10 @@ to round the numeric value.}
 \description{
 Build a bit flag from a numeric value
 }
+\details{
+The length of the bitfield depends on the floating point precision
+of the numeric values returned with this function...
+}
 \examples{
-bf_numeric(x = example_data, source = "y", digits = 1)
+bf_numeric(x = example_data, source = "y", digits = 0)
 }
