@@ -4,10 +4,12 @@
 \alias{bf_origin}
 \title{Build a bit flag from an operation that has generated the focal entity}
 \usage{
-bf_origin(x)
+bf_origin(x, test)
 }
 \arguments{
 \item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the table that contains...}
+
+\item{test}{\code{\link[=character]{character(1)}}\cr something}
 }
 \description{
 Build a bit flag from an operation that has generated the focal entity
