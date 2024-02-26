@@ -53,7 +53,7 @@ Install the official version from CRAN:
 Install the latest development version from github:
 
 ``` r
-devtools::install_github("luckinet/bitfield")
+devtools::install_github("EhrmannS/bitfield")
 ```
 
 ## Examples

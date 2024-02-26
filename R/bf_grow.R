@@ -38,7 +38,7 @@
 #'   \code{\link{bf_range}} (output length 1).
 #' \item flags where the categorical values of a test are combined into a
 #'   compound flag. These are functions that are derived from
-#'   \code{\link{bf_case}}, such as \code{\link{bf_origin}} (output length > 1)
+#'   \code{\link{bf_case}} (output length > 1)
 #' \item flags where a numeric value is encoded as bit value. These are
 #'   functions that are derived from \code{\link{bf_numeric}}, such as
 #'   \code{\link{bf_distribution}}, \code{\link{bf_histogram}},
