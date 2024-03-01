@@ -51,7 +51,7 @@ Install the official version from CRAN:
 Install the latest development version from github:
 
 ```{r, eval=FALSE}
-devtools::install_github("luckinet/bitfield")
+devtools::install_github("EhrmannS/bitfield")
 ```
 
 
