@@ -6,8 +6,9 @@
 #'   range is checked.
 #' @param min [`numeric(1)`][numeric]\cr the minimum allowed value.
 #' @param max [`numeric(1)`][numeric]\cr the maximum allowed value.
-#' @details when leaving either \code{min} or \code{max} at NULL, a "less than
-#'   max" or "greater than min" operation is carried out.
+#' @details when leaving either \code{min} or \code{max} at NULL they are set to
+#'   the minimum or maximum value of \code{test}, respectively, thereby carrying
+#'   out a "less than max" or "greater than min" operation.
 #' @importFrom checkmate assertDataFrame assertSubset assertNumeric
 #' @export
 
@@ -15,41 +16,18 @@ bf_range <- function(x, test, min = NULL, max = NULL){
 
   assertDataFrame(x = x)
   assertSubset(x = test, choices = names(x))
-  assertNumeric(x = min, null.ok = TRUE)
-  assertNumeric(x = max, null.ok = TRUE)
+  assertNumeric(x = min, finite = TRUE, null.ok = TRUE)
+  assertNumeric(x = max, finite = TRUE, null.ok = TRUE)
 
-  if(is.null(min)){
+  if(is.null(min)) min <- min(x[[test]], na.rm = TRUE)
+  if(is.null(max)) max <- max(x[[test]], na.rm = TRUE)
 
-    assertNumeric(x = max, len = 1, finite = TRUE)
+  temp <- x[[test]] > min & x[[test]] < max
 
-    temp <- x[[test]] < max
-
-    name <- paste0("range_", test)
-    desc <- c(paste0("the value in column '", test, "' is less than [", max, "]."),
-              paste0("the value in column '", test, "' is greater than [", max, "]."))
-    triple <- paste0(test, "|less|[", max, "]")
-  } else if(is.null(max)){
-
-    assertNumeric(x = min, len = 1, finite = TRUE)
-
-    temp <- x[[test]] > min
-
-    name <- paste0("range_", test)
-    desc <- c(paste0("the value in column '", test, "' is greater than [", min, "]."),
-              paste0("the value in column '", test, "' is less than [", min, "]."))
-    triple <- paste0(test, "|greater|[", min, "]")
-  } else {
-
-    assertNumeric(x = max, len = 1, finite = TRUE)
-    assertNumeric(x = min, len = 1, finite = TRUE)
-
-    temp <- x[[test]] > min & x[[test]] < max
-
-    name <- paste0("range_", test)
-    desc <- c(paste0("the value in column '", test, "' ranges between [", min, ",", max, "]."),
-              paste0("the value in column '", test, "' is outside the range [", min, ",", max, "]."))
-    triple <- paste0(test, "|range|[", min, ",", max, "]")
-  }
+  name <- paste0("range_", test)
+  desc <- c(paste0("the value in column '", test, "' ranges between [", min, ",", max, "]."),
+            paste0("the value in column '", test, "' is outside the range [", min, ",", max, "]."))
+  triple <- paste0(test, "|range|[", min, ",", max, "]")
 
   out <- temp
 
