@@ -119,8 +119,7 @@ bf_type <- function(x, test, type = NULL, coerce = FALSE){
   }
 
   attr(out, which = "name") <- paste0("type_", test)
-  attr(out, which = "description") <- c(paste0("the value in column '", test, "' has type '", type, "'."),
-                                        paste0("the value in column '", test, "' does not have type '", type, "'."))
+  attr(out, which = "description") <- c(paste0("{FALSE} the value in column '", test, "' does not have type '", type, "'."), paste0("{TRUE}  the value in column '", test, "' has type '", type, "'."))
   attr(out, which = "triple") <- paste0(test, "|type|'", type, "'")
 
   return(out)
