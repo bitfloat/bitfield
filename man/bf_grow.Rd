@@ -37,47 +37,46 @@ flag(s) should be stored.}
 Add flags to a registry
 }
 \details{
-In case you don't use a native function to build flags, to end up
-with useful triples, the \code{name} should be formulated in one of three
-ways: \enumerate{
-\item in case the function has a logical return value, the name will be
-paired with \code{'...|value|[TRUE,FALSE]'}
-\item in case the function has a integer return value, the name will be
-paired with \code{'...|case|[case1:caseN]'} and
-\item in case the function has a numeric return value, the name will be
-paired with \code{'BIT|encodes|...'}
-}
+In case you don't use a native function to build flags, the name
+should be of the form \code{activity_entity}, where 'activity' succinctly
+describes the function and 'entity' the object(s) or column(s) used by the
+function (if it's more than one object/column, they need to be concatenated
+with using a "_", as this is used internally to determine the provenance of
+the function). Both terms are from the
+\href{https://www.w3.org/TR/2013/REC-prov-dm-20130430/}{PROV Data Model}.
 
-The following set of flags can be built with \code{bitfield} operators:
-\itemize{
-\item flags where a column is tested against some condition, such as
-\code{\link{bf_na}}, \code{\link{bf_nan}}, \code{\link{bf_null}} and
-\code{\link{bf_inf}} (output length 1).
-\item flags where an attribute is identified from a small set of possible
-choices, such as \code{\link{bf_length}} or \code{\link{bf_type}} (output
-length 1).
-\item flags where a column is compared with another column (of the same
-length) or a set of values (of another length), such as
-\code{\link{bf_identical}}, \code{\link{bf_match}} and
-\code{\link{bf_range}} (output length 1).
-\item flags where the categorical values of a test are combined into a
-compound flag. These are functions that are derived from
-\code{\link{bf_case}}, such as \code{\link{bf_origin}} (output length > 1)
-\item flags where a numeric value is encoded as bit value. These are
-functions that are derived from \code{\link{bf_numeric}}, such as
+There are two basic types of flags distinguished by their output value. A
+flag can consist of one bit or of more than on bit. Flags that consists of
+only one bit are from tests that return FALSE/TRUE values: \itemize{
+\item where a column is tested against an individual value, such as
+\code{\link{bf_na}}, \code{\link{bf_nan}}, \code{\link{bf_null}},
+\code{\link{bf_inf}} or \code{\link{bf_type}}.
+\item where a column is tested against a set of values, such as
+\code{\link{bf_match}} or \code{\link{bf_range}}.
+\item where a column is compared with another column, such as
+\code{\link{bf_identical}}.
+}
+Flags that consist of a sequence of bits are either from tests that return
+a (small) number of cases, or from tests that return a (set of) numeric
+values: \itemize{
+\item where a categorical value is returned, such as \code{\link{bf_case}}
+(where the cases can be represented by integers from 1 to X).
+\item where a count value is returned, such as \code{\link{bf_length}}
+(that may not include 0 and that may be quite large).
+\item where a numeric value (floating-point number) of any kind is
+returned, such as \code{\link{bf_numeric}}.
+\item where a set of numeric values is returned, such as
 \code{\link{bf_distribution}}, \code{\link{bf_histogram}},
-\code{\link{bf_residuals}} and \code{\link{summarise}}. (output length
-depending on floating-point precision)
-\item flags where relation between objects is recorded, including the output
-of other bitfield operators.
+\code{\link{bf_residuals}} or \code{\link{bf_summarise}} (which are
+basically compound flags that are stored in the registry individually)
 }
 }
 \examples{
 flags1 <- bf_na(x = example_data, test = "x")  # build flag for NAs
 flags2 <- bf_range(x = example_data, test = "x",
-                  min = -180, max = 180)       # build flag for range
+                   min = -180, max = 180)       # build flag for range
 
 registry <- bf_grow(flags = flags1, pos = 1)   # start registry ...
-registry <- bf_grow(flags = flags1, pos = 2,
+registry <- bf_grow(flags = flags2, pos = 2,
                     registry = registry)       # ... and update it
 }

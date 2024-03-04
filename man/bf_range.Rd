@@ -21,6 +21,7 @@ range is checked.}
 Build a bit flag by checking for a range
 }
 \details{
-when leaving either \code{min} or \code{max} at NULL, a "less than
-max" or "greater than min" operation is carried out.
+when leaving either \code{min} or \code{max} at NULL they are set to
+the minimum or maximum value of \code{test}, respectively, thereby carrying
+out a "less than max" or "greater than min" operation.
 }

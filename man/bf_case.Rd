@@ -20,3 +20,9 @@ defined later in the sequence overwrite cases earlier in the sequence.}
 \description{
 Build a bit flag by checking for cases
 }
+\examples{
+bf_case(x = example_data, exclusive = FALSE,
+        yield >= 11,
+        yield < 11 & yield > 9,
+        yield < 9 & commodity == "maize")
+}
