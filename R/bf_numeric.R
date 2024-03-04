@@ -4,27 +4,37 @@
 #'   \code{source}.
 #' @param source [`character(1)`][character]\cr the column in \code{x} from
 #'   which to take the numeric value.
-#' @param digits [`integerish(1)`][integer]\cr the number of decimals to which
-#'   to round the numeric value.
+#' @param exponent description
+#' @param significand description
+#' @param bias description
 #' @details The length of the bitfield depends on the floating point precision
 #'   of the numeric values returned with this function...
 #'
 #' @examples
-#' bf_numeric(x = example_data, source = "y", digits = 0)
+#' bf_numeric(x = example_data, source = "y")
 #' @importFrom checkmate assertDataFrame assertSubset assertNumeric
 #' @export
 
-bf_numeric <- function(x, source, digits = 0){
+bf_numeric <- function(x, source, exponent = 8, significand = 7, bias = 127){
 
   assertDataFrame(x = x)
   assertSubset(x = source, choices = names(x))
-  assertNumeric(x = digits, len = 1, lower = 0, finite = TRUE)
+  assertIntegerish(x = exponent, len = 1, any.missing = FALSE)
+  assertIntegerish(x = significand, len = 1, any.missing = FALSE)
+  assertIntegerish(x = bias, len = 1, any.missing = FALSE)
 
-  out <- round(x[[source]], digits)
+  # https://en.wikipedia.org/wiki/Minifloat
+  # https://en.wikipedia.org/wiki/Bfloat16_floating-point_format
+  # https://www.youtube.com/watch?v=D-9SQMWo6kI
+  #
+  # for use-case
+  # https://en.wikipedia.org/wiki/Decimal_degrees
+
+  out <- x[[source]]
 
   attr(out, which = "name") <- paste0("numeric_", source)
-  attr(out, which = "desc") <- paste0("the bit-representaiton decodes to the numeric value [...] in column '", source, "'.")
-  attr(out, which = "triple") <- paste0("BIT|encodes|", source)
+  attr(out, which = "desc") <- paste0("the bits encode the numeric value in column '", source, "' (with {E} exponent bits, {S} significand bits and bias {B}, base-2).")
+  attr(out, which = "triple") <- paste0(source, "|encoded|{E}.{S}.{B}")
 
   return(out)
 }
