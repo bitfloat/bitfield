@@ -15,7 +15,8 @@
 #' @importFrom checkmate assertDataFrame assertSubset assertNumeric
 #' @export
 
-bf_numeric <- function(x, source, exponent = 8, significand = 7, bias = 127){
+bf_numeric <- function(x, source, exponent = 8, significand = 7, bias = 127,
+                       provenance = NULL){
 
   assertDataFrame(x = x)
   assertSubset(x = source, choices = names(x))
@@ -35,6 +36,7 @@ bf_numeric <- function(x, source, exponent = 8, significand = 7, bias = 127){
   attr(out, which = "name") <- paste0("numeric_", source)
   attr(out, which = "desc") <- paste0("the bits encode the numeric value in column '", source, "' (with {E} exponent bits, {S} significand bits and bias {B}, base-2).")
   attr(out, which = "triple") <- paste0(source, "|encoded|{E}.{S}.{B}")
+  attr(out, which = "prov") <- provenance
 
   return(out)
 }

@@ -20,7 +20,7 @@
 #' @importFrom dplyr rename bind_cols filter if_else
 #' @export
 
-bf_case <- function(x, ..., exclusive = TRUE){
+bf_case <- function(x, ..., exclusive = TRUE, provenance = NULL){
 
   assertDataFrame(x = x)
   assertLogical(x = exclusive, len = 1)
@@ -68,6 +68,7 @@ bf_case <- function(x, ..., exclusive = TRUE){
   attr(out, which = "name") <- paste0("cases")
   attr(out, which = "desc") <- paste0("the bits encode the case [", case_expr, "] (with 0 exponent bits, {S} significand bits and bias 0, base-2).")
   attr(out, which = "triple") <- paste0("{OBS}|encoded|0.{S}.0")
+  attr(out, which = "prov") <- provenance
 
   return(out)
 

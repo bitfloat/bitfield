@@ -27,7 +27,7 @@
 #' @importFrom dplyr bind_cols
 #' @export
 
-bf_length <- function(x, test, dec = NULL, fill = TRUE){
+bf_length <- function(x, test, dec = NULL, fill = TRUE, provenance = NULL){
 
   assertDataFrame(x = x)
   assertSubset(x = test, choices = names(x))
@@ -88,6 +88,7 @@ bf_length <- function(x, test, dec = NULL, fill = TRUE){
   attr(out, which = "name") <- theName
   attr(out, which = "desc") <- theDesc
   attr(out, which = "triple") <- paste0(test, "|encoded|", significand, ".", exponent)
+  attr(out, which = "prov") <- provenance
 
   return(out)
 }
