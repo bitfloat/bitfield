@@ -7,7 +7,11 @@
 #' @param exclusive [`logical(1)`][logical]\cr whether the function should check
 #'   that the cases are mutually exclusive, or whether it would allow that cases
 #'   defined later in the sequence overwrite cases earlier in the sequence.
-#'
+#' @examples
+#' bf_case(x = example_data, exclusive = FALSE,
+#'         yield >= 11,
+#'         yield < 11 & yield > 9,
+#'         yield < 9 & commodity == "maize")
 #' @importFrom checkmate assertDataFrame assertLogical assertTRUE
 #' @importFrom rlang enquos eval_tidy as_label `:=` get_expr quo_get_expr quos
 #'   parse_expr quo_set_env quo
@@ -62,8 +66,8 @@ bf_case <- function(x, ..., exclusive = TRUE){
   }
 
   attr(out, which = "name") <- paste0("cases")
-  attr(out, which = "desc") <- paste0("the observation has the case [", case_expr, "].")
-  attr(out, which = "triple") <- paste0("OBS|case|[", paste0(case_expr, collapse = "|"), "]")
+  attr(out, which = "desc") <- paste0("the bits encode the case [", case_expr, "] (with 0 exponent bits, {S} significand bits and bias 0, base-2).")
+  attr(out, which = "triple") <- paste0("{OBS}|encoded|0.{S}.0")
 
   return(out)
 

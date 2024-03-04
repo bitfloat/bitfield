@@ -39,13 +39,11 @@ bf_length <- function(x, test, dec = NULL, fill = TRUE){
     testVals[is.na(testVals)] <- 0L
 
     theName <- paste0("decimals_", test)
-    thePredicate <- "decimals"
   } else {
     testVals <- str_length(x[[test]])
     testVals[is.na(x[[test]])] <- 0L
 
     theName <- paste0("length_", test)
-    thePredicate <- "length"
   }
 
   temp <- bind_cols(x, test = testVals)
@@ -78,14 +76,18 @@ bf_length <- function(x, test, dec = NULL, fill = TRUE){
   out <- tempVals[out]
 
   if(!is.null(dec)){
-    theDesc <- paste0("the value in '", test, "' has [", paste0(tempVals, collapse = ","), "] decimals.")
+    significand <- "0"
+    exponent <- "{E}"
+    theDesc <- paste0("the bits encode the number of decimals in column '", test, "'.")
   } else {
-    theDesc <- paste0("the value in '", test, "' has length [", paste0(tempVals, collapse = ","), "].")
+    significand <- "{S}"
+    exponent <- "0"
+    theDesc <- paste0("the bits encode the value length in column '", test, "'.")
   }
 
   attr(out, which = "name") <- theName
   attr(out, which = "desc") <- theDesc
-  attr(out, which = "triple") <- paste0(test, "|", thePredicate, "|[", paste0(tempVals, collapse = ","), "]")
+  attr(out, which = "triple") <- paste0(test, "|encoded|", significand, ".", exponent)
 
   return(out)
 }
