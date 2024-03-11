@@ -4,7 +4,16 @@
 \alias{bf_length}
 \title{Build a bit flag by counting aspects of an entity}
 \usage{
-bf_length(x, test, dec = NULL, fill = TRUE)
+bf_length(
+  x,
+  test,
+  dec = NULL,
+  fill = TRUE,
+  pos = NULL,
+  na.val = NULL,
+  prov = NULL,
+  registry = NULL
+)
 }
 \arguments{
 \item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the table that contains
@@ -20,6 +29,15 @@ decimal symbol is a "."). If this is}
 \item{fill}{\code{\link[=logical]{logical(1)}}\cr whether the function should consider
 decimals lengths from 0 through the maximum length in \code{x[[test]]}, or
 whether it should only document existing decimal lengths.}
+
+\item{pos}{\code{\link[=integer]{integerish(.)}}\cr the position(s) in the bitfield that
+should be set.}
+
+\item{na.val}{description}
+
+\item{prov}{description}
+
+\item{registry}{description}
 }
 \description{
 Build a bit flag by counting aspects of an entity
