@@ -1,9 +1,9 @@
-#' Unpack a bitfield
+#' Decode (unpack) a bitfield
 #'
 #' @param x [`integerish(1)`][integer]\cr table of the integer representation of
 #'   the bitfield.
 #' @param registry  [`registry(1)`][registry]\cr the registry that should be
-#'   used to unpack the bitfield into a binary representation.
+#'   used to decode the bitfield into a binary representation.
 #' @param merge [`character(1)`][character]\cr a symbol with which, if given,
 #'   the distinct fields shall be merged.
 #'
@@ -13,9 +13,10 @@
 #' @importFrom dplyr bind_rows arrange group_by ungroup summarise rowwise mutate
 #'   left_join n first row_number
 #' @importFrom tidyr separate unite separate_longer_delim
+#' @importFrom rlang env_bind
 #' @export
 
-bf_unpack <- function(x, registry, merge = NULL){
+bf_decode <- function(x, registry, merge = NULL){
 
   assertIntegerish(x = x, any.missing = FALSE, min.len = 1)
   assertClass(x = registry, classes = "registry")
