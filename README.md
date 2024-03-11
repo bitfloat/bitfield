@@ -132,11 +132,11 @@ newRegistry <- newRegistry |>
   # test which case an observation is part of
   bf_case(x = input, exclusive = FALSE,
           yield >= 11, yield < 11 & yield > 9, yield < 9 & commodity == "maize",
-          pos = 2:3, registry = _) |>
+          registry = _) |>
 
   # test the length (number of digits) of values
   bf_length(x = input, test = "y",
-            pos = 4:6, registry = _) |>
+            registry = _) |>
   
   # store a simplified (e.g. rounded) value
   bf_numeric(x = input, source = "yield",

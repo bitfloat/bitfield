@@ -88,7 +88,7 @@ bf_case <- function(x, ..., exclusive = TRUE, pos = NULL, na.val = NULL,
 
   # update position if it's not set
   if(is.null(pos)){
-    pos <- registry@width+1:(registry@width+nBits)
+    pos <- (registry@width+1):(registry@width+nBits)
   }
 
   # assign tentative flags values into the current environment
