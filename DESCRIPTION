@@ -10,13 +10,13 @@ Authors@R: c(
 Description: Provides tools to record formal data quality and meta data to store 
     that in a bitfield, which can be published alongside all sort of (modelled) 
     data products that can be handled in tabular form.
-URL: https://github.com/luckinet/bitfield
+URL: https://github.com/luckinet/bitfield, http://luckinet.github.io/bitfield
 BugReports: https://github.com/luckinet/bitfield/issues
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 Imports: 
     checkmate,
     crayon,
