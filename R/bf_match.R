@@ -28,8 +28,8 @@ bf_match <- function(x, test, set, negate = FALSE){
   } else {
     out <- x[[test]] %in% set
     type_label <- "included"
-    theDesc <- c(paste0("{FALSE} the value in column '", test, "' is not influded in the set [", paste0(set, collapse = "|"), "]."),
-                 paste0("{TRUE}  the value in column '", test, "' is influded in the set [", paste0(set, collapse = "|"), "]."))
+    theDesc <- c(paste0("{FALSE} the value in column '", test, "' is not included in the set [", paste0(set, collapse = "|"), "]."),
+                 paste0("{TRUE}  the value in column '", test, "' is included in the set [", paste0(set, collapse = "|"), "]."))
   }
 
   attr(out, which = "name") <- paste0("match_", test)

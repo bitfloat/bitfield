@@ -14,7 +14,7 @@
 #' @importFrom methods new
 #' @export
 
-bf_create <- function(length = NULL, name = NULL, description = NULL){
+bf_registry <- function(length = NULL, name = NULL, description = NULL){
 
   assertIntegerish(x = length, len = 1, null.ok = TRUE)
   assertCharacter(x = name, len = 1, null.ok = TRUE)

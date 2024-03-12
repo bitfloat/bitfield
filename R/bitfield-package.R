@@ -1,0 +1,55 @@
+#' bitfield: Handle Bitfields to record Data-Quality
+#'
+#' The bitfield package provides tools to record meta-analytic and
+#' meta-algorithmic data or just ordinary values to store those in a bitfield. A
+#' bitfield accompanies a (modelled) dataset and can give insight into data
+#' quality, provenance, and intermediate values, or can be used to store output
+#' values in a highly compressed form.
+#'
+#' @author \strong{Maintainer, Author}: Steffen Ehrmann
+#'   \email{steffen.ehrmann@posteo.de}
+#'
+#' @seealso \itemize{ \item Github project:
+#'   \href{https://github.com/EhrmannS/bitfield}{https://github.com/EhrmannS/bitfield}
+#'   \item Report bugs:
+#'   \href{https://github.com/EhrmannS/bitfield/issues}{https://github.com/EhrmannS/bitfield/issues}
+#'   }
+#'
+#' @details
+#'   There are two basic types of flags distinguished by their output value. A
+#'   flag can consist of one bit or of more than on bit. Flags that consists of
+#'   only one bit are from tests that return FALSE/TRUE values: \itemize{
+#'     \item where a column is tested against an individual value, such as
+#'       \code{\link{bf_na}}, \code{\link{bf_nan}}, \code{\link{bf_null}},
+#'       \code{\link{bf_inf}} or \code{\link{bf_type}}.
+#'     \item where a column is tested against a set of values, such as
+#'       \code{\link{bf_match}} or \code{\link{bf_range}}.
+#'     \item where a column is compared with another column, such as
+#'       \code{\link{bf_identical}}.
+#'   }
+#'   Flags that consist of a sequence of bits are either from tests that return
+#'   a (small) number of cases, or from tests that return a (set of) numeric
+#'   values: \itemize{
+#'     \item where a categorical value is returned, such as \code{\link{bf_case}}
+#'       (where the cases can be represented by integers from 1 to X).
+#'     \item where a count value is returned, such as \code{\link{bf_length}}
+#'       (that may not include 0 and that may be quite large).
+#'     \item where a numeric value (floating-point number) of any kind is
+#'       returned, such as \code{\link{bf_numeric}}.
+#'     \item where a set of numeric values is returned, such as
+#'       \code{\link{bf_distribution}}, \code{\link{bf_histogram}},
+#'       \code{\link{bf_residuals}} or \code{\link{bf_summarise}} (which are
+#'       basically compound flags that are stored in the registry individually)
+#'   }
+#'
+#'   check out https://float.exposed/
+#'
+#'   The format of the triple may contain a bit float configuration. The bit
+#'   float resembles scientific notation of numbers, with the only difference
+#'   that it has base-2 instead of base-10 values. To configure a bit float, one
+#'   requires the number of bits of the exponent (E), the number of bits of the
+#'   significand (or mantissa) S, and the bias B. Together, they are combined to
+#'   a function that maps the numeric (or integer) values to binary values, i.e.
+#'   \code{2^{E-B} * S}. The configuration that may appear in the triple then
+#'   has the form \code{E.S/B}.
+"_PACKAGE"

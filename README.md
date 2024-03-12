@@ -107,8 +107,8 @@ This registry captures all the information required to build the
 bitfield
 
 ``` r
-newRegistry <- bf_create(name = "yield_errors", 
-                         description = "this bitfield documents errors in a table of yield data.")
+newRegistry <- bf_registry(name = "yield_QA",
+                           description = "this bitfield documents quality assessment in a table of yield data.")
 ```
 
 Then, individual bit flags need to be grown by specifying a mapping
@@ -122,27 +122,31 @@ grown. A flag is declared by calling, for example,
 in the table `input` has `NA`-values.
 
 ``` r
-newRegistry <- newRegistry %>%
+newRegistry <- newRegistry |> 
   # tests for coordinates ...
-  bf_grow(flags = bf_na(x = input, test = "x"),            # determine flags
-          pos = 1,                                         # specify at which position to store the flag
-          registry = .) %>%                                # provide the registry to update
-  bf_grow(flags =  bf_range(x = input, test = "x", min = -180, max = 180),
-          pos = 2, registry = .) %>%
+  bf_na(x = input,                               # specify where to determine flags
+        test = "x",                              # determine flags
+        pos = 1,                                 # specify at which position to store the flag
+        registry = _) |>                         # provide the registry to update
 
-  # ... or override NA test
-  bf_grow(flags = bf_range(x = input, test = "y", min = -90, max = 90),
-          pos = 3, na = FALSE, registry = .)  %>%
+  # test which case an observation is part of
+  bf_case(x = input, exclusive = FALSE,
+          yield >= 11, yield < 11 & yield > 9, yield < 9 & commodity == "maize",
+          registry = _) |>
 
-  # test for matches with an external vector
-  bf_grow(flags = bf_match(x = input, test = "commodity", set = validComm),
-          pos = 4, na = FALSE, registry = .) %>%
+  # test the length (number of digits) of values
+  bf_length(x = input, test = "y",
+            registry = _) |>
   
-  # define cases
-  bf_grow(flags = bf_case(x = input, exclusive = FALSE, 
-                          yield >= 11, yield < 11 & yield > 9, yield < 9 & commodity == "maize"),
-          pos = 5:6, registry = .)
+  # store a simplified (e.g. rounded) value
+  bf_numeric(x = input, source = "yield",
+             exponent = 3, significand = 4, bias = 3,
+             registry = _)
 ```
+
+mention here that the above examples are 1. binary, 2. ordinal (cases
+that start at 0), 3. integer (that start anywhere) and 4. floating
+point; and explain the implications…
 
 It is also possible to use other functions that return flags, where it
 is required to provide a name and a concise yet expressive description,
@@ -168,25 +172,21 @@ important to keep in mind:
     and `y` shall have distinct values.
 
 ``` r
-newRegistry <- newRegistry %>%
-  # use external functions, such as from CoordinateCleaner ...
-  bf_grow(flags = cc_equ(x = input, lon = "x", lat = "y", value = "flagged"), 
-          name = "distinct_x_y", desc = c("x and y coordinates are not identical, NAs are FALSE"),
-          pos = 7, na = FALSE, registry = .) %>%
-  
-  # ... or stringr ...
-  bf_grow(flags = str_detect(input$year, "r"), 
-          name = "flag_year", desc = c("year values do have a flag, NAs are FALSE"),
-          pos = 8, na = FALSE, registry = .) %>%
-  
-  # ... or even base R
-  bf_grow(flags = !is.na(as.integer(input$year)), 
-          name = "valid_year", desc = c("year values are valid integers"),
-          pos = 9, registry = .)
-#> Testing equal lat/lon
-#> Flagged NA records.
-#> Warning in bf_grow(flags = !is.na(as.integer(input$year)), name = "valid_year",
-#> : NAs durch Umwandlung erzeugt
+# newRegistry <- newRegistry %>%
+#   # use external functions, such as from CoordinateCleaner ...
+#   bf_custom(flags = cc_equ(x = input, lon = "x", lat = "y", value = "flagged"), 
+#             name = "distinct_x_y", desc = c("x and y coordinates are not identical, NAs are FALSE"),
+#             pos = 7, na = FALSE, registry = .) |> 
+#   
+#   # ... or stringr ...
+#   bf_custom(flags = str_detect(input$year, "r"), 
+#             name = "flag_year", desc = c("year values do have a flag, NAs are FALSE"),
+#             pos = 8, na = FALSE, registry = .) |> 
+#   
+#   # ... or even base R
+#   bf_custom(flags = !is.na(as.integer(input$year)), 
+#             name = "valid_year", desc = c("year values are valid integers"),
+#             pos = 9, registry = .)
 ```
 
 The resulting strcuture is basically a record of all the things that are
@@ -201,8 +201,8 @@ been stored into the environment `bf_env`). This will result in a vector
 of integers.
 
 ``` r
-(intBit <- bf_combine(registry = newRegistry))
-#>  [1] 334  78 198 366 320 350 334 366 302 266
+(intBit <- bf_encode(registry = newRegistry))
+#>  [1] 736 736 736 736 736 736 736 736 736 736
 ```
 
 As mentioned above, the registry is a record of things, which is
@@ -211,47 +211,14 @@ legend, the bit flags can then be converted back to human readable text
 or used in any downstream workflow.
 
 ``` r
-bitfield <- bf_unpack(x = intBit, registry = newRegistry, merge = "-")
-#> # A tibble: 17 × 4
-#>    bits  name            flag  desc                                             
-#>    <chr> <chr>           <chr> <chr>                                            
-#>  1 1     na_x            0     "{FALSE} the value in column 'x' is not NA."     
-#>  2 1     na_x            1     "{TRUE}  the value in column 'x' is NA."         
-#>  3 2     range_x         0     "the value in column 'x' ranges between [-180,18…
-#>  4 2     range_x         1     "the value in column 'x' is outside the range [-…
-#>  5 3     range_y         0     "the value in column 'y' ranges between [-90,90]…
-#>  6 3     range_y         1     "the value in column 'y' is outside the range [-…
-#>  7 4     match_commodity 0     "{FALSE} the value in column 'commodity' is not …
-#>  8 4     match_commodity 1     "{TRUE}  the value in column 'commodity' is infl…
-#>  9 5:6   cases           00    "the observation has the case [yield >= 11]."    
-#> 10 5:6   cases           01    "the observation has the case [yield < 11 & yiel…
-#> 11 5:6   cases           10    "the observation has the case [yield < 9 & commo…
-#> 12 7     distinct_x_y    0     "x and y coordinates are not identical, NAs are …
-#> 13 7     distinct_x_y    1     "x and y coordinates are not identical, NAs are …
-#> 14 8     flag_year       0     "year values do have a flag, NAs are FALSE"      
-#> 15 8     flag_year       1     "year values do have a flag, NAs are FALSE"      
-#> 16 9     valid_year      0     "year values are valid integers"                 
-#> 17 9     valid_year      1     "year values are valid integers"
-
-# -> prints legend by default, which is also available in bf_env$legend
-
-input %>% 
-  bind_cols(bitfield) %>% 
-  kable()
+# bitfield <- bf_decode(x = intBit, registry = newRegistry, merge = "-")
+# 
+# # -> prints legend by default, which is also available in bf_env$legend
+# 
+# input |> 
+#   bind_cols(bitfield) |> 
+#   kable()
 ```
-
-|     x |    y | commodity |     yield | year  | bf_int | bf_binary        |
-|------:|-----:|:----------|----------:|:------|-------:|:-----------------|
-|  25.3 | 59.5 | soybean   | 11.192915 | 2021  |    334 | 0-1-1-1-00-1-0-1 |
-|  27.9 | 58.1 | maize     | 11.986793 | NA    |     78 | 0-1-1-1-00-1-0-0 |
-|  27.8 | 57.8 | NA        | 13.229386 | 2021r |    198 | 0-1-1-0-00-1-1-0 |
-|  27.0 | 59.2 | maize     |  9.431376 | 2021  |    366 | 0-1-1-1-01-1-0-1 |
-| 259.0 |  Inf | honey     | 12.997422 | 2021  |    320 | 0-0-0-0-00-1-0-1 |
-|  27.3 | 59.1 | maize     |  8.548882 | 2021  |    350 | 0-1-1-1-10-1-0-1 |
-|  26.1 | 58.4 | soybean   | 11.276921 | 2021  |    334 | 0-1-1-1-00-1-0-1 |
-|  26.5 | 59.0 | maize     | 10.640715 | 2021  |    366 | 0-1-1-1-01-1-0-1 |
-|   0.0 |  0.0 | soybean   |  9.010452 | 2021  |    302 | 0-1-1-1-01-0-0-1 |
-|  25.7 |  NaN | maize     | 13.169897 | 2021  |    266 | 0-1-0-1-00-0-0-1 |
 
 Together with the rules mentioned above, we can read the binary
 representation on step at a time. For example, considering the second
@@ -275,17 +242,17 @@ library(terra)
 
 raster <- rast(matrix(data = 1:25, nrow = 5, ncol = 5))
 
-input <- values(raster) %>% 
-  as_tibble() %>% 
-  rename(values = lyr.1) %>% 
+input <- values(raster) |> 
+  as_tibble() |>  
+  rename(values = lyr.1) |> 
   bind_cols(crds(raster), .)
 
 # from here we can continue creating a bitfield and growing bits on it just like shown above...
 intBit <- bf_combine(...)
 
 # ... and then converting it back to a raster
-QB_rast <- crds(raster) %>% 
-  bind_cols(intBit) %>% 
+QB_rast <- crds(raster) |> 
+  bind_cols(intBit) |> 
   rast(type = "xyz", crs = crs(raster), extent = ext(raster))
 ```
 

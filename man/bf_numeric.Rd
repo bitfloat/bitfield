@@ -4,7 +4,17 @@
 \alias{bf_numeric}
 \title{Build a bit flag from a numeric value}
 \usage{
-bf_numeric(x, source, digits = 0)
+bf_numeric(
+  x,
+  source,
+  exponent = 8,
+  significand = 7,
+  bias = 127,
+  pos = NULL,
+  na.val = NULL,
+  prov = NULL,
+  registry = NULL
+)
 }
 \arguments{
 \item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the table that contains
@@ -13,8 +23,20 @@ bf_numeric(x, source, digits = 0)
 \item{source}{\code{\link[=character]{character(1)}}\cr the column in \code{x} from
 which to take the numeric value.}
 
-\item{digits}{\code{\link[=integer]{integerish(1)}}\cr the number of decimals to which
-to round the numeric value.}
+\item{exponent}{description}
+
+\item{significand}{description}
+
+\item{bias}{description}
+
+\item{pos}{\code{\link[=integer]{integerish(.)}}\cr the position(s) in the bitfield that
+should be set.}
+
+\item{na.val}{description}
+
+\item{prov}{description}
+
+\item{registry}{description}
 }
 \description{
 Build a bit flag from a numeric value
@@ -24,5 +46,5 @@ The length of the bitfield depends on the floating point precision
 of the numeric values returned with this function...
 }
 \examples{
-bf_numeric(x = example_data, source = "y", digits = 0)
+bf_numeric(x = example_data, source = "yield")
 }
