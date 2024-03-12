@@ -45,7 +45,7 @@ bf_decode <- function(x, registry, merge = NULL){
 
   # process bits
   out <- rowwise(tibble(bf_int = x))
-  out <- mutate(out, bit = .makeFlag(x = bf_int, len = registry@width))
+  out <- mutate(out, bit = .bit(x = bf_int, encoding = registry@width), to = "int")
   out <- separate(out, col = bit, into = paste0("b", tempTab$split), sep = tempTab$split)
 
   if(!is.null(merge)){

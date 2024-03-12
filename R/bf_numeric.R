@@ -29,7 +29,7 @@ bf_numeric <- function(x, source, exponent = 8, significand = 7, bias = 127,
   assertIntegerish(x = significand, len = 1, any.missing = FALSE)
   assertIntegerish(x = bias, len = 1, any.missing = FALSE)
   assertIntegerish(x = pos, lower = 1, min.len = 1, unique = TRUE, null.ok = TRUE)
-  assertIntegerish(x = na.val, lower = 0, len = 1, null.ok = TRUE)
+  assertNumeric(x = na.val, len = 1, null.ok = TRUE)
   assertList(x = prov, types = "character", any.missing = FALSE, null.ok = TRUE)
 
   if(is.null(registry)){
