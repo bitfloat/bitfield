@@ -2,7 +2,7 @@ authors:
   Steffen Ehrmann:
     href:  https://orcid.org/0000-0002-2958-0796
 title: bitfield
-url: http://luckinet.github.io/bitfield
+url: http://ehrmanns.github.io/bitfield
 development:
   mode: release
 
@@ -54,4 +54,4 @@ navbar:
       href: news/index.html
   right:
     - icon: fa-github
-      href: https://github.com/luckinet/bitfield
+      href: https://github.com/ehrmanns/bitfield
