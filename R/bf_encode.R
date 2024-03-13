@@ -46,7 +46,7 @@ bf_encode <- function(registry){
   out <- map_int(1:dim(theBitfield)[1], function(ix){
 
     temp <- paste0(theBitfield[ix, ], collapse = "")
-    int <- str_split(temp, "")[[1]]
+    int <- rev(str_split(temp, "")[[1]])
     sum(+(int == "1") * 2^(seq(int)-1))
 
   })

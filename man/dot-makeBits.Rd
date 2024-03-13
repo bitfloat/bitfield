@@ -7,17 +7,11 @@
 .makeBits(x, encoding = NULL)
 }
 \arguments{
-\item{x}{\code{\link[=integer]{integerish(1)}}\cr the integer for which to derive the
+\item{x}{the integer for which to derive the
 binary representation (bit flags).}
 
-\item{len}{\code{\link[=integer]{integerish(1)}}\cr the number of bit flags.}
-
-\item{rev}{\code{\link[=logical]{logical(1)}}\cr whether or not to revert the direction
-of how the bit flag is returned.}
+\item{encoding}{the number of bit flags.}
 }
 \description{
 Make a bit flag from an integer
-}
-\details{
-Wrapper around \code{\link{intToBits}}.
 }
