@@ -1,11 +1,17 @@
 #' Make a bit flag from an integer
 #'
-#' @param x the integer for which to derive the
+#' @param x [`integerish(1)`][integer]\cr the integer for which to derive the
 #'   binary representation (bit flags).
-#' @param encoding the number of bit flags.
+#' @param len [`integerish(1)`][integer]\cr the number of bit flags.
+#' @param rev [`logical(1)`][logical]\cr whether or not to revert the direction
+#'   of how the bit flag is returned.
+#' @details Wrapper around \code{\link{intToBits}}.
+#'
+#'
 #' @importFrom checkmate assertList
 #' @importFrom purrr map_chr
 #' @importFrom stringr str_split_i
+#' @export
 
 .makeBits <- function(x, encoding = NULL){
 
@@ -13,23 +19,13 @@
 
   len <- encoding$sign + encoding$exponent + encoding$significand
 
-  if(encoding$exponent == 0){
-
-    out <- map_chr(.x = x, .f = function(ix){
-      intToBits(ix) |>
-        as.character() |>
-        str_split_i(pattern = "", 2) |>
-        head(n = len) |>
-        rev()  |>
-        paste0(collapse = "")
-    })
-
-  } else {
-
-
-
-  }
-
+  theBits <- map_chr(.x = x, .f = function(ix){
+    intToBits(x) |>
+      as.character() |>
+      str_split_i(pattern = "", 2) |>
+      head(n = len) |>
+      paste0(collapse = "")
+  })
 
 
   # dec <- str_length(str_extract(theValues, paste0("(?<=\\.)\\d+")))
@@ -50,5 +46,5 @@
   # https://stackoverflow.com/questions/872544/what-range-of-numbers-can-be-represented-in-a-16-32-and-64-bit-ieee-754-syste
   # https://en.wikipedia.org/wiki/Half-precision_floating-point_format
 
-  return(out)
+  return(theBits)
 }
