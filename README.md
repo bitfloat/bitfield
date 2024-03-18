@@ -72,35 +72,27 @@ input <- example_data
 # these data have various deviations:
 input$x                                          # invalid (259) and improbable (0) coordinate value
 #>  [1]  25.3  27.9  27.8  27.0 259.0  27.3  26.1  26.5   0.0  25.7
+
 input$y                                          # Inf and NaN value
 #>  [1] 59.5 58.1 57.8 59.2  Inf 59.1 58.4 59.0  0.0  NaN
-input$commodity                                  # NA value or mislabeled term ("honey")
+
+input$commodity                                  # NA value or mislabelled term ("honey")
 #>  [1] "soybean" "maize"   NA        "maize"   "honey"   "maize"   "soybean"
 #>  [8] "maize"   "soybean" "maize"
-input$yield                                      # too big range?!
+
+input$yield                                      # correct range?!
 #>  [1] 11.192915 11.986793 13.229386  9.431376 12.997422  8.548882 11.276921
 #>  [8] 10.640715  9.010452 13.169897
+
 input$year                                       # flags (*r)
 #>  [1] "2021"  NA      "2021r" "2021"  "2021"  "2021"  "2021"  "2021"  "2021" 
 #> [10] "2021"
 
-validComm <- c("soybean", "maize")               # some valid category terms
+# and there is a set of valid category terms
+validComm <- c("soybean", "maize")
 
-kable(input)
+# kable(input)
 ```
-
-|     x |    y | commodity |     yield | year  |
-|------:|-----:|:----------|----------:|:------|
-|  25.3 | 59.5 | soybean   | 11.192915 | 2021  |
-|  27.9 | 58.1 | maize     | 11.986793 | NA    |
-|  27.8 | 57.8 | NA        | 13.229386 | 2021r |
-|  27.0 | 59.2 | maize     |  9.431376 | 2021  |
-| 259.0 |  Inf | honey     | 12.997422 | 2021  |
-|  27.3 | 59.1 | maize     |  8.548882 | 2021  |
-|  26.1 | 58.4 | soybean   | 11.276921 | 2021  |
-|  26.5 | 59.0 | maize     | 10.640715 | 2021  |
-|   0.0 |  0.0 | soybean   |  9.010452 | 2021  |
-|  25.7 |  NaN | maize     | 13.169897 | 2021  |
 
 The first step is in creating what is called `registry` in `bitfield`.
 This registry captures all the information required to build the
@@ -202,7 +194,7 @@ of integers.
 
 ``` r
 (intBit <- bf_encode(registry = newRegistry))
-#>  [1] 736 736 736 736 736 736 736 736 736 736
+#>  [1] 464 464 464 464 464 464 464 464 464 464
 ```
 
 As mentioned above, the registry is a record of things, which is
