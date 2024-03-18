@@ -1,50 +1,93 @@
 #' Make a bit flag from an integer
 #'
-#' @param x [`integerish(1)`][integer]\cr the integer for which to derive the
-#'   binary representation (bit flags).
-#' @param len [`integerish(1)`][integer]\cr the number of bit flags.
-#' @param rev [`logical(1)`][logical]\cr whether or not to revert the direction
-#'   of how the bit flag is returned.
-#' @details Wrapper around \code{\link{intToBits}}.
+#' @param x [`numeric(1)`][numeric]\cr the numeric value for which to derive the
+#'   binary value.
+#' @param len [`integerish(1)`][integer]\cr the number of bits used to capture
+#'   the value.
+#' @details Additional details...
 #'
+#' @examples
+#' # example code
 #'
-#' @importFrom checkmate assertList
-#' @importFrom purrr map_chr
-#' @importFrom stringr str_split_i
+#' @importFrom checkmate assertIntegerish assertNumeric
+#' @importFrom stringr str_pad
 #' @export
 
-.makeBits <- function(x, encoding = NULL){
+.intToBin <- function(x, len = NULL){
 
-  assertList(x = encoding, types = "integer", any.missing = FALSE, len = 4)
+  x <- as.integer(x)
+  assertIntegerish(x = x, any.missing = FALSE)
 
-  len <- encoding$sign + encoding$exponent + encoding$significand
+  # ensure that 'len' is enough to capture the value
+  # assertNumeric(x = len, len = 1, lower = ceiling(log2(val)), any.missing = FALSE, finite = TRUE, null.ok = TRUE)
 
-  theBits <- map_chr(.x = x, .f = function(ix){
-    intToBits(x) |>
-      as.character() |>
-      str_split_i(pattern = "", 2) |>
-      head(n = len) |>
-      paste0(collapse = "")
-  })
+  temp <- map(.x = x, .f = function(ix){
+    val <- ix
+    bin <- NULL
+    i <- 1
+    if(val == 0){
+      bin <- "0"
+    } else {
+      while(val > 0){
+
+        bin[i] <- val %% 2
+        val <- val %/% 2
+        i <- i + 1
+
+      }
+    }
+    bin <- rev(bin)
+    bin <- paste0(bin, collapse = "")
 
 
-  # dec <- str_length(str_extract(theValues, paste0("(?<=\\.)\\d+")))
-  # dec[is.na(dec)] <- 0L
-  #
-  # https://stackoverflow.com/questions/872544/what-range-of-numbers-can-be-represented-in-a-16-32-and-64-bit-ieee-754-syste
-  # https://en.wikipedia.org/wiki/Half-precision_floating-point_format
+    return(bin)
+  }) |> unlist()
 
-  # https://en.wikipedia.org/wiki/Minifloat
-  # https://en.wikipedia.org/wiki/Bfloat16_floating-point_format
-  # https://www.youtube.com/watch?v=D-9SQMWo6kI
-  #
-  # https://youtu.be/D-9SQMWo6kI?t=35 -> explanation of the data model of a bitfield, I should write this into a short description to explain how this function works
-  #
-  # for use-case
-  # https://en.wikipedia.org/wiki/Decimal_degrees
-  #
-  # https://stackoverflow.com/questions/872544/what-range-of-numbers-can-be-represented-in-a-16-32-and-64-bit-ieee-754-syste
-  # https://en.wikipedia.org/wiki/Half-precision_floating-point_format
+  # temp <- str_pad(string = temp, width = max(nchar(temp)), side = "left", pad = "0")
 
-  return(theBits)
+  # fill with 0s
+  if(!is.null(len)){
+    bin <- bin[1:len]
+    bin[is.na(bin)] <- 0
+  }
+
+  return(temp)
 }
+
+.decToBin <- function(x, len){
+
+  x <- as.numeric(paste0(0, ".", str_split(x, "[.]", simplify = T)[,2]))
+
+  temp <- map(.x = x, .f = function(ix){
+    val <- ix
+    bin <- NULL
+    i <- 0
+    while(val > 0 & i < len){
+      val <- val * 2
+      bin <- c(bin, val %/% 1)
+      val <- val - val %/% 1
+      i <-  i + 1
+    }
+    bin <- paste0(bin, collapse = "")
+
+    return(bin)
+  }) |> unlist()
+
+  return(temp)
+}
+
+
+# good explanation
+# https://www.cs.cornell.edu/~tomf/notes/cps104/floating
+#
+# calculator
+# https://float.exposed/0x3e458b82
+#
+# https://en.wikipedia.org/wiki/Minifloat
+# https://en.wikipedia.org/wiki/Bfloat16_floating-point_format
+# https://www.youtube.com/watch?v=D-9SQMWo6kI
+#
+# https://youtu.be/D-9SQMWo6kI?t=35 -> explanation of the data model of a bitfield, I should write this into a short description to explain how this function works
+#
+# for use-case
+# https://en.wikipedia.org/wiki/Decimal_degrees
