@@ -55,7 +55,7 @@ bf_encode <- function(registry){
 
         # encode as bit sequence
         sign <- as.integer(0 > theVals)
-        exponent <- .intToBin(x = nchar(intBits)-1 + 127, len = 8) replace this with the correct dynamic bias
+        exponent <- .intToBin(x = nchar(intBits)-1 + 127, len = 8)# replace this with the correct dynamic bias
         mantissa <- map(.x = temp, .f = \(x) str_split(string = x, pattern = "[.]", simplify = TRUE)[2]) |>
           unlist()
 
@@ -74,7 +74,7 @@ bf_encode <- function(registry){
   }
 
   # build the integer representation
-  out <- map(1:dim(theBitfield)[1], function(ix){ this should be an integer
+  out <- map(1:dim(theBitfield)[1], function(ix){ #this should be an integer
 
     temp <- paste0(theBitfield[ix, ], collapse = "")
     int <- rev(str_split(temp, "")[[1]])
