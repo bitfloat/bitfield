@@ -70,12 +70,17 @@ input <- example_data
 
 # these data have various deviations:
 input$x                                          # invalid (259) and improbable (0) coordinate value
+
 input$y                                          # Inf and NaN value
-input$commodity                                  # NA value or mislabeled term ("honey")
-input$yield                                      # too big range?!
+
+input$commodity                                  # NA value or mislabelled term ("honey")
+
+input$yield                                      # correct range?!
+
 input$year                                       # flags (*r)
 
-validComm <- c("soybean", "maize")               # some valid category terms
+# and there is a set of valid category terms
+validComm <- c("soybean", "maize")
 
 # kable(input)
 ```

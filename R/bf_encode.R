@@ -18,32 +18,63 @@ bf_encode <- function(registry){
   theBitfield <- tibble(.rows = registry@length)
 
   # arrange them by position of the bit ...
-  theBits <- bind_rows(map(seq_along(registry@flags), function(ix){
+  theFlags <- bind_rows(map(seq_along(registry@flags), function(ix){
     tibble(pos = registry@flags[[ix]]$position,
            name = names(registry@flags)[ix])
   }))
-  theBits <- arrange(theBits, pos)
+  theFlags <- arrange(theBits, pos)
 
   # ... and write into the registry
-  for(i in seq_along(theBits$name)){
+  for(i in seq_along(theFlags$name)){
 
     if(i != 1){
-      if(theBits$name[i] == theName){
+      if(theFlags$name[i] == theName){
         next
       }
     }
 
-    theName <- theBits$name[i]
+    theName <- theFlags$name[i]
     theFlag <- registry@flags[[theName]]
     theVals <- bf_env[[theName]]
 
-    temp <- .makeBits(x = theVals, encoding = theFlag$encoding)
-    theBitfield <- bind_cols(theBitfield, temp, .name_repair = "minimal")
+    if(!is.logical(theVals)){
 
+      # get the integer part of the binary value
+      # .intToBin(x = theVals, len = theFlag$encoding$significand)
+      intBits <- .intToBin(x = theVals)
+
+      if(!is.integer(theVals)){
+        # if(theFlag$encoding$exponent != 0L){
+        # optionally get the decimal part of the binary value and ...
+        decBits <- .decToBin(x = theVals, len = 23)
+
+        # transform to scientific notation, then ...
+        temp <- paste0(intBits, decBits)
+        temp <- str_pad(string = temp, width = max(nchar(temp)), side = "right", pad = "0")
+        temp <- gsub("^(.{1})(.*)$", "\\1.\\2", temp)
+
+        # encode as bit sequence
+        sign <- as.integer(0 > theVals)
+        exponent <- .intToBin(x = nchar(intBits)-1 + 127, len = 8) replace this with the correct dynamic bias
+        mantissa <- map(.x = temp, .f = \(x) str_split(string = x, pattern = "[.]", simplify = TRUE)[2]) |>
+          unlist()
+
+        theBits <- paste0(sign, exponent, mantissa)
+      } else {
+        # pad with 0s to have the same specs for all values of this flag
+        theBits <- intBits |>
+          str_pad(width = max(nchar(intBits)), side = "left", pad = "0")
+      }
+
+    } else {
+      theBits <- as.integer(theVals)
+    }
+
+    theBitfield <- bind_cols(theBitfield, theBits, .name_repair = "minimal")
   }
 
   # build the integer representation
-  out <- map_int(1:dim(theBitfield)[1], function(ix){
+  out <- map(1:dim(theBitfield)[1], function(ix){ this should be an integer
 
     temp <- paste0(theBitfield[ix, ], collapse = "")
     int <- rev(str_split(temp, "")[[1]])
