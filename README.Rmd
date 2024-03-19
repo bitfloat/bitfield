@@ -77,7 +77,7 @@ input$year                                       # flags (*r)
 
 validComm <- c("soybean", "maize")               # some valid category terms
 
-kable(input)
+# kable(input)
 ```
 
 The first step is in creating what is called `registry` in `bitfield`. This registry captures all the information required to build the bitfield
