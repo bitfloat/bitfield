@@ -66,55 +66,50 @@ library(dplyr, warn.conflicts = FALSE); library(CoordinateCleaner); library(stri
 Let's first load an example dataset
 
 ```{r}
-input <- example_data
+bityield$x                                       # invalid (259) and improbable (0) coordinate value
 
-# these data have various deviations:
-input$x                                          # invalid (259) and improbable (0) coordinate value
+bityield$y                                       # Inf and NaN value
 
-input$y                                          # Inf and NaN value
+bityield$commodity                               # NA value or mislabelled term ("honey")
 
-input$commodity                                  # NA value or mislabelled term ("honey")
+bityield$yield                                   # correct range?!
 
-input$yield                                      # correct range?!
+bityield$year                                    # flags (*r)
 
-input$year                                       # flags (*r)
-
-# and there is a set of valid category terms
+# and there is a set of valid commodity terms
 validComm <- c("soybean", "maize")
-
-# kable(input)
 ```
 
 The first step is in creating what is called `registry` in `bitfield`. This registry captures all the information required to build the bitfield
 
 ```{r}
-newRegistry <- bf_registry(name = "yield_QA",
-                           description = "this bitfield documents quality assessment in a table of yield data.")
+yieldReg <- bf_registry(name = "yield_QA",
+                        description = "this bitfield documents quality assessment in a table of yield data.")
 ```
 
 Then, individual bit flags need to be grown by specifying a mapping function and which position of the bitfield should be modified. The functions coming with `bitfield` have attributes containing the correct setup. 
   
-The mapping functions are provided to `bf_grow()`, where the bitfield is grown. A flag is declared by calling, for example, `bf_na(x = input, test = "x")`, which will test whether the column `x` in the table `input` has `NA`-values. 
+The mapping functions are provided to `bf_grow()`, where the bitfield is grown. A flag is declared by calling, for example, `bf_na(x = bityield, test = "x")`, which will test whether the column `x` in the table `bityield` has `NA`-values. 
 
 ```{r}
-newRegistry <- newRegistry |> 
-  # tests for coordinates ...
-  bf_na(x = input,                               # specify where to determine flags
-        test = "x",                              # determine flags
+yieldReg <- yieldReg |> 
+  # tests for longitude availability
+  bf_na(x = bityield,                            # specify where to determine flags
+        test = "x",                              # ... and which variable to test
         pos = 1,                                 # specify at which position to store the flag
         registry = _) |>                         # provide the registry to update
 
   # test which case an observation is part of
-  bf_case(x = input, exclusive = FALSE,
+  bf_case(x = bityield, exclusive = FALSE,
           yield >= 11, yield < 11 & yield > 9, yield < 9 & commodity == "maize",
           registry = _) |>
 
   # test the length (number of digits) of values
-  bf_length(x = input, test = "y",
+  bf_length(x = bityield, test = "y",
             registry = _) |>
   
-  # store a simplified (e.g. rounded) value
-  bf_numeric(x = input, source = "yield",
+  # store a simplified (e.g. rounded) numeric value
+  bf_numeric(x = bityield, source = "yield",
              exponent = 3, significand = 4, bias = 3,
              registry = _)
 ```
@@ -131,17 +126,17 @@ It is also possible to use other functions that return flags, where it is requir
 ```{r}
 # newRegistry <- newRegistry %>%
 #   # use external functions, such as from CoordinateCleaner ...
-#   bf_custom(flags = cc_equ(x = input, lon = "x", lat = "y", value = "flagged"), 
+#   bf_custom(flags = cc_equ(x = bityield, lon = "x", lat = "y", value = "flagged"), 
 #             name = "distinct_x_y", desc = c("x and y coordinates are not identical, NAs are FALSE"),
 #             pos = 7, na = FALSE, registry = .) |> 
 #   
 #   # ... or stringr ...
-#   bf_custom(flags = str_detect(input$year, "r"), 
+#   bf_custom(flags = str_detect(bityield$year, "r"), 
 #             name = "flag_year", desc = c("year values do have a flag, NAs are FALSE"),
 #             pos = 8, na = FALSE, registry = .) |> 
 #   
 #   # ... or even base R
-#   bf_custom(flags = !is.na(as.integer(input$year)), 
+#   bf_custom(flags = !is.na(as.integer(bityield$year)), 
 #             name = "valid_year", desc = c("year values are valid integers"),
 #             pos = 9, registry = .)
 ```
@@ -165,7 +160,7 @@ As mentioned above, the registry is a record of things, which is required to dec
 # 
 # # -> prints legend by default, which is also available in bf_env$legend
 # 
-# input |> 
+# bityield |> 
 #   bind_cols(bitfield) |> 
 #   kable()
 ```

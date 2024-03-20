@@ -7,4 +7,4 @@
 #'   column that indicates the yield of that crop there and one column that
 #'   indicates the year of harvest. All columns contain some sort of deviation
 #'   that may occur in data.
-"example_data"
+"bityield"
