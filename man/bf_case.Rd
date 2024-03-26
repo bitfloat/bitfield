@@ -38,7 +38,7 @@ should be set.}
 Build a bit flag by checking for cases
 }
 \examples{
-registry <- bf_case(x = example_data, exclusive = FALSE,
+registry <- bf_case(x = bityield, exclusive = FALSE,
         yield >= 11,
         yield < 11 & yield > 9,
         yield < 9 & commodity == "maize")

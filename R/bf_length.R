@@ -24,8 +24,8 @@
 #'   precision:
 #'   \href{https://en.wikipedia.org/wiki/Decimal_degrees}{https://en.wikipedia.org/wiki/Decimal_degrees}
 #' @examples
-#' bf_length(x = example_data, test = "y")
-#' bf_length(x = example_data, test = "y", dec = "\\.")
+#' bf_length(x = bityield, test = "y")
+#' bf_length(x = bityield, test = "y", dec = "\\.")
 #' @importFrom checkmate assertDataFrame assertSubset
 #' @importFrom stringr str_length str_extract
 #' @importFrom rlang expr

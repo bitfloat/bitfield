@@ -17,5 +17,5 @@ checked for NaN values.}
 Build a bit flag by checking whether values are NaN
 }
 \examples{
-bf_nan(x = example_data, test = "y")
+bf_nan(x = bityield, test = "y")
 }

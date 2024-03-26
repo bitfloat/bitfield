@@ -4,8 +4,10 @@
 #'   the bitfield.
 #' @param registry  [`registry(1)`][registry]\cr the registry that should be
 #'   used to decode the bitfield into a binary representation.
-#' @param merge [`character(1)`][character]\cr a symbol with which, if given,
-#'   the distinct fields shall be merged.
+#' @param positions [`integerish(.)`][integer]\cr extract flags that are covered
+#'   by those values into explicit data items.
+#' @param sep [`character(1)`][character]\cr a symbol with which, if given, the
+#'   distinct fields shall be separated.
 #'
 #' @importFrom checkmate assertDataFrame assertNames assertClass assertCharacter
 #' @importFrom purrr map
@@ -16,11 +18,11 @@
 #' @importFrom rlang env_bind
 #' @export
 
-bf_decode <- function(x, registry, merge = NULL){
+bf_decode <- function(x, registry, positions = NULL, sep = NULL){
 
   assertIntegerish(x = x, any.missing = FALSE, min.len = 1)
   assertClass(x = registry, classes = "registry")
-  assertCharacter(x = merge, len = 1, null.ok = TRUE)
+  assertCharacter(x = sep, len = 1, null.ok = TRUE)
 
   # get the bits ...
   theBits <- bind_rows(map(seq_along(registry@flags), function(ix){
@@ -48,8 +50,8 @@ bf_decode <- function(x, registry, merge = NULL){
   out <- mutate(out, bit = .bit(x = bf_int, encoding = registry@width), to = "int")
   out <- separate(out, col = bit, into = paste0("b", tempTab$split), sep = tempTab$split)
 
-  if(!is.null(merge)){
-    out <- unite(out, col = "bf_binary", paste0("b", tempTab$split), sep = merge)
+  if(!is.null(sep)){
+    out <- unite(out, col = "bf_binary", paste0("b", tempTab$split), sep = sep)
   } else {
     colnames(out)[-1] <- tempTab$name
   }

@@ -5,7 +5,7 @@
 #' @param test [`character(1)`][character]\cr the column in \code{x} that is
 #'   checked for NaN values.
 #' @examples
-#' bf_nan(x = example_data, test = "y")
+#' bf_nan(x = bityield, test = "y")
 #' @importFrom checkmate assertDataFrame assertSubset
 #' @export
 

@@ -9,7 +9,7 @@
 #' @param negate [`logical(1)`][logical]\cr whether or not to determine a subset
 #'   or a disjoint match.
 #' @examples
-#' bf_match(x = example_data, test = "commodity", set = c("soybean", "maize"))
+#' bf_match(x = bityield, test = "commodity", set = c("soybean", "maize"))
 #'
 #' @importFrom checkmate assertDataFrame assertSubset assertClass
 #' @export

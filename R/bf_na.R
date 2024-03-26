@@ -10,7 +10,7 @@
 #' @param prov description
 #' @param registry description
 #' @examples
-#' bf_na(x = example_data, test = "y")
+#' bf_na(x = bityield, test = "y")
 #' @importFrom checkmate assertDataFrame assertSubset
 #' @export
 

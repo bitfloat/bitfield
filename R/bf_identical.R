@@ -9,7 +9,7 @@
 #' @details This function compares the values of two columns element-wise and
 #'   returns \code{TRUE} when they are identical.
 #' @examples
-#' bf_identical(x = example_data, test = "x", against = "y")
+#' bf_identical(x = bityield, test = "x", against = "y")
 #' @importFrom checkmate assertDataFrame assertSubset
 #' @export
 
