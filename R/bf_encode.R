@@ -22,7 +22,7 @@ bf_encode <- function(registry){
     tibble(pos = registry@flags[[ix]]$position,
            name = names(registry@flags)[ix])
   }))
-  theFlags <- arrange(theBits, pos)
+  theFlags <- arrange(theFlags, pos)
 
   # ... and write into the registry
   for(i in seq_along(theFlags$name)){
@@ -41,12 +41,12 @@ bf_encode <- function(registry){
 
       # get the integer part of the binary value
       # .intToBin(x = theVals, len = theFlag$encoding$significand)
-      intBits <- .intToBin(x = theVals)
+      intBits <- .toBin(x = theVals)
 
       if(!is.integer(theVals)){
         # if(theFlag$encoding$exponent != 0L){
         # optionally get the decimal part of the binary value and ...
-        decBits <- .decToBin(x = theVals, len = 23)
+        decBits <- .toBin(x = theVals, len = 23, dec = TRUE)
 
         # transform to scientific notation, then ...
         temp <- paste0(intBits, decBits)
@@ -55,7 +55,7 @@ bf_encode <- function(registry){
 
         # encode as bit sequence
         sign <- as.integer(0 > theVals)
-        exponent <- .intToBin(x = nchar(intBits)-1 + 127, len = 8)# replace this with the correct dynamic bias
+        exponent <- .toBin(x = nchar(intBits)-1 + 127, len = 8)# replace this with the correct dynamic bias
         mantissa <- map(.x = temp, .f = \(x) str_split(string = x, pattern = "[.]", simplify = TRUE)[2]) |>
           unlist()
 
@@ -74,13 +74,13 @@ bf_encode <- function(registry){
   }
 
   # build the integer representation
-  out <- map(1:dim(theBitfield)[1], function(ix){ #this should be an integer
+  out <- map(1:dim(theBitfield)[1], function(ix){
 
-    temp <- paste0(theBitfield[ix, ], collapse = "")
+    temp <- paste0(theBitfield[ix, ], collapse = "") implement it so that it splits this up into chunks of 32 bits, if it's longer
     int <- rev(str_split(temp, "")[[1]])
     sum(+(int == "1") * 2^(seq(int)-1))
 
-  })
+  }) |> unlist()
 
   return(out)
 

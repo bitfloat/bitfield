@@ -25,30 +25,32 @@ bf_decode <- function(x, registry, positions = NULL, sep = NULL){
   assertCharacter(x = sep, len = 1, null.ok = TRUE)
 
   # get the bits ...
-  theBits <- bind_rows(map(seq_along(registry@flags), function(ix){
+  theBits <- map(.x = seq_along(registry@flags), .f = function(ix){
     tibble(pos = registry@flags[[ix]]$position,
            name = names(registry@flags)[ix],
            flags = length(registry@flags[[ix]]$values),
            bits = length(registry@flags[[ix]]$position),
            desc = paste0(registry@flags[[ix]]$description, collapse = " | "))
-  }))
-  theBits <- arrange(theBits, pos)
+  }) |>
+    bind_rows() |>
+    arrange(pos)
 
   # ... and the positions where they should be split
-  tempTab <- theBits
-  tempTab <- group_by(theBits, name)
-  tempTab <- summarise(tempTab,
-                       split = max(pos),
-                       pos = if_else(n() == 1, as.character(split), paste0(min(pos), ":", max(pos))),
-                       flags = max(flags),
-                       bits = max(bits),
-                       desc = first(desc))
-  tempTab <- arrange(tempTab, split)
+  tempTab <- theBits |>
+    group_by(name) |>
+    summarise(split = max(pos),
+              pos = if_else(n() == 1, as.character(split), paste0(min(pos), ":", max(pos))),
+              flags = max(flags),
+              bits = max(bits),
+              desc = first(desc)) |>
+    arrange(split)
 
   # process bits
-  out <- rowwise(tibble(bf_int = x))
-  out <- mutate(out, bit = .bit(x = bf_int, encoding = registry@width), to = "int")
-  out <- separate(out, col = bit, into = paste0("b", tempTab$split), sep = tempTab$split)
+  out <- .toBin(x = x) |>
+    separate(col = bit, into = paste0("b", tempTab$split), sep = tempTab$split)
+
+    # rowwise(tibble(bf_int = x)) |>
+    # mutate(bit = .toBin(x = bf_int)) |> # fix here
 
   if(!is.null(sep)){
     out <- unite(out, col = "bf_binary", paste0("b", tempTab$split), sep = sep)
@@ -62,7 +64,7 @@ bf_decode <- function(x, registry, positions = NULL, sep = NULL){
   lut <- mutate(lut, flags = row_number()-1)
   lut <- ungroup(lut)
   lut <- rowwise(lut)
-  lut <- mutate(lut, flag = .makeFlag(x = flags, len = bits, rev = TRUE))
+  # lut <- mutate(lut, flag = .makeFlag(x = flags, len = bits, rev = TRUE))
   lut <- ungroup(lut)
   lut <- select(lut, bits = pos, name, flag, desc)
 
