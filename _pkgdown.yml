@@ -10,9 +10,9 @@ reference:
   - title: create, grow and unpack registry, combine into bitfield
     desc: housekeeping functions
     contents:
-      - bf_registry
-      - bf_encode
       - bf_decode
+      - bf_encode
+      - bf_registry
   - title: flag mappers
     desc: functions that provide all information to build the flags
     contents:
@@ -38,10 +38,10 @@ reference:
       - show,registry-method
   - title: helpers
     contents:
-      - .makeBits
+      - .toBin
   - title: example data
     contents:
-      - example_data
+      - bityield
 
 navbar:
   left:
