@@ -26,7 +26,8 @@ Imports:
     rlang,
     stringr,
     tibble,
-    tidyr
+    tidyr,
+    tidyselect
 Suggests: 
     knitr,
     rmarkdown
