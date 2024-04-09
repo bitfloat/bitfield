@@ -6,8 +6,10 @@
 #' @importFrom checkmate assertClass assertCharacter assertLogical
 #' @importFrom tibble tibble
 #' @importFrom purrr map map_int
-#' @importFrom dplyr bind_rows arrange bind_cols select
+#' @importFrom dplyr bind_rows arrange bind_cols select across
 #' @importFrom stringr str_split str_split_i str_sub
+#' @importFrom tidyselect everything
+#' @importFrom tidyr separate_wider_position
 #' @export
 
 bf_encode <- function(registry){
@@ -40,12 +42,10 @@ bf_encode <- function(registry){
     if(!is.logical(theVals)){
 
       # get the integer part of the binary value
-      # .intToBin(x = theVals, len = theFlag$encoding$significand)
       intBits <- .toBin(x = theVals)
 
       if(!is.integer(theVals)){
-        # if(theFlag$encoding$exponent != 0L){
-        # optionally get the decimal part of the binary value and ...
+        # get the decimal part of the binary value and ...
         decBits <- .toBin(x = theVals, len = 23, dec = TRUE)
 
         # transform to scientific notation, then ...
@@ -70,17 +70,32 @@ bf_encode <- function(registry){
       theBits <- as.integer(theVals)
     }
 
-    theBitfield <- bind_cols(theBitfield, theBits, .name_repair = "minimal")
+    theBitfield <- bind_cols(theBitfield, theBits, .name_repair = "unique")
   }
 
-  # build the integer representation
-  out <- map(1:dim(theBitfield)[1], function(ix){
+  tempBits <- unite(theBitfield, col = "int", everything(), sep = "")
+  bitLen <- nchar(tempBits[[1]][1])
+  intLen <- ceiling(bitLen / 32)
+  widths <- NULL
+  while(bitLen > 0){
+    if(bitLen > 32){
+      widths <- c(widths, 32)
+    } else {
+      widths <- c(widths, bitLen)
+    }
+    bitLen <- bitLen - 32
+  }
+  names(widths) <- paste0("int", 1:intLen)
 
-    temp <- paste0(theBitfield[ix, ], collapse = "") implement it so that it splits this up into chunks of 32 bits, if it's longer
-    int <- rev(str_split(temp, "")[[1]])
-    sum(+(int == "1") * 2^(seq(int)-1))
+  tempBits <- separate_wider_position(data = tempBits, cols = "int", widths = widths)
 
-  }) |> unlist()
+  out <- tempBits |>
+    mutate(across(everything(), function(x){
+      temp <- str_split(x, "")
+      map(seq_along(temp), function(y){
+        sum(+(rev(temp[[y]]) == "1") * 2^(seq(temp[[y]])-1))
+      }) |> unlist()
+    }))
 
   return(out)
 
