@@ -89,13 +89,15 @@ bf_encode <- function(registry){
 
   tempBits <- separate_wider_position(data = tempBits, cols = "int", widths = widths)
 
+  .toInt <- function(x){
+    temp <- str_split(x, "")
+    map(seq_along(temp), function(y){
+      sum(+(rev(temp[[y]]) == "1") * 2^(seq(temp[[y]])-1))
+    }) |> unlist()
+  }
+
   out <- tempBits |>
-    mutate(across(everything(), function(x){
-      temp <- str_split(x, "")
-      map(seq_along(temp), function(y){
-        sum(+(rev(temp[[y]]) == "1") * 2^(seq(temp[[y]])-1))
-      }) |> unlist()
-    }))
+    mutate(across(everything(), .toInt))
 
   return(out)
 
