@@ -96,26 +96,29 @@ yieldReg <- bf_registry(name = "yield_QA",
 Then, individual bit flags need to be grown by specifying the respective mapping function. These functions create flags for the most common applications, such as `bf_na()` (to test for missing values), `bf_case()` (to test what case/class the observations are part of),`bf_length()` (to count the number of digits of a variable), or `bf_numeric()` to encode a numeric (floating point) variable as bit sequence.
   
 ```{r}
-yieldReg <- yieldReg |> 
-  # tests for longitude availability
+# tests for longitude availability
+yieldReg <- 
   bf_na(x = bityield,                            # specify where to determine flags
         test = "x",                              # ... and which variable to test
         pos = 1,                                 # specify at which position to store the flag
-        registry = _) |>                         # provide the registry to update
+        registry = yieldReg)                     # provide the registry to update
 
-  # test which case an observation is part of
+# test which case an observation is part of
+yieldReg <- 
   bf_case(x = bityield, exclusive = FALSE,
           yield >= 11, yield < 11 & yield > 9, yield < 9 & commodity == "maize",
-          registry = _) |>
+          registry = yieldReg)
 
-  # test the length (number of digits) of values
+# test the length (number of digits) of values
+yieldReg <- 
   bf_length(x = bityield, test = "y",
-            registry = _) |>
+            registry = yieldReg)
   
-  # store a simplified (e.g. rounded) numeric value
+# store a simplified (e.g. rounded) numeric value
+yieldReg <- 
   bf_numeric(x = bityield, source = "yield",
              exponent = 3, significand = 4, bias = 3,
-             registry = _)
+             registry = yieldReg)
 ```
 
 Various derived functions build on these and thus require bits according to the same rules. Finally, the registry is combined into a bitfield that is encoded by an integer and can be stored by the usual means. The resulting data structure is a record of all the things that are grown on the bitfield.
