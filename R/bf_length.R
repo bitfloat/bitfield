@@ -13,6 +13,7 @@
 #' @param pos [`integerish(.)`][integer]\cr the position(s) in the bitfield that
 #'   should be set.
 #' @param na.val description
+#' @param description description
 #' @param prov description
 #' @param registry description
 #' @details The show method of various classes shows decimals that may not
@@ -32,8 +33,9 @@
 #' @importFrom dplyr bind_cols
 #' @export
 
-bf_length <- function(x, test, dec = NULL, fill = TRUE, pos = NULL,
-                      na.val = NULL, prov = NULL, registry = NULL){
+bf_length <- function(x, test, dec = NULL, fill = TRUE,
+                      pos = NULL, na.val = NULL, description = NULL, prov = NULL,
+                      registry = NULL){
 
   assertDataFrame(x = x)
   assertSubset(x = test, choices = names(x))
@@ -105,14 +107,6 @@ bf_length <- function(x, test, dec = NULL, fill = TRUE, pos = NULL,
     out[is.na(out)] <- na.val
   }
 
-  # update position if it's not set
-  if(is.null(pos)){
-    pos <- (registry@width + 1L):(registry@width + len)
-  }
-
-  # assign tentative flags values into the current environment
-  env_bind(.env = bf_env, !!thisName := out)
-
   # update the registry
   registry@width <- registry@width + len
   if(registry@length == 0L){
@@ -123,20 +117,39 @@ bf_length <- function(x, test, dec = NULL, fill = TRUE, pos = NULL,
     }
   }
 
-  # store encoding metadata
+  # update flag metadata ...
+  if(is.null(description)){
+    description <- theDesc
+  }
+
+  if(is.null(pos)){
+    pos <- (registry@width + 1L):(registry@width + len)
+  } else {
+    # include test that checks whether sufficient positions are set, and give an error if not
+  }
+
   enc <- list(sign = 0L,
               exponent = exponent,
               significand = significand,
               bias = 0L)
 
-  # and store everything in the registry
-  temp <- list(description = theDesc,
+  if(is.null(prov)){
+    prov <- test
+  }
+
+  prov <- list(wasDerivedFrom = prov,
+               wasGeneratedBy = paste0("encodingAsBinary: 0.", exponent, ".", significand, "/0"))
+
+  # ... and store everything in the registry
+  temp <- list(description = description,
                position = pos,
                encoding = enc,
-               provenance = prov,
-               triple = paste0(test, "|encoded|0.", exponent, ".", significand, "/0"))
+               provenance = prov)
 
   registry@flags[[thisName]] <- temp
+
+  # assign tentative flags values into the current environment
+  env_bind(.env = bf_env, !!thisName := out)
 
   return(registry)
 

@@ -7,6 +7,7 @@
 #' @param pos [`integerish(.)`][integer]\cr the position(s) in the bitfield that
 #'   should be set.
 #' @param na.val description
+#' @param description description
 #' @param prov description
 #' @param registry description
 #' @examples
@@ -14,7 +15,8 @@
 #' @importFrom checkmate assertDataFrame assertSubset
 #' @export
 
-bf_na <- function(x, test, pos = NULL, na.val = NULL, prov = NULL,
+bf_na <- function(x, test,
+                  pos = NULL, na.val = NULL, description = NULL, prov = NULL,
                   registry = NULL){
 
   assertDataFrame(x = x)
@@ -36,14 +38,6 @@ bf_na <- function(x, test, pos = NULL, na.val = NULL, prov = NULL,
     out[is.na(out)] <- na.val
   }
 
-  # update position if it's not set
-  if(is.null(pos)){
-    pos <- registry@width + 1L
-  }
-
-  # assign tentative flags values into the current environment
-  env_bind(.env = bf_env, !!thisName := out)
-
   # update the registry
   registry@width <- registry@width + 1L
   if(registry@length == 0L){
@@ -54,20 +48,39 @@ bf_na <- function(x, test, pos = NULL, na.val = NULL, prov = NULL,
     }
   }
 
-  # store encoding metadata
+  # update flag metadata ...
+  if(is.null(description)){
+    description <- c(paste0("{FALSE} the value in column '", test, "' is not NA."), paste0("{TRUE}  the value in column '", test, "' is NA."))
+  }
+
+  if(is.null(pos)){
+    pos <- registry@width + 1L
+  } else {
+    # include test that checks whether sufficient positions are set, and give an error if not
+  }
+
   enc <- list(sign = 0L,
               exponent = 0L,
               significand = 1L,
               bias = 0L)
 
-  # and store everything in the registry
-  temp <- list(description = c(paste0("{FALSE} the value in column '", test, "' is not NA."), paste0("{TRUE}  the value in column '", test, "' is NA.")),
+  if(is.null(prov)){
+    prov <- test
+  }
+
+  prov <- list(wasDerivedFrom = prov,
+               wasGeneratedBy = c(paste0(test, "|value|NA"), paste0("encodingAsBinary: 0.0.1/0")))
+
+  # ... and store everything in the registry
+  temp <- list(description = description,
                position = pos,
                encoding = enc,
-               provenance = prov,
-               triple = paste0(test, "|value|NA"))
+               provenance = prov)
 
   registry@flags[[thisName]] <- temp
+
+  # assign tentative flags values into the current environment
+  env_bind(.env = bf_env, !!thisName := out)
 
   return(registry)
 }

@@ -4,30 +4,31 @@
 #'   \code{source}.
 #' @param source [`character(1)`][character]\cr the column in \code{x} from
 #'   which to take the numeric value.
-#' @param exponent description
-#' @param significand description
-#' @param bias description
+#' @param precision [`integerish(1)`][integer]\cr description
+#' @param range [`integerish(1)`][integer]\cr description
+#' @param options [`list(.)`][list]\cr description
 #' @param pos [`integerish(.)`][integer]\cr the position(s) in the bitfield that
 #'   should be set.
 #' @param na.val description
+#' @param description description
 #' @param prov description
 #' @param registry description
 #' @details The length of the bitfield depends on the floating point precision
 #'   of the numeric values returned with this function...
 #'
 #' @examples
-#' bf_numeric(x = bityield, source = "yield")
+#' bf_numeric(x = bityield, precision = 3, source = "yield")
 #' @importFrom checkmate assertDataFrame assertSubset assertIntegerish assertList
 #' @export
 
-bf_numeric <- function(x, source, exponent = 8, significand = 7, bias = 127,
-                       pos = NULL, na.val = NULL, prov = NULL, registry = NULL){
+bf_numeric <- function(x, source, precision = NULL, range = NULL, options = NULL,
+                       pos = NULL, na.val = NULL, description = NULL, prov = NULL,
+                       registry = NULL){
 
   assertDataFrame(x = x)
   assertSubset(x = source, choices = names(x))
-  assertIntegerish(x = exponent, len = 1, any.missing = FALSE)
-  assertIntegerish(x = significand, len = 1, any.missing = FALSE)
-  assertIntegerish(x = bias, len = 1, any.missing = FALSE)
+  assertIntegerish(x = precision, len = 1, any.missing = FALSE, null.ok = TRUE)
+  assertIntegerish(x = range, len = 1, any.missing = FALSE, null.ok = TRUE)
   assertIntegerish(x = pos, lower = 1, min.len = 1, unique = TRUE, null.ok = TRUE)
   assertNumeric(x = na.val, len = 1, null.ok = TRUE)
   assertList(x = prov, types = "character", any.missing = FALSE, null.ok = TRUE)
@@ -36,8 +37,7 @@ bf_numeric <- function(x, source, exponent = 8, significand = 7, bias = 127,
     registry <- bf_registry(name = "nameless_registry", description = "descriptionless_registry")
   }
 
-  exponent <- as.integer(exponent)
-  significand <- as.integer(significand)
+  codings <- .toEncoding(x = x, precision = precision, range = range, opts = options)
 
   thisName <- paste0("numeric_", source)
 
@@ -48,16 +48,8 @@ bf_numeric <- function(x, source, exponent = 8, significand = 7, bias = 127,
     out[is.na(out)] <- na.val
   }
 
-  # update position if it's not set
-  if(is.null(pos)){
-    pos <- (registry@width + 1L):(registry@width + 1L + exponent + significand)
-  }
-
-  # assign tentative flags values into the current environment
-  env_bind(.env = bf_env, !!thisName := out)
-
   # update the registry
-  registry@width <- registry@width + 1L + exponent + significand
+  registry@width <- registry@width + codings$sign + codings$exponent + codings$significand
   if(registry@length == 0L){
     registry@length <- length(out)
   } else {
@@ -66,20 +58,39 @@ bf_numeric <- function(x, source, exponent = 8, significand = 7, bias = 127,
     }
   }
 
-  # store encoding metadata
-  enc <- list(sign = 1L,
-              exponent = as.integer(exponent),
-              significand = as.integer(significand),
-              bias = as.integer(bias))
+  # update flag metadata ...
+  if(is.null(description)){
+    description <- paste0("the bits encode the numeric value in column '", source, "'.")
+  }
 
-  # and store everything in the registry
-  temp <- list(description = paste0("the bits encode the numeric value in column '", source, "'."),
+  if(is.null(pos)){
+    pos <- (registry@width + 1L):(registry@width + codings$sign + codings$exponent + codings$significand)
+  } else {
+    # include test that checks whether sufficient positions are set, and give an error if not
+  }
+
+  enc <- list(sign = codings$sign,
+              exponent = codings$exponent,
+              significand = codings$significand,
+              bias = codings$bias)
+
+  if(is.null(prov)){
+    prov <- source
+  }
+
+  provenance <- list(wasDerivedFrom = prov,
+                     wasGeneratedBy = paste0("encodingAsBinary: ", codings$sign, ".", codings$exponent, ".", codings$significand, "/", codings$bias))
+
+  # ... and store everything in the registry
+  temp <- list(description = description,
                position = pos,
                encoding = enc,
-               provenance = prov,
-               triple = paste0(source, "|encoded|1.", exponent, ".", significand, "/", bias, ""))
+               provenance = provenance)
 
   registry@flags[[thisName]] <- temp
+
+  # assign tentative flags values into the current environment
+  env_bind(.env = bf_env, !!thisName := out)
 
   return(registry)
 }

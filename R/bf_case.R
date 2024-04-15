@@ -10,13 +10,14 @@
 #' @param pos [`integerish(.)`][integer]\cr the position(s) in the bitfield that
 #'   should be set.
 #' @param na.val description
+#' @param description description
 #' @param prov description
 #' @param registry description
 #' @examples
 #' registry <- bf_case(x = bityield, exclusive = FALSE,
-#'         yield >= 11,
-#'         yield < 11 & yield > 9,
-#'         yield < 9 & commodity == "maize")
+#'                     yield >= 11,
+#'                     yield < 11 & yield > 9,
+#'                     yield < 9 & commodity == "maize")
 #' @importFrom checkmate assertDataFrame assertLogical assertTRUE assertList
 #' @importFrom rlang enquos eval_tidy as_label `:=` get_expr quo_get_expr quos
 #'   parse_expr quo_set_env quo
@@ -25,8 +26,9 @@
 #' @importFrom dplyr rename bind_cols filter if_else
 #' @export
 
-bf_case <- function(x, ..., exclusive = TRUE, pos = NULL, na.val = NULL,
-                    prov = NULL, registry = NULL){
+bf_case <- function(x, ..., exclusive = TRUE,
+                    pos = NULL, na.val = NULL, description = NULL, prov = NULL,
+                    registry = NULL){
 
   assertDataFrame(x = x)
   assertLogical(x = exclusive, len = 1)
@@ -89,10 +91,9 @@ bf_case <- function(x, ..., exclusive = TRUE, pos = NULL, na.val = NULL,
   # update position if it's not set
   if(is.null(pos)){
     pos <- (registry@width+1):(registry@width+nBits)
+  } else {
+    # include test that checks whether sufficient positions are set, and give an error if not
   }
-
-  # assign tentative flags values into the current environment
-  env_bind(.env = bf_env, !!thisName := out)
 
   # update the registry
   registry@width <- registry@width + nBits
@@ -104,20 +105,33 @@ bf_case <- function(x, ..., exclusive = TRUE, pos = NULL, na.val = NULL,
     }
   }
 
-  # store encoding metadata
+  # update flag metadata ...
+  if(is.null(description)){
+    description <- paste0("the observation has the case [", case_expr, "].")
+  }
+
   enc <- list(sign = 0L,
               exponent = 0L,
               significand = nBits,
               bias = 0L)
 
-  # and store everything in the registry
-  temp <- list(description = paste0("the observation has the case [", case_expr, "]."),
+  if(is.null(prov)){
+    prov <- "{OBS}"
+  }
+
+  prov <- list(wasDerivedFrom = prov,
+               wasGeneratedBy = paste0("encodingAsBinary: 0.0.", nBits, "/0"))
+
+  # ... and store everything in the registry
+  temp <- list(description = description,
                position = pos,
                encoding = enc,
-               provenance = prov,
-               triple = paste0("{OBS}|encoded|0.0.", nBits,"/0"))
+               provenance = prov)
 
   registry@flags[[thisName]] <- temp
+
+  # assign tentative flags values into the current environment
+  env_bind(.env = bf_env, !!thisName := out)
 
   return(registry)
 
