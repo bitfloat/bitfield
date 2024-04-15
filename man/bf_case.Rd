@@ -10,6 +10,7 @@ bf_case(
   exclusive = TRUE,
   pos = NULL,
   na.val = NULL,
+  description = NULL,
   prov = NULL,
   registry = NULL
 )
@@ -30,6 +31,8 @@ should be set.}
 
 \item{na.val}{description}
 
+\item{description}{description}
+
 \item{prov}{description}
 
 \item{registry}{description}
@@ -39,7 +42,7 @@ Build a bit flag by checking for cases
 }
 \examples{
 registry <- bf_case(x = bityield, exclusive = FALSE,
-        yield >= 11,
-        yield < 11 & yield > 9,
-        yield < 9 & commodity == "maize")
+                    yield >= 11,
+                    yield < 11 & yield > 9,
+                    yield < 9 & commodity == "maize")
 }

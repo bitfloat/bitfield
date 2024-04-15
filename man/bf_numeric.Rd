@@ -7,11 +7,12 @@
 bf_numeric(
   x,
   source,
-  exponent = 8,
-  significand = 7,
-  bias = 127,
+  precision = NULL,
+  range = NULL,
+  options = NULL,
   pos = NULL,
   na.val = NULL,
+  description = NULL,
   prov = NULL,
   registry = NULL
 )
@@ -23,16 +24,18 @@ bf_numeric(
 \item{source}{\code{\link[=character]{character(1)}}\cr the column in \code{x} from
 which to take the numeric value.}
 
-\item{exponent}{description}
+\item{precision}{\code{\link[=integer]{integerish(1)}}\cr description}
 
-\item{significand}{description}
+\item{range}{\code{\link[=integer]{integerish(1)}}\cr description}
 
-\item{bias}{description}
+\item{options}{\code{\link[=list]{list(.)}}\cr description}
 
 \item{pos}{\code{\link[=integer]{integerish(.)}}\cr the position(s) in the bitfield that
 should be set.}
 
 \item{na.val}{description}
+
+\item{description}{description}
 
 \item{prov}{description}
 
@@ -46,5 +49,5 @@ The length of the bitfield depends on the floating point precision
 of the numeric values returned with this function...
 }
 \examples{
-bf_numeric(x = bityield, source = "yield")
+bf_numeric(x = bityield, precision = 3, source = "yield")
 }

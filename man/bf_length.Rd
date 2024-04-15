@@ -11,6 +11,7 @@ bf_length(
   fill = TRUE,
   pos = NULL,
   na.val = NULL,
+  description = NULL,
   prov = NULL,
   registry = NULL
 )
@@ -34,6 +35,8 @@ whether it should only document existing decimal lengths.}
 should be set.}
 
 \item{na.val}{description}
+
+\item{description}{description}
 
 \item{prov}{description}
 
