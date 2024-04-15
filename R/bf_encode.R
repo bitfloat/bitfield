@@ -21,7 +21,7 @@ bf_encode <- function(registry){
 
   # arrange them by position of the bit ...
   theFlags <- bind_rows(map(seq_along(registry@flags), function(ix){
-    tibble(pos = registry@flags[[ix]]$position,
+    tibble(pos = min(registry@flags[[ix]]$position),
            name = names(registry@flags)[ix])
   }))
   theFlags <- arrange(theFlags, pos)
@@ -29,48 +29,40 @@ bf_encode <- function(registry){
   # ... and write into the registry
   for(i in seq_along(theFlags$name)){
 
-    if(i != 1){
-      if(theFlags$name[i] == theName){
-        next
-      }
-    }
-
     theName <- theFlags$name[i]
     theFlag <- registry@flags[[theName]]
     theVals <- bf_env[[theName]]
 
     if(!is.logical(theVals)){
 
+      # good explanation here: https://www.cs.cornell.edu/~tomf/notes/cps104/floating
       # get the integer part of the binary value
-      intBits <- .toBin(x = theVals)
+      intBits <- .toBin(x = abs(theVals), len = theFlag$encoding$significand)
 
       if(!is.integer(theVals)){
         # get the decimal part of the binary value and ...
-        decBits <- .toBin(x = theVals, len = 23, dec = TRUE)
+        decBits <- .toBin(x = theVals, len = theFlag$encoding$exponent, dec = TRUE)
 
         # transform to scientific notation, then ...
         temp <- paste0(intBits, decBits)
-        temp <- str_pad(string = temp, width = max(nchar(temp)), side = "right", pad = "0")
         temp <- gsub("^(.{1})(.*)$", "\\1.\\2", temp)
 
         # encode as bit sequence
         sign <- as.integer(0 > theVals)
-        exponent <- .toBin(x = nchar(intBits)-1 + 127, len = 8)# replace this with the correct dynamic bias
+        exponent <- .toBin(x = nchar(intBits)-1 + theFlag$encoding$bias, len = theFlag$encoding$exponent)
         mantissa <- map(.x = temp, .f = \(x) str_split(string = x, pattern = "[.]", simplify = TRUE)[2]) |>
           unlist()
 
         theBits <- paste0(sign, exponent, mantissa)
       } else {
-        # pad with 0s to have the same specs for all values of this flag
-        theBits <- intBits |>
-          str_pad(width = max(nchar(intBits)), side = "left", pad = "0")
+        theBits <- intBits
       }
 
     } else {
       theBits <- as.integer(theVals)
     }
 
-    theBitfield <- bind_cols(theBitfield, theBits, .name_repair = "unique")
+    theBitfield <- bind_cols(theBitfield, tibble(!!paste0("c", i) := theBits))
   }
 
   tempBits <- unite(theBitfield, col = "int", everything(), sep = "")
@@ -88,13 +80,6 @@ bf_encode <- function(registry){
   names(widths) <- paste0("int", 1:intLen)
 
   tempBits <- separate_wider_position(data = tempBits, cols = "int", widths = widths)
-
-  .toInt <- function(x){
-    temp <- str_split(x, "")
-    map(seq_along(temp), function(y){
-      sum(+(rev(temp[[y]]) == "1") * 2^(seq(temp[[y]])-1))
-    }) |> unlist()
-  }
 
   out <- tempBits |>
     mutate(across(everything(), .toInt))

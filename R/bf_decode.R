@@ -20,7 +20,7 @@
 
 bf_decode <- function(x, registry, positions = NULL, sep = NULL){
 
-  assertIntegerish(x = x, any.missing = FALSE, min.len = 1)
+  assertDataFrame(x = x, types = "double", any.missing = FALSE)
   assertClass(x = registry, classes = "registry")
   assertCharacter(x = sep, len = 1, null.ok = TRUE)
 
@@ -36,7 +36,7 @@ bf_decode <- function(x, registry, positions = NULL, sep = NULL){
     arrange(pos)
 
   # ... and the positions where they should be split
-  tempTab <- theBits |>
+  theBits <- theBits |>
     group_by(name) |>
     summarise(split = max(pos),
               pos = if_else(n() == 1, as.character(split), paste0(min(pos), ":", max(pos))),
@@ -46,16 +46,19 @@ bf_decode <- function(x, registry, positions = NULL, sep = NULL){
     arrange(split)
 
   # process bits
-  out <- .toBin(x = x) |>
-    separate(col = bit, into = paste0("b", tempTab$split), sep = tempTab$split)
+  tempBits <- NULL
+  for(i in seq_along(x)){
+    tempBits <- .toBin(x[[i]], len = registry@width[i]) |>
+      bind_cols(tempBits, .)
+  }
+  out <- out |> #identify how to combine several columns
+    separate(col = bit, into = paste0("b", theBits$split), sep = theBits$split)
 
-    # rowwise(tibble(bf_int = x)) |>
-    # mutate(bit = .toBin(x = bf_int)) |> # fix here
 
   if(!is.null(sep)){
-    out <- unite(out, col = "bf_binary", paste0("b", tempTab$split), sep = sep)
+    out <- unite(out, col = "bf_binary", paste0("b", theBits$split), sep = sep)
   } else {
-    colnames(out)[-1] <- tempTab$name
+    colnames(out)[-1] <- theBits$name
   }
 
   # create look-up table for what the bits stand for
