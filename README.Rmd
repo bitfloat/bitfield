@@ -115,10 +115,9 @@ yieldReg <-
             registry = yieldReg)
   
 # store a simplified (e.g. rounded) numeric value
-yieldReg <- 
-  bf_numeric(x = bityield, source = "yield",
-             exponent = 3, significand = 4, bias = 3,
-             registry = yieldReg)
+# yieldReg <- 
+#   bf_numeric(x = bityield, source = "yield", precision = 3, 
+#              registry = yieldReg)
 ```
 
 Various derived functions build on these and thus require bits according to the same rules. Finally, the registry is combined into a bitfield that is encoded by an integer and can be stored by the usual means. The resulting data structure is a record of all the things that are grown on the bitfield.

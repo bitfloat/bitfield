@@ -106,26 +106,28 @@ of),`bf_length()` (to count the number of digits of a variable), or
 sequence.
 
 ``` r
-yieldReg <- yieldReg |> 
-  # tests for longitude availability
+# tests for longitude availability
+yieldReg <- 
   bf_na(x = bityield,                            # specify where to determine flags
         test = "x",                              # ... and which variable to test
         pos = 1,                                 # specify at which position to store the flag
-        registry = _) |>                         # provide the registry to update
+        registry = yieldReg)                     # provide the registry to update
 
-  # test which case an observation is part of
+# test which case an observation is part of
+yieldReg <- 
   bf_case(x = bityield, exclusive = FALSE,
           yield >= 11, yield < 11 & yield > 9, yield < 9 & commodity == "maize",
-          registry = _) |>
+          registry = yieldReg)
 
-  # test the length (number of digits) of values
+# test the length (number of digits) of values
+yieldReg <- 
   bf_length(x = bityield, test = "y",
-            registry = _) |>
+            registry = yieldReg)
   
-  # store a simplified (e.g. rounded) numeric value
-  bf_numeric(x = bityield, source = "yield",
-             exponent = 3, significand = 4, bias = 3,
-             registry = _)
+# store a simplified (e.g. rounded) numeric value
+# yieldReg <- 
+#   bf_numeric(x = bityield, source = "yield", precision = 3, 
+#              registry = yieldReg)
 ```
 
 Various derived functions build on these and thus require bits according
@@ -144,8 +146,19 @@ integer, with the function `bf_encode()`.
 
 ``` r
 (intBit <- bf_encode(registry = yieldReg))
-#>  [1] 146189889906 146196549436 146206973059 695859048110 111845288841
-#>  [6] 695923524034 146190594599 352343687926 317970273914   8767520558
+#> # A tibble: 10 × 1
+#>     int1
+#>    <dbl>
+#>  1     4
+#>  2     4
+#>  3     4
+#>  4    20
+#>  5     3
+#>  6    20
+#>  7     4
+#>  8    10
+#>  9     9
+#> 10     0
 ```
 
 The bitfield can be decoded based on the registry with the function

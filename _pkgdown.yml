@@ -39,6 +39,8 @@ reference:
   - title: helpers
     contents:
       - .toBin
+      - .toInt
+      - .testPrecision
   - title: example data
     contents:
       - bityield
