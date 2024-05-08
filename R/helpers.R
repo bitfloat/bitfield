@@ -84,7 +84,8 @@
   map(seq_along(temp), function(y){
     assertNames(x = temp[[y]], subset.of = c("1", "0"))
 
-    sum(+(rev(temp[[y]]) == "1") * 2^(seq(temp[[y]])-1))
+    sum(+(rev(temp[[y]]) == "1") * 2^(seq(temp[[y]])-1)) |>
+      as.integer()
   }) |>
     unlist()
 }
@@ -177,9 +178,11 @@
   }
 
   if(is.null(exp)){
+    # range comes in here
 
   }
   if(is.null(signif)){
+    # precision comes in here
 
     # x <- 329.390625
     # xInt <- as.integer(x)
