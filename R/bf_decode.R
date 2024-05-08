@@ -20,7 +20,7 @@
 
 bf_decode <- function(x, registry, positions = NULL, sep = NULL){
 
-  assertDataFrame(x = x, types = "double", any.missing = FALSE)
+  assertDataFrame(x = x, types = "integer", any.missing = FALSE)
   assertClass(x = registry, classes = "registry")
   assertCharacter(x = sep, len = 1, null.ok = TRUE)
 
@@ -45,31 +45,30 @@ bf_decode <- function(x, registry, positions = NULL, sep = NULL){
               desc = first(desc)) |>
     arrange(split)
 
+  # create look-up table for what the bits stand for
+  lut <- separate_longer_delim(data = theBits, cols = desc, delim = " | ") |>
+    group_by(name) |>
+    mutate(flags = row_number()-1) |>
+    ungroup() |>
+    rowwise() |>
+    mutate(flag = .toBin(x = flags, len = bits)) |>
+    select(bits = pos, name, flag, desc)
+
   # process bits
   tempBits <- NULL
   for(i in seq_along(x)){
-    tempBits <- .toBin(x[[i]], len = registry@width[i]) |>
-      bind_cols(tempBits, .)
+    tempBits <- tibble(!!paste0("bin", i) := .toBin(x[[i]], len = registry@width)) |>
+      bind_cols(tempBits)
   }
-  out <- out |> #identify how to combine several columns
-    separate(col = bit, into = paste0("b", theBits$split), sep = theBits$split)
-
+  out <- tempBits |> #identify how to combine several columns
+    unite(col = "bin", everything(), sep = "") |>
+    separate(col = bin, into = paste0("flag", theBits$split), sep = theBits$split)
 
   if(!is.null(sep)){
-    out <- unite(out, col = "bf_binary", paste0("b", theBits$split), sep = sep)
+    out <- unite(out, col = "bf_binary", paste0("flag", theBits$split), sep = sep)
   } else {
     colnames(out)[-1] <- theBits$name
   }
-
-  # create look-up table for what the bits stand for
-  lut <- separate_longer_delim(data = tempTab, cols = desc, delim = " | ")
-  lut <- group_by(lut, name)
-  lut <- mutate(lut, flags = row_number()-1)
-  lut <- ungroup(lut)
-  lut <- rowwise(lut)
-  # lut <- mutate(lut, flag = .makeFlag(x = flags, len = bits, rev = TRUE))
-  lut <- ungroup(lut)
-  lut <- select(lut, bits = pos, name, flag, desc)
 
   # assign look-up table to the environment as well
   env_bind(.env = bf_env, legend = lut)
