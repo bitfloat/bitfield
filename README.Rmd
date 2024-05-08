@@ -72,15 +72,15 @@ library(dplyr, warn.conflicts = FALSE); library(CoordinateCleaner); library(stri
 Let's first load an example dataset
 
 ```{r}
-bityield$x                                       # invalid (259) and improbable (0) coordinate value
+tbl_bityield$x                                       # invalid (259) and improbable (0) coordinate value
 
-bityield$y                                       # Inf and NaN value
+tbl_bityield$y                                       # Inf and NaN value
 
-bityield$commodity                               # NA value or mislabelled term ("honey")
+tbl_bityield$commodity                               # NA value or mislabelled term ("honey")
 
-bityield$yield                                   # correct range?!
+tbl_bityield$yield                                   # correct range?!
 
-bityield$year                                    # flags (*r)
+tbl_bityield$year                                    # flags (*r)
 
 # and there is a set of valid commodity terms
 validComm <- c("soybean", "maize")
@@ -98,29 +98,29 @@ Then, individual bit flags need to be grown by specifying the respective mapping
 ```{r}
 # tests for longitude availability
 yieldReg <- 
-  bf_na(x = bityield,                            # specify where to determine flags
+  bf_na(x = tbl_bityield,                            # specify where to determine flags
         test = "x",                              # ... and which variable to test
         pos = 1,                                 # specify at which position to store the flag
         registry = yieldReg)                     # provide the registry to update
 
 # test which case an observation is part of
 yieldReg <- 
-  bf_case(x = bityield, exclusive = FALSE,
+  bf_case(x = tbl_bityield, exclusive = FALSE,
           yield >= 11, yield < 11 & yield > 9, yield < 9 & commodity == "maize",
           registry = yieldReg)
 
 # test the length (number of digits) of values
 yieldReg <- 
-  bf_length(x = bityield, test = "y",
+  bf_length(x = tbl_bityield, test = "y",
             registry = yieldReg)
   
 # store a simplified (e.g. rounded) numeric value
 # yieldReg <- 
-#   bf_numeric(x = bityield, source = "yield", precision = 3, 
+#   bf_numeric(x = tbl_bityield, source = "yield", precision = 3, 
 #              registry = yieldReg)
 ```
 
-Various derived functions build on these and thus require bits according to the same rules. Finally, the registry is combined into a bitfield that is encoded by an integer and can be stored by the usual means. The resulting data structure is a record of all the things that are grown on the bitfield.
+Various derived functions build on these and thus require bits according to the same rules. The resulting data structure is a record of all the things that are grown on the bitfield.
 
 ```{r}
 yieldReg
@@ -135,39 +135,29 @@ This is, however, not yet the bitfield. The registry is merely the instruction m
 The bitfield can be decoded based on the registry with the function `bf_decode()` at a later point in time, where the metadata contained in the bitfield can be studied or extended in a downstream application.
 
 ```{r}
-# bitfield <- bf_decode(x = intBit, registry = yieldReg, sep = "-")
-# 
-# # -> prints legend by default, which is also available in bf_env$legend
-# 
-# bityield |> 
-#   bind_cols(bitfield) |> 
-#   kable()
+bitfield <- bf_decode(x = intBit, registry = yieldReg, sep = "-")
+
+# -> prints legend by default, which is also available in bf_env$legend
+
+tbl_bityield |>
+  bind_cols(bitfield) |>
+  kable()
 ```
 
-~~Together with the rules mentioned above, we can read the binary representation on step at a time. For example, considering the second position, with the description `the values in column 'x' range between [-180,180]`, we see that row five has the value `0`, which means according to naming-rule 1 (`FALSE == 0`), that the x-value here should be outside of the range of [-180, 180], which we can confirm.~~include some example here
+The column `bf_binary`, in combination with the legend, can be read one step at a time. For example, considering the first bit, we see that no observation has an `NA` value and considering the second bit, we see that observations 4 and 6 have a `yield` smaller than 9 and a `commodity` value "maize".
 
 
 ## Bitfields for other data-types
 
-This example here shows how to compute quality bits for tabular data, but this technique is especially helpful for raster data. To keep this package as simple as possible, no specific methods for rasters were developed (so far), they instead need to be converted to tabular form and joined to the attributes or meta data that should be added to the QB, for example like this
 
-```{r, eval = FALSE}
-library(terra)
 
-raster <- rast(matrix(data = 1:25, nrow = 5, ncol = 5))
+```{r}
+library(terra, warn.conflicts = FALSE)
 
-input <- values(raster) |> 
-  as_tibble() |>  
-  rename(values = lyr.1) |> 
-  bind_cols(crds(raster), .)
+rst_bityield <- rast(system.file("ex/rst_bityield.tif", package="bitfield"))
+levels(rst_bityield$commodity) <- tibble(id = 1:3, commodity = c("soybean", "maize", "honey"))
 
-# from here we can continue creating a bitfield and growing bits on it just like shown above...
-intBit <- bf_combine(...)
-
-# ... and then converting it back to a raster
-QB_rast <- crds(raster) |> 
-  bind_cols(intBit) |> 
-  rast(type = "xyz", crs = crs(raster), extent = ext(raster))
+plot(rst_bityield)
 ```
 
 
