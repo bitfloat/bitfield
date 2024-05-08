@@ -38,6 +38,13 @@ bf_na <- function(x, test,
     out[is.na(out)] <- na.val
   }
 
+  # update position if it's not set
+  if(is.null(pos)){
+    pos <- registry@width + 1L
+  } else {
+    # include test that checks whether sufficient positions are set, and give an error if not
+  }
+
   # update the registry
   registry@width <- registry@width + 1L
   if(registry@length == 0L){
@@ -51,12 +58,6 @@ bf_na <- function(x, test,
   # update flag metadata ...
   if(is.null(description)){
     description <- c(paste0("{FALSE} the value in column '", test, "' is not NA."), paste0("{TRUE}  the value in column '", test, "' is NA."))
-  }
-
-  if(is.null(pos)){
-    pos <- registry@width + 1L
-  } else {
-    # include test that checks whether sufficient positions are set, and give an error if not
   }
 
   enc <- list(sign = 0L,

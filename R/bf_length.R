@@ -52,11 +52,15 @@ bf_length <- function(x, test, dec = NULL, fill = TRUE,
   if(!is.null(dec)){
     testVals <- str_length(str_extract(x[[test]], paste0("(?<=", dec, ")\\d+")))
     testVals[is.na(testVals)] <- 0L
+    # testVals[is.nan(testVals)] <- 0L
+    # testVals[is.infinite(testVals)] <- 0L
 
     thisName <- paste0("decimals_", test)
   } else {
     testVals <- str_length(x[[test]])
     testVals[is.na(x[[test]])] <- 0L
+    testVals[is.nan(x[[test]])] <- 0L
+    testVals[is.infinite(x[[test]])] <- 0L
 
     thisName <- paste0("length_", test)
   }
@@ -90,7 +94,7 @@ bf_length <- function(x, test, dec = NULL, fill = TRUE,
 
   out <- tempVals[out]
 
-  len <- as.integer(ceiling(log2(length(unique(out)))))
+  len <- as.integer(ceiling(log2(length(unique(tempVals)))))
 
   if(!is.null(dec)){
     significand <- 0L
@@ -107,6 +111,13 @@ bf_length <- function(x, test, dec = NULL, fill = TRUE,
     out[is.na(out)] <- na.val
   }
 
+  # update position if it's not set
+  if(is.null(pos)){
+    pos <- (registry@width + 1L):(registry@width + len)
+  } else {
+    # include test that checks whether sufficient positions are set, and give an error if not
+  }
+
   # update the registry
   registry@width <- registry@width + len
   if(registry@length == 0L){
@@ -120,12 +131,6 @@ bf_length <- function(x, test, dec = NULL, fill = TRUE,
   # update flag metadata ...
   if(is.null(description)){
     description <- theDesc
-  }
-
-  if(is.null(pos)){
-    pos <- (registry@width + 1L):(registry@width + len)
-  } else {
-    # include test that checks whether sufficient positions are set, and give an error if not
   }
 
   enc <- list(sign = 0L,

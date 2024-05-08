@@ -48,6 +48,13 @@ bf_numeric <- function(x, source, precision = NULL, range = NULL, options = NULL
     out[is.na(out)] <- na.val
   }
 
+  # update position if it's not set
+  if(is.null(pos)){
+    pos <- (registry@width + 1L):(registry@width + codings$sign + codings$exponent + codings$significand)
+  } else {
+    # include test that checks whether sufficient positions are set, and give an error if not
+  }
+
   # update the registry
   registry@width <- registry@width + codings$sign + codings$exponent + codings$significand
   if(registry@length == 0L){
@@ -61,12 +68,6 @@ bf_numeric <- function(x, source, precision = NULL, range = NULL, options = NULL
   # update flag metadata ...
   if(is.null(description)){
     description <- paste0("the bits encode the numeric value in column '", source, "'.")
-  }
-
-  if(is.null(pos)){
-    pos <- (registry@width + 1L):(registry@width + codings$sign + codings$exponent + codings$significand)
-  } else {
-    # include test that checks whether sufficient positions are set, and give an error if not
   }
 
   enc <- list(sign = codings$sign,
