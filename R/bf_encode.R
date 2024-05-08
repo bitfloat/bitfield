@@ -35,7 +35,7 @@ bf_encode <- function(registry){
 
     if(!is.logical(theVals)){
 
-      # good explanation here: https://www.cs.cornell.edu/~tomf/notes/cps104/floating
+      # good explanation: https://www.cs.cornell.edu/~tomf/notes/cps104/floating
       # get the integer part of the binary value
       intBits <- .toBin(x = abs(theVals), len = theFlag$encoding$significand)
 
@@ -62,7 +62,7 @@ bf_encode <- function(registry){
       theBits <- as.integer(theVals)
     }
 
-    theBitfield <- bind_cols(theBitfield, tibble(!!paste0("c", i) := theBits))
+    theBitfield <- bind_cols(theBitfield, tibble(!!paste0("flag", i) := theBits), .name_repair = "minimal")
   }
 
   tempBits <- unite(theBitfield, col = "int", everything(), sep = "")
