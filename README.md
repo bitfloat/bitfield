@@ -19,27 +19,25 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 
 This package is designed to build sequences of bits (i.e.,
 [bitfields](https://en.wikipedia.org/wiki/Bit_field)) to capture the
-computational footprint of a scientific/modelling workflow. This can be
-useful when documenting
+computational footprint of any (scientific) model workflow or output.
+The bit sequence is then encoded as an integer value that stores a range
+of information into a single column of a table or a raster layer. This
+can be useful when documenting
 
-- the metadata of any tabular dataset by collecting information
-  throughout the dataset creation process,
+- the metadata of any dataset by collecting information throughout the
+  dataset creation process,
 - a provenance graph that documents how a gridded modelled data product
   was built,
 - intermediate data that accrue along a workflow, or
-- a set of output metrics or parameters
-
-into a sequence of bits that are encoded as a single integer value that
-is stored in a column of a table or a raster layer.
+- a set of output metrics or parameters.
 
 Think of a bit as a switch representing off and on states. A combination
 of a pair of bits can store four states, and n bits can accommodate 2^n
-states. In R, integers are typically 32-bit values, allowing a single
-integer to store 32 switches (called `flags` here) and 2^32 states.
-These states could be the outcomes of (simple) tests that document
-binary responses, cases or numeric values. Those data could be described
-as meta-analytic or meta-algorithmic data, because they can be re-used
-to extend the analysis pipeline or algorithm by downstream applications.
+states. These states could be the outcomes of (simple) tests that
+document binary responses, cases or numeric values. The data produced in
+that way could be described as meta-analytic or meta-algorithmic data,
+because they can be re-used to extend an analysis pipeline or algorithm
+by downstream applications.
 
 ## Installation
 
@@ -108,7 +106,7 @@ sequence.
 ``` r
 # tests for longitude availability
 yieldReg <- 
-  bf_na(x = tbl_bityield,                            # specify where to determine flags
+  bf_na(x = tbl_bityield,                        # specify where to determine flags
         test = "x",                              # ... and which variable to test
         pos = 1,                                 # specify at which position to store the flag
         registry = yieldReg)                     # provide the registry to update
@@ -135,7 +133,50 @@ to the same rules. The resulting data structure is a record of all the
 things that are grown on the bitfield.
 
 ``` r
-yieldReg
+yieldReg # not showing anything yet
+
+str(yieldReg)
+#> Formal class 'registry' [package "bitfield"] with 7 slots
+#>   ..@ width      : int 6
+#>   ..@ length     : int 10
+#>   ..@ name       : chr "yield_QA"
+#>   ..@ version    : chr "020.412.20240515"
+#>   ..@ md5        : chr NA
+#>   ..@ description: chr "this bitfield documents quality assessment in a table of yield data."
+#>   ..@ flags      :List of 3
+#>   .. ..$ na_x    :List of 4
+#>   .. .. ..$ description: chr [1:2] "{FALSE} the value in column 'x' is not NA." "{TRUE}  the value in column 'x' is NA."
+#>   .. .. ..$ position   : num 1
+#>   .. .. ..$ encoding   :List of 4
+#>   .. .. .. ..$ sign       : int 0
+#>   .. .. .. ..$ exponent   : int 0
+#>   .. .. .. ..$ significand: int 1
+#>   .. .. .. ..$ bias       : int 0
+#>   .. .. ..$ provenance :List of 2
+#>   .. .. .. ..$ wasDerivedFrom: chr "x"
+#>   .. .. .. ..$ wasGeneratedBy: chr [1:2] "x|value|NA" "encodingAsBinary: 0.0.1/0"
+#>   .. ..$ cases   :List of 4
+#>   .. .. ..$ description: chr [1:3] "the observation has the case [yield >= 11]." "the observation has the case [yield < 11 & yield > 9]." "the observation has the case [yield < 9 & commodity == \"maize\"]."
+#>   .. .. ..$ position   : int [1:2] 2 3
+#>   .. .. ..$ encoding   :List of 4
+#>   .. .. .. ..$ sign       : int 0
+#>   .. .. .. ..$ exponent   : int 0
+#>   .. .. .. ..$ significand: int 2
+#>   .. .. .. ..$ bias       : int 0
+#>   .. .. ..$ provenance :List of 2
+#>   .. .. .. ..$ wasDerivedFrom: chr "{OBS}"
+#>   .. .. .. ..$ wasGeneratedBy: chr "encodingAsBinary: 0.0.2/0"
+#>   .. ..$ length_y:List of 4
+#>   .. .. ..$ description: chr "the bits encode the value length in column 'y'."
+#>   .. .. ..$ position   : int [1:3] 4 5 6
+#>   .. .. ..$ encoding   :List of 4
+#>   .. .. .. ..$ sign       : int 0
+#>   .. .. .. ..$ exponent   : int 0
+#>   .. .. .. ..$ significand: int 3
+#>   .. .. .. ..$ bias       : int 0
+#>   .. .. ..$ provenance :List of 2
+#>   .. .. .. ..$ wasDerivedFrom: chr "y"
+#>   .. .. .. ..$ wasGeneratedBy: chr "encodingAsBinary: 0.0.3/0"
 ```
 
 This is, however, not yet the bitfield. The registry is merely the
@@ -145,18 +186,18 @@ integer, with the function `bf_encode()`.
 ``` r
 (intBit <- bf_encode(registry = yieldReg))
 #> # A tibble: 10 × 1
-#>     int1
-#>    <int>
-#>  1     4
-#>  2     4
-#>  3     4
-#>  4    20
-#>  5     0
-#>  6    20
-#>  7     4
-#>  8    10
-#>  9     9
-#> 10     0
+#>    bf_int1
+#>      <int>
+#>  1       4
+#>  2       4
+#>  3       4
+#>  4      20
+#>  5       0
+#>  6      20
+#>  7       4
+#>  8      10
+#>  9       9
+#> 10       0
 ```
 
 The bitfield can be decoded based on the registry with the function
@@ -183,18 +224,18 @@ tbl_bityield |>
   kable()
 ```
 
-|     x |    y | commodity |     yield | year  | bf_binary |
-|------:|-----:|:----------|----------:|:------|:----------|
-|  25.3 | 59.5 | soybean   | 11.192915 | 2021  | 0-00-100  |
-|  27.9 | 58.1 | maize     | 11.986793 | NA    | 0-00-100  |
-|  27.8 | 57.8 | NA        | 13.229386 | 2021r | 0-00-100  |
-|  27.0 | 59.2 | maize     |  4.431376 | 2021  | 0-10-100  |
-| 259.0 |  Inf | honey     | 12.997422 | 2021  | 0-00-000  |
-|  27.3 | 59.1 | maize     |  8.548882 | 2021  | 0-10-100  |
-|  26.1 | 58.4 | soybean   | 11.276921 | 2021  | 0-00-100  |
-|  26.5 | 59.0 | maize     | 10.640715 | 2021  | 0-01-010  |
-|   0.0 |  0.0 | soybean   |  9.010452 | 2021  | 0-01-001  |
-|  25.7 |  NaN | maize     | 13.169897 | 2021  | 0-00-000  |
+|     x |    y | commodity |     yield | year  | bf_bin   |
+|------:|-----:|:----------|----------:|:------|:---------|
+|  25.3 | 59.5 | soybean   | 11.192915 | 2021  | 0-00-100 |
+|  27.9 | 58.1 | maize     | 11.986793 | NA    | 0-00-100 |
+|  27.8 | 57.8 | NA        | 13.229386 | 2021r | 0-00-100 |
+|  27.0 | 59.2 | maize     |  4.431376 | 2021  | 0-10-100 |
+| 259.0 |  Inf | honey     | 12.997422 | 2021  | 0-00-000 |
+|  27.3 | 59.1 | maize     |  8.548882 | 2021  | 0-10-100 |
+|  26.1 | 58.4 | soybean   | 11.276921 | 2021  | 0-00-100 |
+|  26.5 | 59.0 | maize     | 10.640715 | 2021  | 0-01-010 |
+|   0.0 |  0.0 | soybean   |  9.010452 | 2021  | 0-01-001 |
+|  25.7 |  NaN | maize     | 13.169897 | 2021  | 0-00-000 |
 
 The column `bf_binary`, in combination with the legend, can be read one
 step at a time. For example, considering the first bit, we see that no
@@ -203,6 +244,9 @@ that observations 4 and 6 have a `yield` smaller than 9 and a
 `commodity` value “maize”.
 
 ## Bitfields for other data-types
+
+Not only tabular data are supported, but also gridded data such as
+rasters (wip).
 
 ``` r
 library(terra, warn.conflicts = FALSE)
@@ -218,6 +262,8 @@ plot(rst_bityield)
 
 # To Do
 
-- write registry show method
-- include MD5 sum for a bitfield and update it each time the bitfield is
-  grown further
+- [ ] write registry show method
+- [ ] write unit tests
+- [ ] include MD5 sum for a bitfield and update it each time the
+  bitfield is grown further
+- [ ] document the provenance stuff in here

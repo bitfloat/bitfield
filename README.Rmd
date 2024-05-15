@@ -34,17 +34,14 @@ library(knitr)
 
 ## Overview
 
-This package is designed to build sequences of bits (i.e., [bitfields](https://en.wikipedia.org/wiki/Bit_field)) to capture the computational footprint of a scientific/modelling workflow.
-This can be useful when documenting 
+This package is designed to build sequences of bits (i.e., [bitfields](https://en.wikipedia.org/wiki/Bit_field)) to capture the computational footprint of any (scientific) model workflow or output. The bit sequence is then encoded as an integer value that stores a range of information into a single column of a table or a raster layer. This can be useful when documenting 
 
-  - the metadata of any tabular dataset by collecting information throughout the dataset creation process, 
+  - the metadata of any dataset by collecting information throughout the dataset creation process, 
   - a provenance graph that documents how a gridded modelled data product was built, 
   - intermediate data that accrue along a workflow, or 
-  - a set of output metrics or parameters 
+  - a set of output metrics or parameters.
 
-into a sequence of bits that are encoded as a single integer value that is stored in a column of a table or a raster layer.
-
-Think of a bit as a switch representing off and on states. A combination of a pair of bits can store four states, and n bits can accommodate 2^n states. In R, integers are typically 32-bit values, allowing a single integer to store 32 switches (called `flags` here) and 2^32 states. These states could be the outcomes of (simple) tests that document binary responses, cases or numeric values. Those data could be described as meta-analytic or meta-algorithmic data, because they can be re-used to extend the analysis pipeline or algorithm by downstream applications.
+Think of a bit as a switch representing off and on states. A combination of a pair of bits can store four states, and n bits can accommodate 2^n states. These states could be the outcomes of (simple) tests that document binary responses, cases or numeric values. The data produced in that way could be described as meta-analytic or meta-algorithmic data, because they can be re-used to extend an analysis pipeline or algorithm by downstream applications.
 
 ## Installation
 
@@ -98,7 +95,7 @@ Then, individual bit flags need to be grown by specifying the respective mapping
 ```{r}
 # tests for longitude availability
 yieldReg <- 
-  bf_na(x = tbl_bityield,                            # specify where to determine flags
+  bf_na(x = tbl_bityield,                        # specify where to determine flags
         test = "x",                              # ... and which variable to test
         pos = 1,                                 # specify at which position to store the flag
         registry = yieldReg)                     # provide the registry to update
@@ -123,7 +120,9 @@ yieldReg <-
 Various derived functions build on these and thus require bits according to the same rules. The resulting data structure is a record of all the things that are grown on the bitfield.
 
 ```{r}
-yieldReg
+yieldReg # not showing anything yet
+
+str(yieldReg)
 ```
 
 This is, however, not yet the bitfield. The registry is merely the instruction manual, so to speak, to create the bitfield and encode it as integer, with the function `bf_encode()`.
@@ -149,7 +148,7 @@ The column `bf_binary`, in combination with the legend, can be read one step at 
 
 ## Bitfields for other data-types
 
-
+Not only tabular data are supported, but also gridded data such as rasters (wip).
 
 ```{r}
 library(terra, warn.conflicts = FALSE)
@@ -163,5 +162,7 @@ plot(rst_bityield)
 
 # To Do
 
-- write registry show method
-- include MD5 sum for a bitfield and update it each time the bitfield is grown further
+- [ ] write registry show method
+- [ ] write unit tests
+- [ ] include MD5 sum for a bitfield and update it each time the bitfield is grown further
+- [ ] document the provenance stuff in here
