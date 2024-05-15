@@ -65,7 +65,7 @@ bf_decode <- function(x, registry, positions = NULL, sep = NULL){
     separate(col = bin, into = paste0("flag", theBits$split), sep = theBits$split)
 
   if(!is.null(sep)){
-    out <- unite(out, col = "bf_binary", paste0("flag", theBits$split), sep = sep)
+    out <- unite(out, col = "bf_bin", paste0("flag", theBits$split), sep = sep)
   } else {
     colnames(out)[-1] <- theBits$name
   }

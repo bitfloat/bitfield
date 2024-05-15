@@ -65,7 +65,7 @@ bf_encode <- function(registry){
     theBitfield <- bind_cols(theBitfield, tibble(!!paste0("flag", i) := theBits), .name_repair = "minimal")
   }
 
-  tempBits <- unite(theBitfield, col = "int", everything(), sep = "")
+  tempBits <- unite(theBitfield, col = "bf_int", everything(), sep = "")
   bitLen <- nchar(tempBits[[1]][1])
   intLen <- ceiling(bitLen / 32)
   widths <- NULL
@@ -77,9 +77,9 @@ bf_encode <- function(registry){
     }
     bitLen <- bitLen - 32
   }
-  names(widths) <- paste0("int", 1:intLen)
+  names(widths) <- paste0("bf_int", 1:intLen)
 
-  tempBits <- separate_wider_position(data = tempBits, cols = "int", widths = widths)
+  tempBits <- separate_wider_position(data = tempBits, cols = "bf_int", widths = widths)
 
   out <- tempBits |>
     mutate(across(everything(), .toInt))
