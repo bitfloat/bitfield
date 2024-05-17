@@ -120,9 +120,7 @@ yieldReg <-
 Various derived functions build on these and thus require bits according to the same rules. The resulting data structure is a record of all the things that are grown on the bitfield.
 
 ```{r}
-yieldReg # not showing anything yet
-
-str(yieldReg)
+yieldReg
 ```
 
 This is, however, not yet the bitfield. The registry is merely the instruction manual, so to speak, to create the bitfield and encode it as integer, with the function `bf_encode()`.
@@ -162,7 +160,6 @@ plot(rst_bityield)
 
 # To Do
 
-- [ ] write registry show method
 - [ ] write unit tests
 - [ ] include MD5 sum for a bitfield and update it each time the bitfield is grown further
 - [ ] document the provenance stuff in here

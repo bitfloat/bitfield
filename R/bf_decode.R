@@ -72,6 +72,7 @@ bf_decode <- function(x, registry, positions = NULL, sep = NULL){
 
   # assign look-up table to the environment as well
   env_bind(.env = bf_env, legend = lut)
+  # make sure that also all the other items are placed in bf_env, if they are not there yet.
 
   print(lut)
 

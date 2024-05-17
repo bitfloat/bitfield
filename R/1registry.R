@@ -102,12 +102,44 @@ setValidity("registry", function(object){
 #' @param object [`registry(1)`][registry]\cr object to \code{show}.
 #' @importFrom utils head
 #' @importFrom crayon yellow red cyan
+#' @importFrom purrr map
+#' @importFrom stringr str_split
+#' @importFrom dplyr last
 
 setMethod(f = "show",
           signature = "registry",
           definition = function(object){
 
+            theNames <- str_split(names(object@flags), "_")
 
+            thePos <- map(object@flags, "position")
+            minPos <- map(thePos, min)
+            theProv <- map(object@flags, "provenance")
+            theEnc <- map(map(theProv, "wasGeneratedBy"), last)
+
+            colWidth <- c(4, 9, 7, 2)
+
+            theHeader <- paste0("  ",
+                                "pos", paste0(rep(" ", colWidth[1] - 3 + 1), collapse = ""),
+                                "encoding", "  ",
+                                "type", paste0(rep(" ", colWidth[3] - 4 + 1), collapse = ""),
+                                "col", "\n")
+            barcode <- rep("-", object@width + length(object@flags) - 1)
+            bars <- unlist(minPos) + (1:length(object@flags))-1
+            barcode[bars[-1]-1] <- "|"
+            barcode <- paste0(barcode, collapse = "")
+
+            cat(yellow("width"), " ", object@width, "\n", sep = "")
+            cat(yellow("flags"), " ", length(object@flags), "  ", barcode, "\n\n", sep = "")
+            cat(yellow(theHeader))
+            for(i in seq_along(object@flags)){
+              theFlag <- paste0("  ",
+                                minPos[[i]], paste0(rep(" ", colWidth[1] - nchar(minPos[[i]]) + 1), collapse = ""),
+                                str_split(theEnc[[i]], ": ")[[1]][2], "   ",
+                                theNames[[i]][1], paste0(rep(" ", colWidth[3] - nchar(theNames[[i]][1]) + 1), collapse = ""),
+                                na.omit(theNames[[i]][2]), "\n")
+              cat(theFlag)
+            }
 
           }
 )

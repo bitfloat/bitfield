@@ -133,50 +133,14 @@ to the same rules. The resulting data structure is a record of all the
 things that are grown on the bitfield.
 
 ``` r
-yieldReg # not showing anything yet
-
-str(yieldReg)
-#> Formal class 'registry' [package "bitfield"] with 7 slots
-#>   ..@ width      : int 6
-#>   ..@ length     : int 10
-#>   ..@ name       : chr "yield_QA"
-#>   ..@ version    : chr "020.412.20240515"
-#>   ..@ md5        : chr NA
-#>   ..@ description: chr "this bitfield documents quality assessment in a table of yield data."
-#>   ..@ flags      :List of 3
-#>   .. ..$ na_x    :List of 4
-#>   .. .. ..$ description: chr [1:2] "{FALSE} the value in column 'x' is not NA." "{TRUE}  the value in column 'x' is NA."
-#>   .. .. ..$ position   : num 1
-#>   .. .. ..$ encoding   :List of 4
-#>   .. .. .. ..$ sign       : int 0
-#>   .. .. .. ..$ exponent   : int 0
-#>   .. .. .. ..$ significand: int 1
-#>   .. .. .. ..$ bias       : int 0
-#>   .. .. ..$ provenance :List of 2
-#>   .. .. .. ..$ wasDerivedFrom: chr "x"
-#>   .. .. .. ..$ wasGeneratedBy: chr [1:2] "x|value|NA" "encodingAsBinary: 0.0.1/0"
-#>   .. ..$ cases   :List of 4
-#>   .. .. ..$ description: chr [1:3] "the observation has the case [yield >= 11]." "the observation has the case [yield < 11 & yield > 9]." "the observation has the case [yield < 9 & commodity == \"maize\"]."
-#>   .. .. ..$ position   : int [1:2] 2 3
-#>   .. .. ..$ encoding   :List of 4
-#>   .. .. .. ..$ sign       : int 0
-#>   .. .. .. ..$ exponent   : int 0
-#>   .. .. .. ..$ significand: int 2
-#>   .. .. .. ..$ bias       : int 0
-#>   .. .. ..$ provenance :List of 2
-#>   .. .. .. ..$ wasDerivedFrom: chr "{OBS}"
-#>   .. .. .. ..$ wasGeneratedBy: chr "encodingAsBinary: 0.0.2/0"
-#>   .. ..$ length_y:List of 4
-#>   .. .. ..$ description: chr "the bits encode the value length in column 'y'."
-#>   .. .. ..$ position   : int [1:3] 4 5 6
-#>   .. .. ..$ encoding   :List of 4
-#>   .. .. .. ..$ sign       : int 0
-#>   .. .. .. ..$ exponent   : int 0
-#>   .. .. .. ..$ significand: int 3
-#>   .. .. .. ..$ bias       : int 0
-#>   .. .. ..$ provenance :List of 2
-#>   .. .. .. ..$ wasDerivedFrom: chr "y"
-#>   .. .. .. ..$ wasGeneratedBy: chr "encodingAsBinary: 0.0.3/0"
+yieldReg
+#> width 6
+#> flags 3  -|--|---
+#> 
+#>   pos  encoding  type    col
+#>   1    0.0.1/0   na      x
+#>   2    0.0.2/0   cases   
+#>   4    0.0.3/0   length  y
 ```
 
 This is, however, not yet the bitfield. The registry is merely the
@@ -262,7 +226,6 @@ plot(rst_bityield)
 
 # To Do
 
-- [ ] write registry show method
 - [ ] write unit tests
 - [ ] include MD5 sum for a bitfield and update it each time the
   bitfield is grown further
