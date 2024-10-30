@@ -7,8 +7,8 @@
 bf_numeric(
   x,
   source,
-  precision = NULL,
-  range = NULL,
+  decimals = NULL,
+  type = NULL,
   options = NULL,
   pos = NULL,
   na.val = NULL,
@@ -24,9 +24,9 @@ bf_numeric(
 \item{source}{\code{\link[=character]{character(1)}}\cr the column in \code{x} from
 which to take the numeric value.}
 
-\item{precision}{\code{\link[=integer]{integerish(1)}}\cr description}
+\item{decimals}{\code{\link[=integer]{integerish(1)}}\cr description}
 
-\item{range}{\code{\link[=integer]{integerish(1)}}\cr description}
+\item{type}{\code{\link[=integer]{character(1)}}\cr description}
 
 \item{options}{\code{\link[=list]{list(.)}}\cr description}
 
@@ -45,9 +45,9 @@ should be set.}
 Build a bit flag from a numeric value
 }
 \details{
-The length of the bitfield depends on the floating point precision
-of the numeric values returned with this function...
+The length of the bitfield depends on the floating point digits of
+the numeric values returned with this function...
 }
 \examples{
-bf_numeric(x = bityield, precision = 3, source = "yield")
+# bf_numeric(x = tbl_bityield, digits = 3, source = "yield")
 }

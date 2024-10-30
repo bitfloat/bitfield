@@ -17,5 +17,5 @@ checked for Inf values.}
 Build a bit flag by checking whether values are Inf
 }
 \examples{
-bf_inf(x = bityield, test = "y")
+bf_inf(x = tbl_bityield, test = "y")
 }

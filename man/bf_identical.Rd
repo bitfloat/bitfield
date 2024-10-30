@@ -24,5 +24,5 @@ This function compares the values of two columns element-wise and
 returns \code{TRUE} when they are identical.
 }
 \examples{
-bf_identical(x = bityield, test = "x", against = "y")
+bf_identical(x = tbl_bityield, test = "x", against = "y")
 }

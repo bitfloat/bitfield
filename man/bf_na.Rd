@@ -36,5 +36,5 @@ should be set.}
 Build a bit flag by checking whether values are NA
 }
 \examples{
-bf_na(x = bityield, test = "y")
+bf_na(x = tbl_bityield, test = "y")
 }

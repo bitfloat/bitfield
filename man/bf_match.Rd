@@ -23,6 +23,6 @@ or a disjoint match.}
 Build a bit flag by comparing a column with a set
 }
 \examples{
-bf_match(x = bityield, test = "commodity", set = c("soybean", "maize"))
+bf_match(x = tbl_bityield, test = "commodity", set = c("soybean", "maize"))
 
 }

@@ -4,7 +4,7 @@
 \alias{.toBin}
 \title{Make a binary value from an integer}
 \usage{
-.toBin(x, len, dec = FALSE)
+.toBin(x, len = NULL, pad = TRUE, dec = FALSE)
 }
 \arguments{
 \item{x}{\code{\link[=numeric]{numeric(1)}}\cr the numeric value for which to derive the
@@ -12,6 +12,9 @@ binary value.}
 
 \item{len}{\code{\link[=integer]{integerish(1)}}\cr the number of bits used to capture
 the value.}
+
+\item{pad}{\code{\link[=logical]{logical(1)}}\cr whether to pad the binary value with 0
+values.}
 
 \item{dec}{\code{\link[=logical]{logical(1)}}\cr whether to transform the decimal part
 to bits, or the integer part.}

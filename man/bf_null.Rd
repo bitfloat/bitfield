@@ -17,5 +17,5 @@ checked for NULL values.}
 Build a bit flag by checking whether values are NULL
 }
 \examples{
-bf_null(x = bityield, test = "z")
+bf_null(x = tbl_bityield, test = "z")
 }

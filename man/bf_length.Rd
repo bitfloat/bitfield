@@ -24,8 +24,8 @@ bf_length(
 the length is determined.}
 
 \item{dec}{\code{\link[=character]{character(1)}}\cr regex-compatible symbol that
-separates the decimals from the numeric value (such as \code{\\.} if the
-decimal symbol is a "."). If this is}
+separates the decimals from the numeric value (such as \code{\\.} in case
+the decimal symbol is a ".").}
 
 \item{fill}{\code{\link[=logical]{logical(1)}}\cr whether the function should consider
 decimals lengths from 0 through the maximum length in \code{x[[test]]}, or
@@ -56,6 +56,6 @@ precision:
 \href{https://en.wikipedia.org/wiki/Decimal_degrees}{https://en.wikipedia.org/wiki/Decimal_degrees}
 }
 \examples{
-bf_length(x = bityield, test = "y")
-bf_length(x = bityield, test = "y", dec = "\\\\.")
+bf_length(x = tbl_bityield, test = "y")
+bf_length(x = tbl_bityield, test = "y", dec = "\\\\.")
 }
