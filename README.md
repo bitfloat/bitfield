@@ -17,12 +17,13 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 
 ## Overview
 
-This package is designed to build sequences of bits (i.e.,
-[bitfields](https://en.wikipedia.org/wiki/Bit_field)) to capture the
-computational footprint of any (scientific) model workflow or output.
-The bit sequence is then encoded as an integer value that stores a range
-of information into a single column of a table or a raster layer. This
-can be useful when documenting
+This package is designed to capture the computational footprint of any
+model workflow or output. It achieves this by encoding computational
+decisions into sequences of bits (i.e.,
+[bitfields](https://en.wikipedia.org/wiki/Bit_field)) that are
+transformed to integer value. This allows storing a range of information
+into a single column of a table or a raster layer, which can be useful
+when documenting
 
 - the metadata of any dataset by collecting information throughout the
   dataset creation process,
@@ -123,8 +124,8 @@ yieldReg <-
             registry = yieldReg)
   
 # store a simplified (e.g. rounded) numeric value
-# yieldReg <- 
-#   bf_numeric(x = tbl_bityield, source = "yield", precision = 3, 
+# yieldReg <-
+#   bf_numeric(x = tbl_bityield, source = "yield", decimals = 3,
 #              registry = yieldReg)
 ```
 
@@ -134,13 +135,13 @@ things that are grown on the bitfield.
 
 ``` r
 yieldReg
-#> width 6
-#> flags 3  -|--|---
+#>   width 6
+#>   flags 3  -|--|---
 #> 
-#>   pos  encoding  type    col
-#>   1    0.0.1/0   na      x
-#>   2    0.0.2/0   cases   
-#>   4    0.0.3/0   length  y
+#>   pos   encoding type    col
+#>   1     0.0.1/0  na      x
+#>   2     0.0.2/0  cases   
+#>   4     0.0.3/0  length  y
 ```
 
 This is, however, not yet the bitfield. The registry is merely the
@@ -172,7 +173,7 @@ the bitfield can be studied or extended in a downstream application.
 bitfield <- bf_decode(x = intBit, registry = yieldReg, sep = "-")
 #> # A tibble: 6 × 4
 #> # Rowwise: 
-#>   bits  name     flag  desc                                                     
+#>   pos   name     flag  desc                                                     
 #>   <chr> <chr>    <chr> <chr>                                                    
 #> 1 1     na_x     0     "{FALSE} the value in column 'x' is not NA."             
 #> 2 1     na_x     1     "{TRUE}  the value in column 'x' is NA."                 
@@ -214,9 +215,9 @@ rasters (wip).
 
 ``` r
 library(terra, warn.conflicts = FALSE)
-#> terra 1.7.71
+#> terra 1.7.78
 
-rst_bityield <- rast(system.file("ex/rst_bityield.tif", package="bitfield"))
+rst_bityield <- rast(system.file("ex/rst_bityield.tif", package = "bitfield"))
 levels(rst_bityield$commodity) <- tibble(id = 1:3, commodity = c("soybean", "maize", "honey"))
 
 plot(rst_bityield)
@@ -229,4 +230,5 @@ plot(rst_bityield)
 - [ ] write unit tests
 - [ ] include MD5 sum for a bitfield and update it each time the
   bitfield is grown further
-- [ ] document the provenance stuff in here
+- [ ] ensure everything is properly PROVy
+  <https://www.w3.org/TR/prov-o/#Activity>, and document it

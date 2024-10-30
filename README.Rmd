@@ -34,7 +34,7 @@ library(knitr)
 
 ## Overview
 
-This package is designed to build sequences of bits (i.e., [bitfields](https://en.wikipedia.org/wiki/Bit_field)) to capture the computational footprint of any (scientific) model workflow or output. The bit sequence is then encoded as an integer value that stores a range of information into a single column of a table or a raster layer. This can be useful when documenting 
+This package is designed to capture the computational footprint of any model workflow or output. It achieves this by encoding computational decisions into sequences of bits (i.e., [bitfields](https://en.wikipedia.org/wiki/Bit_field)) that are transformed to integer value. This allows storing a range of information into a single column of a table or a raster layer, which can be useful when documenting 
 
   - the metadata of any dataset by collecting information throughout the dataset creation process, 
   - a provenance graph that documents how a gridded modelled data product was built, 
@@ -112,9 +112,9 @@ yieldReg <-
             registry = yieldReg)
   
 # store a simplified (e.g. rounded) numeric value
-# yieldReg <- 
-#   bf_numeric(x = tbl_bityield, source = "yield", precision = 3, 
-#              registry = yieldReg)
+yieldReg <-
+  bf_numeric(x = tbl_bityield, source = "yield", type = "half",
+             registry = yieldReg)
 ```
 
 Various derived functions build on these and thus require bits according to the same rules. The resulting data structure is a record of all the things that are grown on the bitfield.
@@ -151,7 +151,7 @@ Not only tabular data are supported, but also gridded data such as rasters (wip)
 ```{r}
 library(terra, warn.conflicts = FALSE)
 
-rst_bityield <- rast(system.file("ex/rst_bityield.tif", package="bitfield"))
+rst_bityield <- rast(system.file("ex/rst_bityield.tif", package = "bitfield"))
 levels(rst_bityield$commodity) <- tibble(id = 1:3, commodity = c("soybean", "maize", "honey"))
 
 plot(rst_bityield)
@@ -162,4 +162,4 @@ plot(rst_bityield)
 
 - [ ] write unit tests
 - [ ] include MD5 sum for a bitfield and update it each time the bitfield is grown further
-- [ ] document the provenance stuff in here
+- [ ] ensure everything is properly PROVy https://www.w3.org/TR/prov-o/#Activity, and document it
