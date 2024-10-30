@@ -5,7 +5,7 @@
 #' @param test [`character(1)`][character]\cr the column in \code{x} that is
 #'   checked for Inf values.
 #' @examples
-#' bf_inf(x = bityield, test = "y")
+#' bf_inf(x = tbl_bityield, test = "y")
 #' @importFrom checkmate assertDataFrame assertSubset
 #' @export
 

@@ -33,7 +33,7 @@
 #' @return a logical vector of the same length as \code{test} with attributes
 #'   \code{name}, \code{description} and \code{triple}.
 #' @examples
-#' bf_type(x = bityield, test = "y", type = "character", coerce = TRUE)
+#' bf_type(x = tbl_bityield, test = "y", type = "character", coerce = TRUE)
 #' @importFrom checkmate assertDataFrame assertSubset assertCharacter
 #'   assertChoice assertLogical
 #' @importFrom purrr map_lgl

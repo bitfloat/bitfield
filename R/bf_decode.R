@@ -52,7 +52,7 @@ bf_decode <- function(x, registry, positions = NULL, sep = NULL){
     ungroup() |>
     rowwise() |>
     mutate(flag = .toBin(x = flags, len = bits)) |>
-    select(bits = pos, name, flag, desc)
+    select(pos, name, flag, desc)
 
   # process bits
   tempBits <- NULL

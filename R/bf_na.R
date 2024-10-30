@@ -11,7 +11,7 @@
 #' @param prov description
 #' @param registry description
 #' @examples
-#' bf_na(x = bityield, test = "y")
+#' bf_na(x = tbl_bityield, test = "y")
 #' @importFrom checkmate assertDataFrame assertSubset
 #' @export
 
@@ -26,7 +26,7 @@ bf_na <- function(x, test,
   assertList(x = prov, types = "character", any.missing = FALSE, null.ok = TRUE)
 
   if(is.null(registry)){
-    registry <- bf_registry(name = "nameless_registry", description = "descriptionless_registry")
+    registry <- bf_registry(name = "new_registry")
   }
 
   thisName <- paste0("na_", test)
@@ -65,11 +65,7 @@ bf_na <- function(x, test,
               significand = 1L,
               bias = 0L)
 
-  if(is.null(prov)){
-    prov <- test
-  }
-
-  prov <- list(wasDerivedFrom = prov,
+  prov <- list(wasDerivedFrom = test,
                wasGeneratedBy = c(paste0(test, "|value|NA"), paste0("encodingAsBinary: 0.0.1/0")))
 
   # ... and store everything in the registry

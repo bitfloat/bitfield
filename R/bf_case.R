@@ -14,7 +14,7 @@
 #' @param prov description
 #' @param registry description
 #' @examples
-#' registry <- bf_case(x = bityield, exclusive = FALSE,
+#' registry <- bf_case(x = tbl_bityield, exclusive = FALSE,
 #'                     yield >= 11,
 #'                     yield < 11 & yield > 9,
 #'                     yield < 9 & commodity == "maize")
@@ -37,11 +37,12 @@ bf_case <- function(x, ..., exclusive = TRUE,
   assertList(x = prov, types = "character", any.missing = FALSE, null.ok = TRUE)
 
   if(is.null(registry)){
-    registry <- bf_registry(name = "nameless_registry", description = "descriptionless_registry")
+    registry <- bf_registry(name = "new_registry")
   }
 
   thisName <- paste0("cases")
   cases <- enquos(..., .named = TRUE)
+  # return(cases)
 
   temp <- bind_cols(map(cases, function(ix){
     blubb <- eval_tidy(expr = ix, data = x)
@@ -115,11 +116,7 @@ bf_case <- function(x, ..., exclusive = TRUE,
               significand = nBits,
               bias = 0L)
 
-  if(is.null(prov)){
-    prov <- "{OBS}"
-  }
-
-  prov <- list(wasDerivedFrom = prov,
+  prov <- list(wasDerivedFrom = "{OBS}",
                wasGeneratedBy = paste0("encodingAsBinary: 0.0.", nBits, "/0"))
 
   # ... and store everything in the registry

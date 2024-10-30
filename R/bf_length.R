@@ -5,8 +5,8 @@
 #' @param test [`character(1)`][character]\cr the column in \code{x} for which
 #'   the length is determined.
 #' @param dec [`character(1)`][character]\cr regex-compatible symbol that
-#'   separates the decimals from the numeric value (such as \code{\\.} if the
-#'   decimal symbol is a "."). If this is
+#'   separates the decimals from the numeric value (such as \code{\\.} in case
+#'   the decimal symbol is a ".").
 #' @param fill [`logical(1)`][logical]\cr whether the function should consider
 #'   decimals lengths from 0 through the maximum length in `x[[test]]`, or
 #'   whether it should only document existing decimal lengths.
@@ -25,8 +25,8 @@
 #'   precision:
 #'   \href{https://en.wikipedia.org/wiki/Decimal_degrees}{https://en.wikipedia.org/wiki/Decimal_degrees}
 #' @examples
-#' bf_length(x = bityield, test = "y")
-#' bf_length(x = bityield, test = "y", dec = "\\.")
+#' bf_length(x = tbl_bityield, test = "y")
+#' bf_length(x = tbl_bityield, test = "y", dec = "\\.")
 #' @importFrom checkmate assertDataFrame assertSubset
 #' @importFrom stringr str_length str_extract
 #' @importFrom rlang expr
@@ -46,7 +46,7 @@ bf_length <- function(x, test, dec = NULL, fill = TRUE,
   assertList(x = prov, types = "character", any.missing = FALSE, null.ok = TRUE)
 
   if(is.null(registry)){
-    registry <- bf_registry(name = "nameless_registry", description = "descriptionless_registry")
+    registry <- bf_registry(name = "new_registry")
   }
 
   if(!is.null(dec)){
@@ -98,7 +98,7 @@ bf_length <- function(x, test, dec = NULL, fill = TRUE,
 
   if(!is.null(dec)){
     significand <- 0L
-    exponent <-
+    exponent <- len
     theDesc <- paste0("the bits encode the number of decimals in column '", test, "'.")
   } else {
     significand <- len
@@ -138,11 +138,7 @@ bf_length <- function(x, test, dec = NULL, fill = TRUE,
               significand = significand,
               bias = 0L)
 
-  if(is.null(prov)){
-    prov <- test
-  }
-
-  prov <- list(wasDerivedFrom = prov,
+  prov <- list(wasDerivedFrom = test,
                wasGeneratedBy = paste0("encodingAsBinary: 0.", exponent, ".", significand, "/0"))
 
   # ... and store everything in the registry

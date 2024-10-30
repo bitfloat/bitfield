@@ -7,7 +7,7 @@
 #' @importFrom tibble tibble
 #' @importFrom purrr map map_int
 #' @importFrom dplyr bind_rows arrange bind_cols select across
-#' @importFrom stringr str_split str_split_i str_sub
+#' @importFrom stringr str_split str_split_i str_sub str_pad str_remove
 #' @importFrom tidyselect everything
 #' @importFrom tidyr separate_wider_position
 #' @export
@@ -35,25 +35,37 @@ bf_encode <- function(registry){
 
     if(!is.logical(theVals)){
 
-      # good explanation: https://www.cs.cornell.edu/~tomf/notes/cps104/floating
       # get the integer part of the binary value
-      intBits <- .toBin(x = abs(theVals), len = theFlag$encoding$significand)
+      intBits <- .toBin(x = as.integer(theVals), pad = TRUE)
 
       if(!is.integer(theVals)){
+        # good explanation: https://www.cs.cornell.edu/~tomf/notes/cps104/floating
+        # bin<->dec       : https://www.rapidtables.com/convert/number/binary-to-decimal.html
+
+        # theVals <- c(theVals[4], theVals[10], 329.390625)
         # get the decimal part of the binary value and ...
-        decBits <- .toBin(x = theVals, len = theFlag$encoding$exponent, dec = TRUE)
+        # fullBits <- .toBin(x = theVals, len = theFlag$encoding$mantissa)
+        decBits <- .toBin(x = theVals, dec = TRUE)
 
-        # transform to scientific notation, then ...
+        # 1. transform to scientific notation, then ...
         temp <- paste0(intBits, decBits)
-        temp <- gsub("^(.{1})(.*)$", "\\1.\\2", temp)
+        # the first value must be 101001001.011001 -> remove "." after finishing
+        temp <- gsub("^(.{1})(.*)$", "\\1.\\2", str_remove(temp, "^0+"))
 
-        # encode as bit sequence
+        # 2. encode as bit sequence
         sign <- as.integer(0 > theVals)
-        exponent <- .toBin(x = nchar(intBits)-1 + theFlag$encoding$bias, len = theFlag$encoding$exponent)
-        mantissa <- map(.x = temp, .f = \(x) str_split(string = x, pattern = "[.]", simplify = TRUE)[2]) |>
+
+        # 3. bias exponent and encode as binary
+        exponent <- .toBin(x = nchar(str_remove(intBits, "^0+"))-1 + theFlag$encoding$bias)
+
+        # 4. extract mantissa
+        mantissa <- map(.x = temp,
+                        .f = \(x) str_sub(str_split(string = x, pattern = "[.]", simplify = TRUE)[2], end = theFlag$encoding$mantissa))  |>
           unlist()
 
+        # 5. store as bit sequence
         theBits <- paste0(sign, exponent, mantissa)
+
       } else {
         theBits <- intBits
       }

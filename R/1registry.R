@@ -105,40 +105,57 @@ setValidity("registry", function(object){
 #' @importFrom purrr map
 #' @importFrom stringr str_split
 #' @importFrom dplyr last
+#' @importFrom stats na.omit
 
 setMethod(f = "show",
           signature = "registry",
           definition = function(object){
 
-            theNames <- str_split(names(object@flags), "_")
+            theNames <- map(names(object@flags), str_split, "_") |>
+              unlist(recursive = FALSE) |>
+              map(`[`, 1)
+            theVars <- map(names(object@flags), str_split, "_") |>
+              unlist(recursive = FALSE) |>
+              map(`[`, 2)
 
-            thePos <- map(object@flags, "position")
-            minPos <- map(thePos, min)
-            theProv <- map(object@flags, "provenance")
-            theEnc <- map(map(theProv, "wasGeneratedBy"), last)
+            if(length(object@flags) != 0){
 
-            colWidth <- c(4, 9, 7, 2)
+              thePos <- map(object@flags, "position")
+              minPos <- map(thePos, min) |>
+                unlist()
+              theProv <- map(object@flags, "provenance")
+              theEnc <- map(map(theProv, "wasGeneratedBy"), last)
+              theEnc <- map(theEnc, function(ix){
+                str_split(ix[[1]], ": ")[[1]][2]
+              }) |> unlist()
 
-            theHeader <- paste0("  ",
-                                "pos", paste0(rep(" ", colWidth[1] - 3 + 1), collapse = ""),
-                                "encoding", "  ",
-                                "type", paste0(rep(" ", colWidth[3] - 4 + 1), collapse = ""),
-                                "col", "\n")
-            barcode <- rep("-", object@width + length(object@flags) - 1)
-            bars <- unlist(minPos) + (1:length(object@flags))-1
-            barcode[bars[-1]-1] <- "|"
-            barcode <- paste0(barcode, collapse = "")
 
-            cat(yellow("width"), " ", object@width, "\n", sep = "")
-            cat(yellow("flags"), " ", length(object@flags), "  ", barcode, "\n\n", sep = "")
-            cat(yellow(theHeader))
-            for(i in seq_along(object@flags)){
-              theFlag <- paste0("  ",
-                                minPos[[i]], paste0(rep(" ", colWidth[1] - nchar(minPos[[i]]) + 1), collapse = ""),
-                                str_split(theEnc[[i]], ": ")[[1]][2], "   ",
-                                theNames[[i]][1], paste0(rep(" ", colWidth[3] - nchar(theNames[[i]][1]) + 1), collapse = ""),
-                                na.omit(theNames[[i]][2]), "\n")
-              cat(theFlag)
+              colWidth <- c(max(3, max(nchar(minPos))) + 2, max(nchar(theEnc)) + 2, max(nchar(theNames)) + 1, 2)
+
+              theHeader <- paste0("  ",
+                                  "pos", paste0(rep(" ", colWidth[1] - 3 + 1), collapse = ""),
+                                  "encoding", paste0(rep(" ", colWidth[2] - 8), collapse = ""),
+                                  "type", paste0(rep(" ", colWidth[3] - 4 + 1), collapse = ""),
+                                  "col", "\n")
+              barcode <- rep("-", object@width + length(object@flags) - 1)
+              bars <- unlist(minPos) + (1:length(object@flags))-1
+              barcode[bars[-1]-1] <- "|"
+              barcode <- paste0(barcode, collapse = "")
+
+              cat(yellow("  width"), " ", object@width, "\n", sep = "")
+              cat(yellow("  flags"), " ", length(object@flags), "  ", barcode, "\n\n", sep = "")
+              cat(yellow(theHeader))
+              for(i in seq_along(object@flags)){
+                theFlag <- paste0("  ",
+                                  minPos[[i]], paste0(rep(" ", colWidth[1] - nchar(minPos[[i]]) + 1), collapse = ""),
+                                  theEnc[[i]], paste0(rep(" ", colWidth[2] - nchar(theEnc)[i]), collapse = ""),
+                                  theNames[[i]], paste0(rep(" ", colWidth[3] - nchar(theNames[[i]]) + 1), collapse = ""),
+                                  na.omit(theVars[[i]]), "\n")
+                cat(theFlag)
+              }
+
+            } else {
+              cat(yellow("  empty registry"))
             }
 
           }

@@ -5,7 +5,7 @@
 #' @param test [`character(1)`][character]\cr the column in \code{x} that is
 #'   checked for NULL values.
 #' @examples
-#' bf_null(x = bityield, test = "z")
+#' bf_null(x = tbl_bityield, test = "z")
 #' @importFrom checkmate assertDataFrame
 #' @export
 
