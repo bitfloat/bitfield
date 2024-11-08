@@ -4,7 +4,16 @@
 \alias{bf_type}
 \title{Build a bit flag by checking for the type}
 \usage{
-bf_type(x, test, type = NULL, coerce = FALSE)
+bf_type(
+  x,
+  test,
+  type = NULL,
+  coerce = FALSE,
+  pos = NULL,
+  na.val = NULL,
+  description = NULL,
+  registry = NULL
+)
 }
 \arguments{
 \item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the table that contains
@@ -20,6 +29,15 @@ values are \code{"integer"}, \code{"numeric"}, \code{"character"} or
 \item{coerce}{\code{\link[=logical]{logical(1)}}\cr whether or not to carry out a more
 aggressive test, where the values are coerced to the target type and those
 that end up not having NA-values are reported as \code{TRUE}.}
+
+\item{pos}{\code{\link[=integer]{integerish(.)}}\cr the position(s) in the bitfield that
+should be set.}
+
+\item{na.val}{description}
+
+\item{description}{description}
+
+\item{registry}{description}
 }
 \value{
 a logical vector of the same length as \code{test} with attributes

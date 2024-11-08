@@ -4,7 +4,16 @@
 \alias{bf_match}
 \title{Build a bit flag by comparing a column with a set}
 \usage{
-bf_match(x, test, set, negate = FALSE)
+bf_match(
+  x,
+  test,
+  set,
+  negate = FALSE,
+  pos = NULL,
+  na.val = NULL,
+  description = NULL,
+  registry = NULL
+)
 }
 \arguments{
 \item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the table that contains
@@ -18,6 +27,15 @@ operation is performed.}
 
 \item{negate}{\code{\link[=logical]{logical(1)}}\cr whether or not to determine a subset
 or a disjoint match.}
+
+\item{pos}{\code{\link[=integer]{integerish(.)}}\cr the position(s) in the bitfield that
+should be set.}
+
+\item{na.val}{description}
+
+\item{description}{description}
+
+\item{registry}{description}
 }
 \description{
 Build a bit flag by comparing a column with a set

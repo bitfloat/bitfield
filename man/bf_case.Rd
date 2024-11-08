@@ -11,7 +11,6 @@ bf_case(
   pos = NULL,
   na.val = NULL,
   description = NULL,
-  prov = NULL,
   registry = NULL
 )
 }
@@ -32,8 +31,6 @@ should be set.}
 \item{na.val}{description}
 
 \item{description}{description}
-
-\item{prov}{description}
 
 \item{registry}{description}
 }

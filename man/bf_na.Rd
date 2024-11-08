@@ -4,15 +4,7 @@
 \alias{bf_na}
 \title{Build a bit flag by checking whether values are NA}
 \usage{
-bf_na(
-  x,
-  test,
-  pos = NULL,
-  na.val = NULL,
-  description = NULL,
-  prov = NULL,
-  registry = NULL
-)
+bf_na(x, test, pos = NULL, na.val = NULL, description = NULL, registry = NULL)
 }
 \arguments{
 \item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the table that contains
@@ -27,8 +19,6 @@ should be set.}
 \item{na.val}{description}
 
 \item{description}{description}
-
-\item{prov}{description}
 
 \item{registry}{description}
 }

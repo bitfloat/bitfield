@@ -7,13 +7,10 @@
 bf_numeric(
   x,
   source,
-  decimals = NULL,
-  type = NULL,
-  options = NULL,
+  ...,
   pos = NULL,
   na.val = NULL,
   description = NULL,
-  prov = NULL,
   registry = NULL
 )
 }
@@ -24,11 +21,7 @@ bf_numeric(
 \item{source}{\code{\link[=character]{character(1)}}\cr the column in \code{x} from
 which to take the numeric value.}
 
-\item{decimals}{\code{\link[=integer]{integerish(1)}}\cr description}
-
-\item{type}{\code{\link[=integer]{character(1)}}\cr description}
-
-\item{options}{\code{\link[=list]{list(.)}}\cr description}
+\item{...}{description}
 
 \item{pos}{\code{\link[=integer]{integerish(.)}}\cr the position(s) in the bitfield that
 should be set.}
@@ -36,8 +29,6 @@ should be set.}
 \item{na.val}{description}
 
 \item{description}{description}
-
-\item{prov}{description}
 
 \item{registry}{description}
 }

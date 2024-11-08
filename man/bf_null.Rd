@@ -4,7 +4,14 @@
 \alias{bf_null}
 \title{Build a bit flag by checking whether values are NULL}
 \usage{
-bf_null(x, test)
+bf_null(
+  x,
+  test,
+  pos = NULL,
+  na.val = NULL,
+  description = NULL,
+  registry = NULL
+)
 }
 \arguments{
 \item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the table that contains
@@ -12,10 +19,19 @@ bf_null(x, test)
 
 \item{test}{\code{\link[=character]{character(1)}}\cr the column in \code{x} that is
 checked for NULL values.}
+
+\item{pos}{\code{\link[=integer]{integerish(.)}}\cr the position(s) in the bitfield that
+should be set.}
+
+\item{na.val}{description}
+
+\item{description}{description}
+
+\item{registry}{description}
 }
 \description{
 Build a bit flag by checking whether values are NULL
 }
 \examples{
-bf_null(x = tbl_bityield, test = "z")
+bf_null(x = tbl_bityield, test = "y")
 }

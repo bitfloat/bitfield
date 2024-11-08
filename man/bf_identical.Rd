@@ -4,17 +4,34 @@
 \alias{bf_identical}
 \title{Build a bit flag by checking whether two columns are identical}
 \usage{
-bf_identical(x, test, against)
+bf_identical(
+  x,
+  test,
+  against,
+  pos = NULL,
+  na.val = NULL,
+  description = NULL,
+  registry = NULL
+)
 }
 \arguments{
 \item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the table that contains
 \code{test} and \code{against}.}
 
 \item{test}{\code{\link[=character]{character(1)}}\cr the column in \code{x} that is
-checked against \code{against}.}
+checked \code{against}.}
 
 \item{against}{\code{\link[=character]{character(1)}}\cr the column in \code{x} that is
 checked against \code{test}.}
+
+\item{pos}{\code{\link[=integer]{integerish(.)}}\cr the position(s) in the bitfield that
+should be set.}
+
+\item{na.val}{description}
+
+\item{description}{description}
+
+\item{registry}{description}
 }
 \description{
 Build a bit flag by checking whether two columns are identical

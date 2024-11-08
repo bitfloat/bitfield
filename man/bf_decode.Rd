@@ -4,7 +4,7 @@
 \alias{bf_decode}
 \title{Decode (unpack) a bitfield}
 \usage{
-bf_decode(x, registry, positions = NULL, sep = NULL)
+bf_decode(x, registry, sep = NULL)
 }
 \arguments{
 \item{x}{\code{\link[=integer]{integerish(1)}}\cr table of the integer representation of
@@ -12,9 +12,6 @@ the bitfield.}
 
 \item{registry}{\code{\link[=registry]{registry(1)}}\cr the registry that should be
 used to decode the bitfield into a binary representation.}
-
-\item{positions}{\code{\link[=integer]{integerish(.)}}\cr extract flags that are covered
-by those values into explicit data items.}
 
 \item{sep}{\code{\link[=character]{character(1)}}\cr a symbol with which, if given, the
 distinct fields shall be separated.}

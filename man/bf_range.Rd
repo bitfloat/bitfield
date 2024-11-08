@@ -4,7 +4,16 @@
 \alias{bf_range}
 \title{Build a bit flag by checking for a range}
 \usage{
-bf_range(x, test, min = NULL, max = NULL)
+bf_range(
+  x,
+  test,
+  min = NULL,
+  max = NULL,
+  pos = NULL,
+  na.val = NULL,
+  description = NULL,
+  registry = NULL
+)
 }
 \arguments{
 \item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the table that contains
@@ -16,6 +25,15 @@ range is checked.}
 \item{min}{\code{\link[=numeric]{numeric(1)}}\cr the minimum allowed value.}
 
 \item{max}{\code{\link[=numeric]{numeric(1)}}\cr the maximum allowed value.}
+
+\item{pos}{\code{\link[=integer]{integerish(.)}}\cr the position(s) in the bitfield that
+should be set.}
+
+\item{na.val}{description}
+
+\item{description}{description}
+
+\item{registry}{description}
 }
 \description{
 Build a bit flag by checking for a range
