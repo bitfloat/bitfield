@@ -4,21 +4,24 @@
 #'   the bitfield.
 #' @param registry  [`registry(1)`][registry]\cr the registry that should be
 #'   used to decode the bitfield into a binary representation.
-#' @param positions [`integerish(.)`][integer]\cr extract flags that are covered
-#'   by those values into explicit data items.
+#' @param flags [`character(.)`][character]\cr the name(s) of flags to extract
+#'   from this bitfield; leave at \code{NULL} to extract the full bitfield.
 #' @param sep [`character(1)`][character]\cr a symbol with which, if given, the
 #'   distinct fields shall be separated.
 #'
 #' @importFrom checkmate assertDataFrame assertNames assertClass assertCharacter
-#' @importFrom purrr map
+#' @importFrom purrr map map_dbl map_chr
 #' @importFrom tibble tibble
 #' @importFrom dplyr bind_rows arrange group_by ungroup summarise rowwise mutate
 #'   left_join n first row_number
 #' @importFrom tidyr separate unite separate_longer_delim
 #' @importFrom rlang env_bind
+#' @importFrom stringr str_sub_all str_replace
 #' @export
 
-bf_decode <- function(x, registry, positions = NULL, sep = NULL){
+bf_decode <- function(x, registry, flags = NULL, sep = NULL){
+
+  # library(checkmate); library(purrr); library(rlang); library(tidyr)
 
   assertDataFrame(x = x, types = "integer", any.missing = FALSE)
   assertClass(x = registry, classes = "registry")
@@ -48,10 +51,11 @@ bf_decode <- function(x, registry, positions = NULL, sep = NULL){
   # create look-up table for what the bits stand for
   lut <- separate_longer_delim(data = theBits, cols = desc, delim = " | ") |>
     group_by(name) |>
-    mutate(flags = row_number()-1) |>
+    mutate(flags = row_number()-1,
+           grp = n()) |>
     ungroup() |>
     rowwise() |>
-    mutate(flag = .toBin(x = flags, len = bits)) |>
+    mutate(flag = if_else(grp == 1, paste0(rep("x", bits), collapse = ""), .toBin(x = flags, len = bits))) |>
     select(pos, name, flag, desc)
 
   # process bits
@@ -60,22 +64,57 @@ bf_decode <- function(x, registry, positions = NULL, sep = NULL){
     tempBits <- tibble(!!paste0("bin", i) := .toBin(x[[i]], len = registry@width)) |>
       bind_cols(tempBits)
   }
-  out <- tempBits |> #identify how to combine several columns
+  tempOut <- tempBits |> #identify how to combine several columns
     unite(col = "bin", everything(), sep = "") |>
     separate(col = bin, into = paste0("flag", theBits$split), sep = theBits$split)
 
-  if(!is.null(sep)){
-    out <- unite(out, col = "bf_bin", paste0("flag", theBits$split), sep = sep)
+  # decode also the bit values
+  if(!is.null(flags)){
+    assertSubset(x = flags, choices = names(registry@flags))
+    theFlags <- flags
   } else {
-    colnames(out)[-1] <- theBits$name
+    theFlags <- names(registry@flags)
+  }
+
+  for(i in seq_along(theFlags)){
+
+    flagName <- theFlags[i]
+    theFlag <- registry@flags[[flagName]]
+    flagEnc <- theFlag$encoding
+
+    if(flagName == "cases"){
+      temp <- .toDec(x = tempOut[[i]]) + 1
+    } else if(flagEnc$bias == 0){
+      temp <- .toDec(x = tempOut[[i]])
+    } else {
+      flagPos <- unlist(flagEnc)[1:3]
+      flagSplit <- str_sub_all(tempOut[[i]], start = cumsum(c(1, flagPos[-length(flagPos)])), end = cumsum(flagPos))
+      sign <- map_dbl(flagSplit, function(ix){
+        (-1)^as.integer(ix[1])
+      })
+      exponent <- map_int(flagSplit, function(ix){
+        .toDec(x = ix[2]) - flagEnc$bias
+      })
+      mantissa <- map_chr(seq_along(flagSplit), function(ix){
+        paste0("1", flagSplit[[ix]][3])
+      })
+
+      temp <- .toDec(x = str_replace(mantissa, pattern = paste0("^(.{", exponent + 1, "})(.*)$"), replacement = "\\1.\\2"))
+    }
+
+    env_bind(.env = bf_env, !!flagName := temp)
+  }
+
+  if(!is.null(sep)){
+    out <- unite(tempOut, col = "bf_bin", paste0("flag", theBits$split), sep = sep)
+  } else {
+    colnames(tempOut)[-1] <- theBits$name
   }
 
   # assign look-up table to the environment as well
   env_bind(.env = bf_env, legend = lut)
-  # make sure that also all the other items are placed in bf_env, if they are not there yet.
 
   print(lut)
 
   return(out)
-
 }
