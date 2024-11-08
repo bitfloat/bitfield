@@ -113,7 +113,7 @@ yieldReg <-
   
 # store a simplified (e.g. rounded) numeric value
 yieldReg <-
-  bf_numeric(x = tbl_bityield, source = "yield", type = "half",
+  bf_numeric(x = tbl_bityield, source = "yield", precision = "half",
              registry = yieldReg)
 ```
 
@@ -162,4 +162,4 @@ plot(rst_bityield)
 
 - [ ] write unit tests
 - [ ] include MD5 sum for a bitfield and update it each time the bitfield is grown further
-- [ ] ensure everything is properly PROVy https://www.w3.org/TR/prov-o/#Activity, and document it
+- [x] ensure everything is properly PROVy https://www.w3.org/TR/prov-o/#Activity, and document it, define the Activities that are used in the provenance statements, such as `testValue`,  `substituteValue`, `encodeAsBinary`, etc
