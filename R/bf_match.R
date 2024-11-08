@@ -34,7 +34,7 @@ bf_match <- function(x, test, set, negate = FALSE, pos = NULL, na.val = NULL,
     registry <- bf_registry(name = "new_registry")
   }
 
-  thisName <- paste0("match_", source)
+  thisName <- paste0("match_", test)
 
   if(negate){
     out <- !x[[test]] %in% set

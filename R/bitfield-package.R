@@ -37,8 +37,8 @@
 #'     \item where a numeric value (floating-point number) of any kind is
 #'       returned, such as \code{\link{bf_numeric}}.
 #'     \item where a set of numeric values is returned, such as
-#'       \code{\link{bf_distribution}}, \code{\link{bf_histogram}},
-#'       \code{\link{bf_residuals}} or \code{\link{bf_summarise}} (which are
+#'       \code{bf_distribution}, \code{bf_histogram},
+#'       \code{bf_residuals} or \code{bf_summarise} (which are
 #'       basically compound flags that are stored in the registry individually)
 #'   }
 #'
