@@ -17,8 +17,6 @@ reference:
     desc: functions that provide all information to build the flags
     contents:
       - bf_case
-      - bf_distribution
-      - bf_histogram
       - bf_identical
       - bf_inf
       - bf_length
@@ -28,8 +26,6 @@ reference:
       - bf_null
       - bf_numeric
       - bf_range
-      - bf_residuals
-      - bf_summarise
       - bf_type
   - title: classes
     desc: new classes that come with this package
@@ -39,11 +35,11 @@ reference:
   - title: helpers
     contents:
       - .toBin
-      - .toInt
-      - .testPrecision
+      - .toDec
+      - .determineEncoding
   - title: example data
     contents:
-      - bityield
+      - tbl_bityield
 
 navbar:
   left:
