@@ -230,6 +230,7 @@ plot(rst_bityield)
 # To Do
 
 - [ ] write unit tests
+- [ ] revise documentation also in bitfield-package.R
 - [ ] include MD5 sum for a bitfield and update it each time the
   bitfield is grown further
 - [x] ensure everything is properly PROVy
