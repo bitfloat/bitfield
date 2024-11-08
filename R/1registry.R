@@ -114,9 +114,9 @@ setMethod(f = "show",
             theNames <- map(names(object@flags), str_split, "_") |>
               unlist(recursive = FALSE) |>
               map(`[`, 1)
-            theVars <- map(names(object@flags), str_split, "_") |>
-              unlist(recursive = FALSE) |>
-              map(`[`, 2)
+            # theVars <- map(names(object@flags), str_split, "_") |>
+            #   unlist(recursive = FALSE) |>
+            #   map(`[`, 2)
 
             if(length(object@flags) != 0){
 
@@ -124,6 +124,7 @@ setMethod(f = "show",
               minPos <- map(thePos, min) |>
                 unlist()
               theProv <- map(object@flags, "provenance")
+              theVars <- map(theProv, "wasDerivedFrom")
               theEnc <- map(map(theProv, "wasGeneratedBy"), last)
               theEnc <- map(theEnc, function(ix){
                 str_split(ix[[1]], ": ")[[1]][2]
