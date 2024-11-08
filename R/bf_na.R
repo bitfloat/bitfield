@@ -8,22 +8,21 @@
 #'   should be set.
 #' @param na.val description
 #' @param description description
-#' @param prov description
 #' @param registry description
 #' @examples
 #' bf_na(x = tbl_bityield, test = "y")
 #' @importFrom checkmate assertDataFrame assertSubset
 #' @export
 
-bf_na <- function(x, test,
-                  pos = NULL, na.val = NULL, description = NULL, prov = NULL,
+bf_na <- function(x, test, pos = NULL, na.val = NULL, description = NULL,
                   registry = NULL){
 
   assertDataFrame(x = x)
   assertSubset(x = test, choices = names(x))
   assertIntegerish(x = pos, lower = 1, min.len = 1, unique = TRUE, null.ok = TRUE)
   assertIntegerish(x = na.val, lower = 0, len = 1, null.ok = TRUE)
-  assertList(x = prov, types = "character", any.missing = FALSE, null.ok = TRUE)
+  assertCharacter(x = description, len = 2, null.ok = TRUE)
+  assertClass(x = registry, classes = "registry", null.ok = TRUE)
 
   if(is.null(registry)){
     registry <- bf_registry(name = "new_registry")
@@ -35,7 +34,11 @@ bf_na <- function(x, test,
 
   # replace NA values
   if(any(is.na(out))){
+    if(is.null(na.val)) stop("there are NA values in the bit representation, please define 'na.val'.")
     out[is.na(out)] <- na.val
+    naProv <- paste0("substituteValue: NA->", na.val)
+  } else {
+    naProv <- NULL
   }
 
   # update position if it's not set
@@ -57,16 +60,17 @@ bf_na <- function(x, test,
 
   # update flag metadata ...
   if(is.null(description)){
-    description <- c(paste0("{FALSE} the value in column '", test, "' is not NA."), paste0("{TRUE}  the value in column '", test, "' is NA."))
+    description <- c(paste0("{FALSE} the value in column '", test, "' is not NA."),
+                     paste0("{TRUE}  the value in column '", test, "' is NA."))
   }
 
   enc <- list(sign = 0L,
               exponent = 0L,
-              significand = 1L,
+              mantissa = 1L,
               bias = 0L)
 
   prov <- list(wasDerivedFrom = test,
-               wasGeneratedBy = c(paste0(test, "|value|NA"), paste0("encodingAsBinary: 0.0.1/0")))
+               wasGeneratedBy = c("testValue: is.na(", test, ")", naProv, "encodeAsBinary: 0.0.1/0"))
 
   # ... and store everything in the registry
   temp <- list(description = description,

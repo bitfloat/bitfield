@@ -14,7 +14,6 @@
 #'   should be set.
 #' @param na.val description
 #' @param description description
-#' @param prov description
 #' @param registry description
 #' @details The show method of various classes shows decimals that may not
 #'   really be present, and that even includes ordinary numeric vectors. In
@@ -33,9 +32,8 @@
 #' @importFrom dplyr bind_cols
 #' @export
 
-bf_length <- function(x, test, dec = NULL, fill = TRUE,
-                      pos = NULL, na.val = NULL, description = NULL, prov = NULL,
-                      registry = NULL){
+bf_length <- function(x, test, dec = NULL, fill = TRUE, pos = NULL, na.val = NULL,
+                      description = NULL, registry = NULL){
 
   assertDataFrame(x = x)
   assertSubset(x = test, choices = names(x))
@@ -43,7 +41,8 @@ bf_length <- function(x, test, dec = NULL, fill = TRUE,
   assertLogical(x = fill, len = 1, any.missing = FALSE)
   assertIntegerish(x = pos, lower = 1, min.len = 1, unique = TRUE, null.ok = TRUE)
   assertIntegerish(x = na.val, lower = 0, len = 1, null.ok = TRUE)
-  assertList(x = prov, types = "character", any.missing = FALSE, null.ok = TRUE)
+  assertCharacter(x = description, len = 1, null.ok = TRUE)
+  assertClass(x = registry, classes = "registry", null.ok = TRUE)
 
   if(is.null(registry)){
     registry <- bf_registry(name = "new_registry")
@@ -97,18 +96,22 @@ bf_length <- function(x, test, dec = NULL, fill = TRUE,
   len <- as.integer(ceiling(log2(length(unique(tempVals)))))
 
   if(!is.null(dec)){
-    significand <- 0L
+    mantissa <- 0L
     exponent <- len
     theDesc <- paste0("the bits encode the number of decimals in column '", test, "'.")
   } else {
-    significand <- len
+    mantissa <- len
     exponent <- 0L
     theDesc <- paste0("the bits encode the value length in column '", test, "'.")
   }
 
   # replace NA values
   if(any(is.na(out))){
+    if(is.null(na.val)) stop("there are NA values in the bit representation, please define 'na.val'.")
     out[is.na(out)] <- na.val
+    naProv <- paste0("substituteValue: NA->", na.val)
+  } else {
+    naProv <- NULL
   }
 
   # update position if it's not set
@@ -135,11 +138,11 @@ bf_length <- function(x, test, dec = NULL, fill = TRUE,
 
   enc <- list(sign = 0L,
               exponent = exponent,
-              significand = significand,
+              mantissa = mantissa,
               bias = 0L)
 
   prov <- list(wasDerivedFrom = test,
-               wasGeneratedBy = paste0("encodingAsBinary: 0.", exponent, ".", significand, "/0"))
+               wasGeneratedBy = c(naProv, paste0("encodingAsBinary: 0.", exponent, ".", mantissa, "/0")))
 
   # ... and store everything in the registry
   temp <- list(description = description,
@@ -153,5 +156,4 @@ bf_length <- function(x, test, dec = NULL, fill = TRUE,
   env_bind(.env = bf_env, !!thisName := out)
 
   return(registry)
-
 }

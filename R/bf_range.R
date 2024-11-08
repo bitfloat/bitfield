@@ -6,35 +6,90 @@
 #'   range is checked.
 #' @param min [`numeric(1)`][numeric]\cr the minimum allowed value.
 #' @param max [`numeric(1)`][numeric]\cr the maximum allowed value.
+#' @param pos [`integerish(.)`][integer]\cr the position(s) in the bitfield that
+#'   should be set.
+#' @param na.val description
+#' @param description description
+#' @param registry description
 #' @details when leaving either \code{min} or \code{max} at NULL they are set to
 #'   the minimum or maximum value of \code{test}, respectively, thereby carrying
 #'   out a "less than max" or "greater than min" operation.
 #' @importFrom checkmate assertDataFrame assertSubset assertNumeric
 #' @export
 
-bf_range <- function(x, test, min = NULL, max = NULL){
+bf_range <- function(x, test, min = NULL, max = NULL, pos = NULL, na.val = NULL,
+                     description = NULL, registry = NULL){
 
   assertDataFrame(x = x)
   assertSubset(x = test, choices = names(x))
   assertNumeric(x = min, finite = TRUE, null.ok = TRUE)
   assertNumeric(x = max, finite = TRUE, null.ok = TRUE)
+  assertIntegerish(x = pos, lower = 1, min.len = 1, unique = TRUE, null.ok = TRUE)
+  assertIntegerish(x = na.val, lower = 0, len = 1, null.ok = TRUE)
+  assertCharacter(x = description, len = 2, null.ok = TRUE)
+  assertClass(x = registry, classes = "registry", null.ok = TRUE)
+
+  if(is.null(registry)){
+    registry <- bf_registry(name = "new_registry")
+  }
+
+  thisName <- paste0("range_", source)
 
   if(is.null(min)) min <- min(x[[test]], na.rm = TRUE)
   if(is.null(max)) max <- max(x[[test]], na.rm = TRUE)
 
-  temp <- x[[test]] > min & x[[test]] < max
+  out <- x[[test]] > min & x[[test]] < max
 
-  name <- paste0("range_", test)
-  desc <- c(paste0("the value in column '", test, "' ranges between [", min, ",", max, "]."),
-            paste0("the value in column '", test, "' is outside the range [", min, ",", max, "]."))
-  triple <- paste0(test, "|range|[", min, ",", max, "]")
+  # replace NA values
+  if(any(is.na(out))){
+    if(is.null(na.val)) stop("there are NA values in the bit representation, please define 'na.val'.")
+    out[is.na(out)] <- na.val
+    naProv <- paste0("substituteValue: NA->", na.val)
+  } else {
+    naProv <- NULL
+  }
 
-  out <- temp
+  # update position if it's not set
+  if(is.null(pos)){
+    pos <- registry@width + 1L
+  } else {
+    # include test that checks whether sufficient positions are set, and give an error if not
+  }
 
-  attr(out, which = "name") <- name
-  attr(out, which = "desc") <- desc
-  attr(out, which = "triple") <- triple
+  # update the registry
+  registry@width <- registry@width + 1L
+  if(registry@length == 0L){
+    registry@length <- length(out)
+  } else {
+    if(registry@length != length(out)){
+      stop(paste0("this flag doesn't have as many items, as there are observations in the bitfield."))
+    }
+  }
 
-  return(out)
+  # update flag metadata ...
+  if(is.null(description)){
+    description <- c(paste0("the value in column '", test, "' ranges between [", min, ",", max, "]."),
+                     paste0("the value in column '", test, "' is outside the range [", min, ",", max, "]."))
+  }
 
+  enc <- list(sign = 0L,
+              exponent = 0L,
+              mantissa = 1L,
+              bias = 0L)
+
+  prov <- list(wasDerivedFrom = test,
+               wasGeneratedBy = c(paste0("testValue: ", min, "<", test, "<", max), naProv, "encodeAsBinary: 0.0.1/0"))
+
+  # ... and store everything in the registry
+  temp <- list(description = description,
+               position = pos,
+               encoding = enc,
+               provenance = prov)
+
+  registry@flags[[thisName]] <- temp
+
+  # assign tentative flags values into the current environment
+  env_bind(.env = bf_env, !!thisName := out)
+
+  return(registry)
 }
