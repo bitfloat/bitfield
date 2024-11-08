@@ -51,8 +51,8 @@ bf_length <- function(x, test, dec = NULL, fill = TRUE, pos = NULL, na.val = NUL
   if(!is.null(dec)){
     testVals <- str_length(str_extract(x[[test]], paste0("(?<=", dec, ")\\d+")))
     testVals[is.na(testVals)] <- 0L
-    # testVals[is.nan(testVals)] <- 0L
-    # testVals[is.infinite(testVals)] <- 0L
+    testVals[is.nan(testVals)] <- 0L
+    testVals[is.infinite(testVals)] <- 0L
 
     thisName <- paste0("decimals_", test)
   } else {
