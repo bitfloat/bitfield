@@ -31,20 +31,21 @@ bf_encode <- function(registry){
 
     theName <- theFlags$name[i]
     theFlag <- registry@flags[[theName]]
+    thisLen <- theFlag$encoding$sign + theFlag$encoding$exponent + theFlag$encoding$mantissa
     theVals <- bf_env[[theName]]
 
     if(!is.logical(theVals)){
 
       # get the integer part of the binary value
+      # theVals <- c(theVals[4], theVals[10], 329.390625)
+      # theVals <- c(theVals, 329.390625)
       intBits <- .toBin(x = as.integer(theVals), pad = TRUE)
 
       if(!is.integer(theVals)){
         # good explanation: https://www.cs.cornell.edu/~tomf/notes/cps104/floating
         # bin<->dec       : https://www.rapidtables.com/convert/number/binary-to-decimal.html
 
-        # theVals <- c(theVals[4], theVals[10], 329.390625)
         # get the decimal part of the binary value and ...
-        # fullBits <- .toBin(x = theVals, len = theFlag$encoding$mantissa)
         decBits <- .toBin(x = theVals, dec = TRUE)
 
         # 1. transform to scientific notation, then ...
@@ -74,6 +75,9 @@ bf_encode <- function(registry){
       theBits <- as.integer(theVals)
     }
 
+    # add trailing 0s
+    theBits <- str_pad(string = theBits, width = thisLen, side = "right", pad = "0")
+
     theBitfield <- bind_cols(theBitfield, tibble(!!paste0("flag", i) := theBits), .name_repair = "minimal")
   }
 
@@ -94,7 +98,7 @@ bf_encode <- function(registry){
   tempBits <- separate_wider_position(data = tempBits, cols = "bf_int", widths = widths)
 
   out <- tempBits |>
-    mutate(across(everything(), .toInt))
+    mutate(across(everything(), .toDec))
 
   return(out)
 
