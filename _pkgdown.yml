@@ -7,6 +7,9 @@ development:
   mode: release
 
 reference:
+  - title: overview
+    contents:
+      - bitfield-package
   - title: create, grow and unpack registry, combine into bitfield
     desc: housekeeping functions
     contents:
