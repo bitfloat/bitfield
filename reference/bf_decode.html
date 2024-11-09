@@ -56,7 +56,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">bf_decode</span><span class="op">(</span><span class="va">x</span>, <span class="va">registry</span>, flags <span class="op">=</span> <span class="cn">NULL</span>, sep <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">bf_decode</span><span class="op">(</span><span class="va">x</span>, <span class="va">registry</span>, flags <span class="op">=</span> <span class="cn">NULL</span>, sep <span class="op">=</span> <span class="cn">NULL</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -69,8 +69,8 @@ the bitfield.</p></dd>
 
 
 <dt id="arg-registry">registry<a class="anchor" aria-label="anchor" href="#arg-registry"></a></dt>
-<dd><p><code><a href="registry-class.html">registry(1)</a></code><br> the registry that should be
-used to decode the bitfield into a binary representation.</p></dd>
+<dd><p><code><a href="registry-class.html">registry(1)</a></code><br> the registry that should be used
+to decode the bitfield.</p></dd>
 
 
 <dt id="arg-flags">flags<a class="anchor" aria-label="anchor" href="#arg-flags"></a></dt>
@@ -82,8 +82,84 @@ from this bitfield; leave at <code>NULL</code> to extract the full bitfield.</p>
 <dd><p><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character(1)</a></code><br> a symbol with which, if given, the
 distinct fields shall be separated.</p></dd>
 
+
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p><code><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical(1)</a></code><br> whether or not to return the
+registry legend.</p></dd>
+
 </dl></div>
 
+    <div id="ref-examples">
+    <h2>Examples</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># grow registry</span></span></span>
+<span class="r-in"><span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="bf_na.html">bf_na</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">tbl_bityield</span>, test <span class="op">=</span> <span class="st">"commodity"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="bf_match.html">bf_match</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">tbl_bityield</span>, test <span class="op">=</span> <span class="st">"commodity"</span>, set <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"soybean"</span>, <span class="st">"maize"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                registry <span class="op">=</span> <span class="va">reg</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">reg</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">  width</span> 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">  flags</span> 2  -|-</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">  pos   encoding type   col</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1     0.0.1/0  na     commodity</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2     0.0.1/0  match  commodity</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># encode the flags into a bitfield</span></span></span>
+<span class="r-in"><span><span class="va">field</span> <span class="op">&lt;-</span> <span class="fu"><a href="bf_encode.html">bf_encode</a></span><span class="op">(</span>registry <span class="op">=</span> <span class="va">reg</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">field</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 10 × 1</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    bf_int1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>       1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>       1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>       2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>       1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>       0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>       1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>       1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>       1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>       1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>       1</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># decode (somewhere downstream)</span></span></span>
+<span class="r-in"><span><span class="va">flags</span> <span class="op">&lt;-</span> <span class="fu">bf_decode</span><span class="op">(</span>x <span class="op">=</span> <span class="va">field</span>, registry <span class="op">=</span> <span class="va">reg</span>, sep <span class="op">=</span> <span class="st">"-"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 4 × 4</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Rowwise: </span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   pos   name            flag  desc                                              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> 1     na_commodity    0     {FALSE} the value in column 'commodity' is not NA.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> 1     na_commodity    1     {TRUE}  the value in column 'commodity' is NA.    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> 2     match_commodity 0     {FALSE} the value in column 'commodity' is not in…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> 2     match_commodity 1     {TRUE}  the value in column 'commodity' is includ…</span>
+<span class="r-in"><span><span class="va">flags</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 10 × 1</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    bf_bin</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 0-1   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 0-1   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 1-0   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 0-1   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 0-0   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 0-1   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 0-1   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 0-1   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 0-1   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 0-1   </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># more reader friendly</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">tbl_bityield</span>, <span class="fu">bf_decode</span><span class="op">(</span>x <span class="op">=</span> <span class="va">field</span>, registry <span class="op">=</span> <span class="va">reg</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        x    y commodity     yield  year na_commodity match_commodity</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   25.3 59.5   soybean 11.192915  2021            0               1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2   27.9 58.1     maize 11.986793  &lt;NA&gt;            0               1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3   27.8 57.8      &lt;NA&gt; 13.229386 2021r            1               0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4   27.0 59.2     maize  4.431376  2021            0               1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  259.0  Inf     honey 12.997422  2021            0               0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6   27.3 59.1     maize  8.548882  2021            0               1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7   26.1 58.4   soybean 11.276921  2021            0               1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8   26.5 59.0     maize 10.640715  2021            0               1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9    0.0  0.0   soybean  9.010452  2021            0               1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10  25.7  NaN     maize 13.169897  2021            0               1</span>
+</code></pre></div>
+    </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top"><h2 data-toc-skip>Contents</h2>

@@ -65,10 +65,21 @@
 
 <dl><dt id="arg-registry">registry<a class="anchor" aria-label="anchor" href="#arg-registry"></a></dt>
 <dd><p><code><a href="registry-class.html">registry(1)</a></code><br> the bit registry that should be
-combined into a bitfield.</p></dd>
+encoded into a bitfield.</p></dd>
 
 </dl></div>
+    <div id="value">
+    <h2>Value</h2>
+    <p>description</p>
+    </div>
 
+    <div id="ref-examples">
+    <h2>Examples</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">myRegistry</span> <span class="op">&lt;-</span> <span class="fu"><a href="bf_na.html">bf_na</a></span><span class="op">(</span><span class="va">tbl_bityield</span>, <span class="st">"y"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">myBitfield</span> <span class="op">&lt;-</span> <span class="fu">bf_encode</span><span class="op">(</span>registry <span class="op">=</span> <span class="va">myRegistry</span><span class="op">)</span></span></span>
+</code></pre></div>
+    </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top"><h2 data-toc-skip>Contents</h2>

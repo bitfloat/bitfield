@@ -98,17 +98,29 @@ should be set.</p></dd>
 
 
 <dt id="arg-na-val">na.val<a class="anchor" aria-label="anchor" href="#arg-na-val"></a></dt>
-<dd><p>description</p></dd>
+<dd><p><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character(1)</a></code><br> optional value that should be
+used to substitute NA values in the input data.</p></dd>
 
 
 <dt id="arg-description">description<a class="anchor" aria-label="anchor" href="#arg-description"></a></dt>
-<dd><p>description</p></dd>
+<dd><p><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character(.)</a></code><br> optional description that
+should be used instead of the default function-specific description. This
+description is used in the registry legend, so it should have as many
+entries as there will be entries per the respective flag in the legend (two
+for a binary flag, as many as there are cases for a cases flag and one for
+count or numeric flags).</p></dd>
 
 
 <dt id="arg-registry">registry<a class="anchor" aria-label="anchor" href="#arg-registry"></a></dt>
-<dd><p>description</p></dd>
+<dd><p><code><a href="registry-class.html">registry(1)</a></code><br> a bitfield registry that has
+been defined with <code><a href="bf_registry.html">bf_registry</a></code>; if it's undefined, an empty
+registry will be defined on-the-fly.</p></dd>
 
 </dl></div>
+    <div id="value">
+    <h2>Value</h2>
+    <p>an object of class 'registry' with the additional flag defined here.</p>
+    </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
@@ -118,7 +130,6 @@ should be set.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">  pos   encoding type   col</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   1     0.0.1/0  match  commodity</span>
-<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>

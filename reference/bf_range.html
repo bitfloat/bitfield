@@ -96,17 +96,29 @@ should be set.</p></dd>
 
 
 <dt id="arg-na-val">na.val<a class="anchor" aria-label="anchor" href="#arg-na-val"></a></dt>
-<dd><p>description</p></dd>
+<dd><p><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character(1)</a></code><br> optional value that should be
+used to substitute NA values in the input data.</p></dd>
 
 
 <dt id="arg-description">description<a class="anchor" aria-label="anchor" href="#arg-description"></a></dt>
-<dd><p>description</p></dd>
+<dd><p><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character(.)</a></code><br> optional description that
+should be used instead of the default function-specific description. This
+description is used in the registry legend, so it should have as many
+entries as there will be entries per the respective flag in the legend (two
+for a binary flag, as many as there are cases for a cases flag and one for
+count or numeric flags).</p></dd>
 
 
 <dt id="arg-registry">registry<a class="anchor" aria-label="anchor" href="#arg-registry"></a></dt>
-<dd><p>description</p></dd>
+<dd><p><code><a href="registry-class.html">registry(1)</a></code><br> a bitfield registry that has
+been defined with <code><a href="bf_registry.html">bf_registry</a></code>; if it's undefined, an empty
+registry will be defined on-the-fly.</p></dd>
 
 </dl></div>
+    <div id="value">
+    <h2>Value</h2>
+    <p>an object of class 'registry' with the additional flag defined here.</p>
+    </div>
     <div id="details">
     <h2>Details</h2>
     <p>when leaving either <code>min</code> or <code>max</code> at NULL they are set to
@@ -114,6 +126,16 @@ the minimum or maximum value of <code>test</code>, respectively, thereby carryin
 out a "less than max" or "greater than min" operation.</p>
     </div>
 
+    <div id="ref-examples">
+    <h2>Examples</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">bf_range</span><span class="op">(</span>x <span class="op">=</span> <span class="va">tbl_bityield</span>, test <span class="op">=</span> <span class="st">"y"</span>, min <span class="op">=</span> <span class="fl">50</span>, max <span class="op">=</span> <span class="fl">59</span>, na.val <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">  width</span> 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">  flags</span> 1  -</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">  pos   encoding type   col</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1     0.0.1/0  range  y</span>
+</code></pre></div>
+    </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top"><h2 data-toc-skip>Contents</h2>
