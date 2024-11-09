@@ -8,13 +8,26 @@
 #' @param max [`numeric(1)`][numeric]\cr the maximum allowed value.
 #' @param pos [`integerish(.)`][integer]\cr the position(s) in the bitfield that
 #'   should be set.
-#' @param na.val description
-#' @param description description
-#' @param registry description
+#' @param na.val [`character(1)`][character]\cr optional value that should be
+#'   used to substitute NA values in the input data.
+#' @param description [`character(.)`][character]\cr optional description that
+#'   should be used instead of the default function-specific description. This
+#'   description is used in the registry legend, so it should have as many
+#'   entries as there will be entries per the respective flag in the legend (two
+#'   for a binary flag, as many as there are cases for a cases flag and one for
+#'   count or numeric flags).
+#' @param registry [`registry(1)`][registry]\cr a bitfield registry that has
+#'   been defined with \code{\link{bf_registry}}; if it's undefined, an empty
+#'   registry will be defined on-the-fly.
 #' @details when leaving either \code{min} or \code{max} at NULL they are set to
 #'   the minimum or maximum value of \code{test}, respectively, thereby carrying
 #'   out a "less than max" or "greater than min" operation.
+#' @return an object of class 'registry' with the additional flag defined here.
+#' @examples
+#' bf_range(x = tbl_bityield, test = "y", min = 50, max = 59, na.val = 0)
 #' @importFrom checkmate assertDataFrame assertSubset assertNumeric
+#'   assertIntegerish assertCharacter assertClass
+#' @importFrom rlang env_bind
 #' @export
 
 bf_range <- function(x, test, min = NULL, max = NULL, pos = NULL, na.val = NULL,
@@ -33,12 +46,12 @@ bf_range <- function(x, test, min = NULL, max = NULL, pos = NULL, na.val = NULL,
     registry <- bf_registry(name = "new_registry")
   }
 
-  thisName <- paste0("range_", source)
+  thisName <- paste0("range_", test)
 
   if(is.null(min)) min <- min(x[[test]], na.rm = TRUE)
   if(is.null(max)) max <- max(x[[test]], na.rm = TRUE)
 
-  out <- x[[test]] > min & x[[test]] < max
+  out <- x[[test]] >= min & x[[test]] <= max
 
   # replace NA values
   if(any(is.na(out))){
@@ -78,7 +91,7 @@ bf_range <- function(x, test, min = NULL, max = NULL, pos = NULL, na.val = NULL,
               bias = 0L)
 
   prov <- list(wasDerivedFrom = test,
-               wasGeneratedBy = c(paste0("testValue: ", min, "<", test, "<", max), naProv, "encodeAsBinary: 0.0.1/0"))
+               wasGeneratedBy = c(paste0("testValue: ", min, "<=", test, "<=", max), naProv, "encodeAsBinary: 0.0.1/0"))
 
   # ... and store everything in the registry
   temp <- list(description = description,
