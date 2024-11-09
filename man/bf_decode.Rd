@@ -4,21 +4,42 @@
 \alias{bf_decode}
 \title{Decode (unpack) a bitfield}
 \usage{
-bf_decode(x, registry, flags = NULL, sep = NULL)
+bf_decode(x, registry, flags = NULL, sep = NULL, verbose = TRUE)
 }
 \arguments{
 \item{x}{\code{\link[=integer]{integerish(1)}}\cr table of the integer representation of
 the bitfield.}
 
-\item{registry}{\code{\link[=registry]{registry(1)}}\cr the registry that should be
-used to decode the bitfield into a binary representation.}
+\item{registry}{\code{\link[=registry]{registry(1)}}\cr the registry that should be used
+to decode the bitfield.}
 
 \item{flags}{\code{\link[=character]{character(.)}}\cr the name(s) of flags to extract
 from this bitfield; leave at \code{NULL} to extract the full bitfield.}
 
 \item{sep}{\code{\link[=character]{character(1)}}\cr a symbol with which, if given, the
 distinct fields shall be separated.}
+
+\item{verbose}{\code{\link[=logical]{logical(1)}}\cr whether or not to return the
+registry legend.}
 }
 \description{
 Decode (unpack) a bitfield
+}
+\examples{
+# grow registry
+reg <- bf_na(x = tbl_bityield, test = "commodity")
+reg <- bf_match(x = tbl_bityield, test = "commodity", set = c("soybean", "maize"),
+                registry = reg)
+reg
+
+# encode the flags into a bitfield
+field <- bf_encode(registry = reg)
+field
+
+# decode (somewhere downstream)
+flags <- bf_decode(x = field, registry = reg, sep = "-")
+flags
+
+# more reader friendly
+cbind(tbl_bityield, bf_decode(x = field, registry = reg, verbose = FALSE))
 }

@@ -8,8 +8,16 @@ bf_encode(registry)
 }
 \arguments{
 \item{registry}{\code{\link[=registry]{registry(1)}}\cr the bit registry that should be
-combined into a bitfield.}
+encoded into a bitfield.}
+}
+\value{
+description
 }
 \description{
 Build a bitfield from a bit registry
+}
+\examples{
+myRegistry <- bf_na(tbl_bityield, "y")
+
+myBitfield <- bf_encode(registry = myRegistry)
 }
