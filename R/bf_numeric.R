@@ -7,22 +7,29 @@
 #' @param ... description
 #' @param pos [`integerish(.)`][integer]\cr the position(s) in the bitfield that
 #'   should be set.
-#' @param na.val description
-#' @param description description
-#' @param registry description
+#' @param na.val [`character(1)`][character]\cr optional value that should be
+#'   used to substitute NA values in the input data.
+#' @param description [`character(.)`][character]\cr optional description that
+#'   should be used instead of the default function-specific description. This
+#'   description is used in the registry legend, so it should have as many
+#'   entries as there will be entries per the respective flag in the legend (two
+#'   for a binary flag, as many as there are cases for a cases flag and one for
+#'   count or numeric flags).
+#' @param registry [`registry(1)`][registry]\cr a bitfield registry that has
+#'   been defined with \code{\link{bf_registry}}; if it's undefined, an empty
+#'   registry will be defined on-the-fly.
 #' @details The length of the bitfield depends on the floating point digits of
 #'   the numeric values returned with this function...
-#'
+#' @return an object of class 'registry' with the additional flag defined here.
 #' @examples
-#' # bf_numeric(x = tbl_bityield, digits = 3, source = "yield")
+#' bf_numeric(x = tbl_bityield, source = "yield")
 #' @importFrom checkmate assert assertDataFrame assertSubset assertIntegerish
 #'   assertList testNull
+#' @importFrom rlang env_bind
 #' @export
 
 bf_numeric <- function(x, source, ..., pos = NULL, na.val = NULL,
                        description = NULL, registry = NULL){
-
-  # library(checkmate); library(rlang); library(tidyverse); type = "half"; options = NULL; pos = NULL; na.val = NULL; description = NULL; prov = NULL
 
   assertDataFrame(x = x)
   assertSubset(x = source, choices = names(x))
@@ -75,7 +82,7 @@ bf_numeric <- function(x, source, ..., pos = NULL, na.val = NULL,
   }
 
   prov <- list(wasDerivedFrom = source,
-               wasGeneratedBy = c(naProv, paste0("encodingAsBinary: ", enc$sign, ".", enc$exponent, ".", enc$mantissa, "/", enc$bias)))
+               wasGeneratedBy = c(naProv, paste0("encodeAsBinary: ", enc$sign, ".", enc$exponent, ".", enc$mantissa, "/", enc$bias)))
 
   # ... and store everything in the registry
   temp <- list(description = description,

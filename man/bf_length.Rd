@@ -33,20 +33,31 @@ whether it should only document existing decimal lengths.}
 \item{pos}{\code{\link[=integer]{integerish(.)}}\cr the position(s) in the bitfield that
 should be set.}
 
-\item{na.val}{description}
+\item{na.val}{\code{\link[=character]{character(1)}}\cr optional value that should be
+used to substitute NA values in the input data.}
 
-\item{description}{description}
+\item{description}{\code{\link[=character]{character(.)}}\cr optional description that
+should be used instead of the default function-specific description. This
+description is used in the registry legend, so it should have as many
+entries as there will be entries per the respective flag in the legend (two
+for a binary flag, as many as there are cases for a cases flag and one for
+count or numeric flags).}
 
-\item{registry}{description}
+\item{registry}{\code{\link[=registry]{registry(1)}}\cr a bitfield registry that has
+been defined with \code{\link{bf_registry}}; if it's undefined, an empty
+registry will be defined on-the-fly.}
+}
+\value{
+an object of class 'registry' with the additional flag defined here.
 }
 \description{
 Build a bit flag by counting aspects of an entity
 }
 \details{
-The show method of various classes shows decimals that may not
-really be present, and that even includes ordinary numeric vectors. In
-these cases, what is printed in the R console may be misleading. Double
-check with \code{\link{str}}.
+The console output of various classes shows decimals that are not
+present or round decimals away that are present, even for ordinary numeric
+vectors. If a bit flag doesn't seem to coincide with the values you see in
+the console, double check the values with \code{\link{str}}.
 
 Determine the number of decimals of coordinates to determine their
 precision:

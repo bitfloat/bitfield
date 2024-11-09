@@ -10,13 +10,22 @@
 #'   or a disjoint match.
 #' @param pos [`integerish(.)`][integer]\cr the position(s) in the bitfield that
 #'   should be set.
-#' @param na.val description
-#' @param description description
-#' @param registry description
+#' @param na.val [`character(1)`][character]\cr optional value that should be
+#'   used to substitute NA values in the input data.
+#' @param description [`character(.)`][character]\cr optional description that
+#'   should be used instead of the default function-specific description. This
+#'   description is used in the registry legend, so it should have as many
+#'   entries as there will be entries per the respective flag in the legend (two
+#'   for a binary flag, as many as there are cases for a cases flag and one for
+#'   count or numeric flags).
+#' @param registry [`registry(1)`][registry]\cr a bitfield registry that has
+#'   been defined with \code{\link{bf_registry}}; if it's undefined, an empty
+#'   registry will be defined on-the-fly.
+#' @return an object of class 'registry' with the additional flag defined here.
 #' @examples
 #' bf_match(x = tbl_bityield, test = "commodity", set = c("soybean", "maize"))
-#'
 #' @importFrom checkmate assertDataFrame assertSubset assertClass
+#' @importFrom rlang env_bind
 #' @export
 
 bf_match <- function(x, test, set, negate = FALSE, pos = NULL, na.val = NULL,

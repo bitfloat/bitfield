@@ -1,8 +1,12 @@
 #' Build a bitfield from a bit registry
 #'
 #' @param registry [`registry(1)`][registry]\cr the bit registry that should be
-#'   combined into a bitfield.
+#'   encoded into a bitfield.
+#' @return description
+#' @examples
+#' myRegistry <- bf_na(tbl_bityield, "y")
 #'
+#' myBitfield <- bf_encode(registry = myRegistry)
 #' @importFrom checkmate assertClass assertCharacter assertLogical
 #' @importFrom tibble tibble
 #' @importFrom purrr map map_int

@@ -12,23 +12,32 @@
 #'   whether it should only document existing decimal lengths.
 #' @param pos [`integerish(.)`][integer]\cr the position(s) in the bitfield that
 #'   should be set.
-#' @param na.val description
-#' @param description description
-#' @param registry description
-#' @details The show method of various classes shows decimals that may not
-#'   really be present, and that even includes ordinary numeric vectors. In
-#'   these cases, what is printed in the R console may be misleading. Double
-#'   check with \code{\link{str}}.
+#' @param na.val [`character(1)`][character]\cr optional value that should be
+#'   used to substitute NA values in the input data.
+#' @param description [`character(.)`][character]\cr optional description that
+#'   should be used instead of the default function-specific description. This
+#'   description is used in the registry legend, so it should have as many
+#'   entries as there will be entries per the respective flag in the legend (two
+#'   for a binary flag, as many as there are cases for a cases flag and one for
+#'   count or numeric flags).
+#' @param registry [`registry(1)`][registry]\cr a bitfield registry that has
+#'   been defined with \code{\link{bf_registry}}; if it's undefined, an empty
+#'   registry will be defined on-the-fly.
+#' @details The console output of various classes shows decimals that are not
+#'   present or round decimals away that are present, even for ordinary numeric
+#'   vectors. If a bit flag doesn't seem to coincide with the values you see in
+#'   the console, double check the values with \code{\link{str}}.
 #'
 #'   Determine the number of decimals of coordinates to determine their
 #'   precision:
 #'   \href{https://en.wikipedia.org/wiki/Decimal_degrees}{https://en.wikipedia.org/wiki/Decimal_degrees}
+#' @return an object of class 'registry' with the additional flag defined here.
 #' @examples
 #' bf_length(x = tbl_bityield, test = "y")
 #' bf_length(x = tbl_bityield, test = "y", dec = "\\.")
 #' @importFrom checkmate assertDataFrame assertSubset
 #' @importFrom stringr str_length str_extract
-#' @importFrom rlang expr
+#' @importFrom rlang expr env_bind parse_expr
 #' @importFrom dplyr bind_cols
 #' @export
 

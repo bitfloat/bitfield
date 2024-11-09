@@ -8,14 +8,24 @@
 #'   checked against \code{test}.
 #' @param pos [`integerish(.)`][integer]\cr the position(s) in the bitfield that
 #'   should be set.
-#' @param na.val description
-#' @param description description
-#' @param registry description
+#' @param na.val [`character(1)`][character]\cr optional value that should be
+#'   used to substitute NA values in the input data.
+#' @param description [`character(.)`][character]\cr optional description that
+#'   should be used instead of the default function-specific description. This
+#'   description is used in the registry legend, so it should have as many
+#'   entries as there will be entries per the respective flag in the legend (two
+#'   for a binary flag, as many as there are cases for a cases flag and one for
+#'   count or numeric flags).
+#' @param registry [`registry(1)`][registry]\cr a bitfield registry that has
+#'   been defined with \code{\link{bf_registry}}; if it's undefined, an empty
+#'   registry will be defined on-the-fly.
 #' @details This function compares the values of two columns element-wise and
-#'   returns \code{TRUE} when they are identical.
+#'   returns \code{TRUE} when the two columns are identical.
+#' @return an object of class 'registry' with the additional flag defined here.
 #' @examples
 #' bf_identical(x = tbl_bityield, test = "x", against = "y", na.val = 0)
 #' @importFrom checkmate assertDataFrame assertSubset
+#' @importFrom rlang env_bind
 #' @export
 
 bf_identical <- function(x, test, against, pos = NULL, na.val = NULL,

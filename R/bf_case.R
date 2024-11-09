@@ -9,17 +9,25 @@
 #'   defined later in the sequence overwrite cases earlier in the sequence.
 #' @param pos [`integerish(.)`][integer]\cr the position(s) in the bitfield that
 #'   should be set.
-#' @param na.val description
-#' @param description description
-#' @param registry description
+#' @param na.val [`character(1)`][character]\cr optional value that should be
+#'   used to substitute NA values in the input data.
+#' @param description [`character(.)`][character]\cr optional description that
+#'   should be used instead of the default function-specific description. This
+#'   description is used in the registry legend, so it should have as many
+#'   entries as there will be entries per the respective flag in the legend (two
+#'   for a binary flag, as many as there are cases for a cases flag and one for
+#'   count or numeric flags).
+#' @param registry [`registry(1)`][registry]\cr a bitfield registry that has
+#'   been defined with \code{\link{bf_registry}}; if it's undefined, an empty
+#'   registry will be defined on-the-fly.
+#' @return an object of class 'registry' with the additional flag defined here.
 #' @examples
 #' registry <- bf_case(x = tbl_bityield, exclusive = FALSE,
 #'                     yield >= 11,
 #'                     yield < 11 & yield > 9,
 #'                     yield < 9 & commodity == "maize")
 #' @importFrom checkmate assertDataFrame assertLogical assertTRUE assertList
-#' @importFrom rlang enquos eval_tidy as_label `:=` get_expr quo_get_expr quos
-#'   parse_expr quo_set_env quo
+#' @importFrom rlang enquos eval_tidy as_label `:=` get_expr env_bind
 #' @importFrom purrr map reduce
 #' @importFrom tibble as_tibble
 #' @importFrom dplyr rename bind_cols filter if_else
