@@ -1,63 +1,32 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>http://EhrmannS.github.io/queuebee/404.html</loc>
-  </url>
-  <url>
-    <loc>http://EhrmannS.github.io/queuebee/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>http://EhrmannS.github.io/queuebee/articles/bitfield.html</loc>
-  </url>
-  <url>
-    <loc>http://EhrmannS.github.io/queuebee/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>http://EhrmannS.github.io/queuebee/authors.html</loc>
-  </url>
-  <url>
-    <loc>http://EhrmannS.github.io/queuebee/index.html</loc>
-  </url>
-  <url>
-    <loc>http://EhrmannS.github.io/queuebee/news/index.html</loc>
-  </url>
-  <url>
-    <loc>http://EhrmannS.github.io/queuebee/reference/bf_case.html</loc>
-  </url>
-  <url>
-    <loc>http://EhrmannS.github.io/queuebee/reference/bf_combine.html</loc>
-  </url>
-  <url>
-    <loc>http://EhrmannS.github.io/queuebee/reference/bf_create.html</loc>
-  </url>
-  <url>
-    <loc>http://EhrmannS.github.io/queuebee/reference/bf_decimals.html</loc>
-  </url>
-  <url>
-    <loc>http://EhrmannS.github.io/queuebee/reference/bf_grow.html</loc>
-  </url>
-  <url>
-    <loc>http://EhrmannS.github.io/queuebee/reference/bf_match.html</loc>
-  </url>
-  <url>
-    <loc>http://EhrmannS.github.io/queuebee/reference/bf_na.html</loc>
-  </url>
-  <url>
-    <loc>http://EhrmannS.github.io/queuebee/reference/bf_range.html</loc>
-  </url>
-  <url>
-    <loc>http://EhrmannS.github.io/queuebee/reference/bf_unpack.html</loc>
-  </url>
-  <url>
-    <loc>http://EhrmannS.github.io/queuebee/reference/dot-makeFlag.html</loc>
-  </url>
-  <url>
-    <loc>http://EhrmannS.github.io/queuebee/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>http://EhrmannS.github.io/queuebee/reference/registry-class.html</loc>
-  </url>
-  <url>
-    <loc>http://EhrmannS.github.io/queuebee/reference/show-registry-method.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>http://ehrmanns.github.io/bitfield/404.html</loc></url>
+<url><loc>http://ehrmanns.github.io/bitfield/LICENSE.html</loc></url>
+<url><loc>http://ehrmanns.github.io/bitfield/articles/bitfield.html</loc></url>
+<url><loc>http://ehrmanns.github.io/bitfield/articles/index.html</loc></url>
+<url><loc>http://ehrmanns.github.io/bitfield/authors.html</loc></url>
+<url><loc>http://ehrmanns.github.io/bitfield/index.html</loc></url>
+<url><loc>http://ehrmanns.github.io/bitfield/news/index.html</loc></url>
+<url><loc>http://ehrmanns.github.io/bitfield/reference/bf_case.html</loc></url>
+<url><loc>http://ehrmanns.github.io/bitfield/reference/bf_decode.html</loc></url>
+<url><loc>http://ehrmanns.github.io/bitfield/reference/bf_encode.html</loc></url>
+<url><loc>http://ehrmanns.github.io/bitfield/reference/bf_identical.html</loc></url>
+<url><loc>http://ehrmanns.github.io/bitfield/reference/bf_inf.html</loc></url>
+<url><loc>http://ehrmanns.github.io/bitfield/reference/bf_length.html</loc></url>
+<url><loc>http://ehrmanns.github.io/bitfield/reference/bf_match.html</loc></url>
+<url><loc>http://ehrmanns.github.io/bitfield/reference/bf_na.html</loc></url>
+<url><loc>http://ehrmanns.github.io/bitfield/reference/bf_nan.html</loc></url>
+<url><loc>http://ehrmanns.github.io/bitfield/reference/bf_null.html</loc></url>
+<url><loc>http://ehrmanns.github.io/bitfield/reference/bf_numeric.html</loc></url>
+<url><loc>http://ehrmanns.github.io/bitfield/reference/bf_range.html</loc></url>
+<url><loc>http://ehrmanns.github.io/bitfield/reference/bf_registry.html</loc></url>
+<url><loc>http://ehrmanns.github.io/bitfield/reference/bf_type.html</loc></url>
+<url><loc>http://ehrmanns.github.io/bitfield/reference/bitfield-package.html</loc></url>
+<url><loc>http://ehrmanns.github.io/bitfield/reference/dot-determineEncoding.html</loc></url>
+<url><loc>http://ehrmanns.github.io/bitfield/reference/dot-toBin.html</loc></url>
+<url><loc>http://ehrmanns.github.io/bitfield/reference/dot-toDec.html</loc></url>
+<url><loc>http://ehrmanns.github.io/bitfield/reference/index.html</loc></url>
+<url><loc>http://ehrmanns.github.io/bitfield/reference/registry-class.html</loc></url>
+<url><loc>http://ehrmanns.github.io/bitfield/reference/show-registry-method.html</loc></url>
+<url><loc>http://ehrmanns.github.io/bitfield/reference/tbl_bityield.html</loc></url>
 </urlset>
+
