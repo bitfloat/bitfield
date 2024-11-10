@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">bitfield</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -56,19 +56,14 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">bf_registry</span><span class="op">(</span>length <span class="op">=</span> <span class="cn">NULL</span>, name <span class="op">=</span> <span class="cn">NULL</span>, description <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">bf_registry</span><span class="op">(</span>name <span class="op">=</span> <span class="cn">NULL</span>, description <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
 
 
-<dl><dt id="arg-length">length<a class="anchor" aria-label="anchor" href="#arg-length"></a></dt>
-<dd><p><code><a href="https://rdrr.io/r/base/integer.html" class="external-link">integerish(1)</a></code><br> how many observation there shall
-be in the bitfield encoded by this registry.</p></dd>
-
-
-<dt id="arg-name">name<a class="anchor" aria-label="anchor" href="#arg-name"></a></dt>
+<dl><dt id="arg-name">name<a class="anchor" aria-label="anchor" href="#arg-name"></a></dt>
 <dd><p><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character(1)</a></code><br> the name of the bitfield.</p></dd>
 
 
@@ -77,6 +72,17 @@ be in the bitfield encoded by this registry.</p></dd>
 bitfield.</p></dd>
 
 </dl></div>
+    <div id="value">
+    <h2>Value</h2>
+    <p>an empty registry that captures some metadata of the bitfield, but
+doesn't contain any flags yet.</p>
+    </div>
+    <div id="details">
+    <h2>Details</h2>
+    <p>Besides creating a registry object, this function also opens the
+environment <code>bf_env</code>, which is used to store the temporary non-encoded
+flag values.</p>
+    </div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
