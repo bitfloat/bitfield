@@ -1,15 +1,15 @@
 Package: bitfield
 Type: Package
-Title: Handle Bitfields to record Data-Quality
-Version: 0.2.0
+Title: Handle Bitfields to record Meta Data
+Version: 0.3.0
 Authors@R: c(
     person("Steffen", "Ehrmann", role = c("aut", "cre"), 
            email = "steffen.ehrmann@posteo.de", 
            comment = c(ORCID = "0000-0002-2958-0796"))
     )
-Description: Provides tools to record formal data quality and meta data to store 
-    that in a bitfield, which can be published alongside all sort of (modelled) 
-    data products that can be handled in tabular form.
+Description: Provides tools to record algorithmic and analytic meta data along a 
+    workflow to store that in a bitfield, which can be published alongside any 
+    (modelled) data products.
 URL: https://github.com/ehrmanns/bitfield, http://ehrmanns.github.io/bitfield
 BugReports: https://github.com/ehrmanns/bitfield/issues
 License: GPL (>= 3)

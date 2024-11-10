@@ -58,8 +58,6 @@ devtools::install_github("EhrmannS/bitfield")
 
 ``` r
 library(bitfield)
-
-library(dplyr, warn.conflicts = FALSE); library(CoordinateCleaner); library(stringr)
 ```
 
 Let’s first load an example dataset
@@ -150,7 +148,7 @@ instruction manual, so to speak, to create the bitfield and encode it as
 integer, with the function `bf_encode()`.
 
 ``` r
-(intBit <- bf_encode(registry = yieldReg))
+(bitYield <- bf_encode(registry = yieldReg))
 #> # A tibble: 10 × 1
 #>    bf_int1
 #>      <int>
@@ -171,7 +169,7 @@ The bitfield can be decoded based on the registry with the function
 the bitfield can be studied or extended in a downstream application.
 
 ``` r
-bitfield <- bf_decode(x = intBit, registry = yieldReg, sep = "-")
+flags <- bf_decode(x = bitYield, registry = yieldReg, sep = "-")
 #> # A tibble: 7 × 4
 #> # Rowwise: 
 #>   pos   name          flag             desc                                     
@@ -187,7 +185,7 @@ bitfield <- bf_decode(x = intBit, registry = yieldReg, sep = "-")
 # -> prints legend by default, which is also available in bf_env$legend
 
 tbl_bityield |>
-  bind_cols(bitfield) |>
+  dplyr::bind_cols(flags) |>
   kable()
 ```
 
@@ -208,32 +206,70 @@ The column `bf_binary`, in combination with the legend, can be read one
 step at a time. For example, considering the first bit, we see that no
 observation has an `NA` value and considering the second bit, we see
 that observations 4 and 6 have a `yield` smaller than 9 and a
-`commodity` value “maize”.
+`commodity` value “maize” (case 3 with binary value `10`).
+
+However, more computation friendly, we can also separate the bitfield
+into distinct columns per flag and we can load the decoded values from
+the package environment `bf_env`.
+
+``` r
+bf_decode(x = bitYield, registry = yieldReg, verbose = FALSE)
+#> # A tibble: 10 × 4
+#>    na_x  cases length_y numeric_yield   
+#>    <chr> <chr> <chr>    <chr>           
+#>  1 0     00    100      0100100110011000
+#>  2 0     00    100      0100100111111110
+#>  3 0     00    100      0100101010011101
+#>  4 0     10    100      0100010001101110
+#>  5 0     00    000      0100101001111111
+#>  6 0     10    100      0100100001000110
+#>  7 0     00    100      0100100110100011
+#>  8 0     01    010      0100100101010010
+#>  9 0     01    001      0100100010000001
+#> 10 0     00    000      0100101010010101
+
+# access values manually
+ls(bf_env)
+#> [1] "cases"         "legend"        "length_y"      "na_x"         
+#> [5] "numeric_yield"
+bf_env[["length_y"]]
+#>  [1] 4 4 4 4 0 4 4 2 1 0
+```
+
+Beware that numeric values that have been encoded in this way likely
+have a lower precision than the input values (which may not be a problem
+when only rounded values are of interest). This can be adjusted by
+setting the respective parameters in any bitfield operator that encodes
+numeric values such as `bf_numeric()` (a vignette explaining this in
+detail will follow).
+
+``` r
+old <- options(pillar.sigfig = 7)
+tibble::tibble(original = tbl_bityield$yield, 
+               bitfield = bf_env$numeric_yield)
+#> # A tibble: 10 × 2
+#>     original  bitfield
+#>        <dbl>     <dbl>
+#>  1 11.19292  11.1875  
+#>  2 11.98679  11.98438 
+#>  3 13.22939  13.22656 
+#>  4  4.431376  4.429688
+#>  5 12.99742  12.99219 
+#>  6  8.548882  8.546875
+#>  7 11.27692  11.27344 
+#>  8 10.64072  10.64062 
+#>  9  9.010452  9.007812
+#> 10 13.16990  13.16406
+options(old)
+```
 
 ## Bitfields for other data-types
 
-Not only tabular data are supported, but also gridded data such as
-rasters (wip).
+*Work in progress*
 
-``` r
-library(terra, warn.conflicts = FALSE)
-#> terra 1.7.71
-
-rst_bityield <- rast(system.file("ex/rst_bityield.tif", package = "bitfield"))
-levels(rst_bityield$commodity) <- tibble(id = 1:3, commodity = c("soybean", "maize", "honey"))
-
-plot(rst_bityield)
-```
-
-<img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" />
-
-# To Do
-
-- [ ] write unit tests
-- [ ] revise documentation also in bitfield-package.R
-- [ ] include MD5 sum for a bitfield and update it each time the
-  bitfield is grown further
-- [x] ensure everything is properly PROVy
-  <https://www.w3.org/TR/prov-o/#Activity>, and document it, define the
-  Activities that are used in the provenance statements, such as
-  `testValue`, `substituteValue`, `encodeAsBinary`, etc
+<!-- ```{r} -->
+<!-- library(terra, warn.conflicts = FALSE) -->
+<!-- rst_bityield <- rast(system.file("ex/rst_bityield.tif", package = "bitfield")) -->
+<!-- levels(rst_bityield$commodity) <- tibble(id = 1:3, commodity = c("soybean", "maize", "honey")) -->
+<!-- plot(rst_bityield) -->
+<!-- ``` -->
