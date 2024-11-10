@@ -160,6 +160,7 @@ bf_length <- function(x, test, dec = NULL, fill = TRUE, pos = NULL, na.val = NUL
                provenance = prov)
 
   registry@flags[[thisName]] <- temp
+  registry <- .updateMD5(registry)
 
   # assign tentative flags values into the current environment
   env_bind(.env = bf_env, !!thisName := out)

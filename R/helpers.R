@@ -260,3 +260,38 @@
 
   return(out)
 }
+
+#' Determine and write MD5 sum
+#'
+#' @param x [`registry(1)`][registry]\cr registry for which to determine the MD5
+#'   checksum.
+#' @details This function follows the following algorithm: \itemize{
+#'   \item set the current MD5 checksum to NA_character_,
+#'   \item write the registry into the temporary directory,
+#'   \item calculate the checksum of this file and finally
+#'   \item store the checksum  in the md5 slot of the registry.}
+#' This means that when comparing the MD5 checksum in this slot, one first has to set that value also to NULL, otherwise the two values won't coincide.
+#' @return this function is called for its side-effect of storing the MD5 checksum in the md5 slot of the registry.
+#' @importFrom checkmate assertClass
+#' @importFrom tools md5sum
+#' @exportB
+
+.updateMD5 <- function(x){
+
+  assertClass(x = x, classes = "registry")
+
+  tempReg <- paste0(tempdir(), "/tempReg.rds")
+
+  temp <- out <- x
+  temp@md5 <- NA_character_
+  saveRDS(object = temp, file = tempReg)
+
+  tempSum <- md5sum(files = tempReg)
+  names(tempSum) <- NULL
+
+  unlink(x = tempReg)
+
+  out@md5 <- tempSum
+
+  return(out)
+}

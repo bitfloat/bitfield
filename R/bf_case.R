@@ -137,6 +137,7 @@ bf_case <- function(x, ..., exclusive = TRUE, pos = NULL, na.val = NULL,
                provenance = prov)
 
   registry@flags[[thisName]] <- temp
+  registry <- .updateMD5(registry)
 
   # assign tentative flags values into the current environment
   env_bind(.env = bf_env, !!thisName := out)
