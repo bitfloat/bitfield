@@ -1,12 +1,14 @@
 #' Create a new registry
 #'
-#' @param length [`integerish(1)`][integer]\cr how many observation there shall
-#'   be in the bitfield encoded by this registry.
 #' @param name [`character(1)`][character]\cr the name of the bitfield.
 #' @param description [`character(1)`][character]\cr the description of the
 #'   bitfield.
-#'
-#' @importFrom checkmate assertDataFrame assertSubset assertNumeric
+#' @details Besides creating a registry object, this function also opens the
+#' environment \code{bf_env}, which is used to store the temporary non-encoded
+#' flag values.
+#' @return an empty registry that captures some metadata of the bitfield, but
+#'   doesn't contain any flags yet.
+#' @importFrom checkmate assertIntegerish assertCharacter
 #' @importFrom utils packageVersion
 #' @importFrom stringr str_replace_all
 #' @importFrom rlang new_environment
@@ -14,13 +16,11 @@
 #' @importFrom methods new
 #' @export
 
-bf_registry <- function(length = NULL, name = NULL, description = NULL){
+bf_registry <- function(name = NULL, description = NULL){
 
-  assertIntegerish(x = length, len = 1, null.ok = TRUE)
   assertCharacter(x = name, len = 1, null.ok = TRUE)
   assertCharacter(x = description, len = 1, null.ok = TRUE)
 
-  if(is.null(length)) length <- 0
   if(is.null(description)) description <- NA_character_
 
   # set a name, in case none is provided
@@ -38,7 +38,7 @@ bf_registry <- function(length = NULL, name = NULL, description = NULL){
   # put together the intial bitfield
   out <- new(Class = "registry",
              width = 0L,
-             length = as.integer(length),
+             length = 0L,
              name = name,
              version = version,
              md5 = NA_character_,

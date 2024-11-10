@@ -4,17 +4,23 @@
 \alias{bf_registry}
 \title{Create a new registry}
 \usage{
-bf_registry(length = NULL, name = NULL, description = NULL)
+bf_registry(name = NULL, description = NULL)
 }
 \arguments{
-\item{length}{\code{\link[=integer]{integerish(1)}}\cr how many observation there shall
-be in the bitfield encoded by this registry.}
-
 \item{name}{\code{\link[=character]{character(1)}}\cr the name of the bitfield.}
 
 \item{description}{\code{\link[=character]{character(1)}}\cr the description of the
 bitfield.}
 }
+\value{
+an empty registry that captures some metadata of the bitfield, but
+doesn't contain any flags yet.
+}
 \description{
 Create a new registry
+}
+\details{
+Besides creating a registry object, this function also opens the
+environment \code{bf_env}, which is used to store the temporary non-encoded
+flag values.
 }

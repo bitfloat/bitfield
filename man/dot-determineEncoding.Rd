@@ -2,7 +2,7 @@
 % Please edit documentation in R/helpers.R
 \name{.determineEncoding}
 \alias{.determineEncoding}
-\title{Make encoding for floating point values}
+\title{Determine encoding for floating point values}
 \usage{
 .determineEncoding(
   x,
@@ -13,23 +13,34 @@
 )
 }
 \arguments{
-\item{x}{description}
+\item{x}{\code{\link[=numeric]{numeric(.)}}\cr a set of numeric values for which to
+determine the floating point encoding.}
 
-\item{precision}{description}
+\item{precision}{\code{\link[=character]{character(1)}}\cr option that determines the
+configuration of the floating point encoding. Possible values are
+\code{"half"} [1.5.10], \code{"bfloat16"} [1.8.7], \code{"tensor19"}
+[1.8.10], \code{"fp24"} [1.7.16], \code{"pxr24"} [1.8.15],
+\code{"single"} [1.8.23], \code{"double"} [1.11.52] and \code{"auto"}
+(where the positions are determined based on the provided numeric values in
+\code{x}; not supported yet).}
 
-\item{decimals}{\code{\link[=integer]{integer(1)}}\cr the number of decimal digits that should
-be reliably represented, see Details.}
+\item{decimals}{\code{\link[=integer]{integer(1)}}\cr the number of decimal digits that
+should be reliably represented, not supported yet.}
 
-\item{range}{[\code{(1)}][]\cr the ratio between the smallest and largest possible value to be
-reliably represented, see Details.}
+\item{range}{\code{\link[=numeric]{numeric(2)}}\cr the ratio between the smallest and
+largest possible value to be reliably represented, not supported yet.}
 
-\item{fields}{\code{\link[=list]{list(.)}}\cr options to control the encoding of the
-binary representation of the numeric values.}
+\item{fields}{\code{\link[=list]{list(3)}}\cr list that controls how many bits are
+allocated to \code{sign}, \code{exponent} and \code{mantissa} for encoding
+the numeric values.}
 }
 \description{
-Make encoding for floating point values
+Determine encoding for floating point values
 }
-\examples{
-# example code
-
+\details{
+For background information study for instance
+\href{https://www.cs.cornell.edu/~tomf/notes/cps104/floating}{'Floating
+Point' by Thomas Finley} and check out
+\href{https://float.exposed/}{https://float.exposed/} to play around with
+floating point encoding.
 }

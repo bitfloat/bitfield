@@ -2,7 +2,7 @@
 #'
 #'@param x [`integerish(1)`][integer]\cr table of the integer representation of
 #'  the bitfield.
-#'@param registry  [`registry(1)`][registry]\cr the registry that should be used
+#'@param registry [`registry(1)`][registry]\cr the registry that should be used
 #'  to decode the bitfield.
 #'@param flags [`character(.)`][character]\cr the name(s) of flags to extract
 #'  from this bitfield; leave at \code{NULL} to extract the full bitfield.

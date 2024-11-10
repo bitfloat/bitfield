@@ -1,15 +1,19 @@
 #' Bit registry class (S4) and methods
 #'
-#' A \code{registry} stores ...
+#' A \code{registry} stores metadata and flag configuration of a bitfield.
 #'
-#'
-#' @slot width [`integerish(1)`][integer]\cr
-#' @slot length [`integerish(1)`][integer]\cr
-#' @slot name [`character(1)`][character]\cr
-#' @slot version [`character(1)`][character]\cr
-#' @slot md5 [`character(1)`][character]\cr
-#' @slot description [`character(1)`][character]\cr
-#' @slot flags [`list(.)`][list]\cr
+#' @slot width [`integerish(1)`][integer]\cr how many bits is the bitfield wide.
+#' @slot length [`integerish(1)`][integer]\cr how many observations are encoded
+#'   in the bitfield.
+#' @slot name [`character(1)`][character]\cr short name of the bitfield.
+#' @slot version [`character(1)`][character]\cr automatically created version
+#'   tag of the bitfield. This consists of the package version, the version of R
+#'   and the date of creation of the bitfield.
+#' @slot md5 [`character(1)`][character]\cr the MD5 checksum of the bitfield as
+#'   determined with \link[tools]{md5sum}.
+#' @slot description [`character(1)`][character]\cr longer description of the
+#'   bitfield.
+#' @slot flags [`list(.)`][list]\cr list of flags in the registry.
 
 registry <- setClass(Class = "registry",
                      slots = c(width = "integer",
@@ -100,6 +104,11 @@ setValidity("registry", function(object){
 #' Print registry in the console (not working yet)
 #'
 #' @param object [`registry(1)`][registry]\cr object to \code{show}.
+#' @details This method produces an overview of the registry by printing a
+#'   header with information about the setup of the bitfield and a table with
+#'   one line for each flag in the bitfield. The table shows the start position
+#'   of each flag, the encoding type (see \code{\link{.determineEncoding}}), the
+#'   bitfield operator type and the columns that are tested by the flag.
 #' @importFrom utils head
 #' @importFrom crayon yellow red cyan
 #' @importFrom purrr map

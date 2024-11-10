@@ -133,20 +133,31 @@
   return(out)
 }
 
-#' Make encoding for floating point values
+#' Determine encoding for floating point values
 #'
-#' @param x description
-#' @param precision description
-#' @param decimals [`integer(1)`][integer]\cr the number of decimal digits that should
-#'   be reliably represented, see Details.
-#' @param range [`(1)`][]\cr the ratio between the smallest and largest possible value to be
-#'   reliably represented, see Details.
-#' @param fields [`list(.)`][list]\cr options to control the encoding of the
-#'   binary representation of the numeric values.
-#' @examples
-#' # example code
-#'
-#' @importFrom checkmate assertIntegerish assertLogical
+#' @param x [`numeric(.)`][numeric]\cr a set of numeric values for which to
+#'   determine the floating point encoding.
+#' @param precision [`character(1)`][character]\cr option that determines the
+#'   configuration of the floating point encoding. Possible values are
+#'   \code{"half"} \[1.5.10\], \code{"bfloat16"} \[1.8.7\], \code{"tensor19"}
+#'   \[1.8.10\], \code{"fp24"} \[1.7.16\], \code{"pxr24"} \[1.8.15\],
+#'   \code{"single"} \[1.8.23\], \code{"double"} \[1.11.52\] and \code{"auto"}
+#'   (where the positions are determined based on the provided numeric values in
+#'   \code{x}; not supported yet).
+#' @param decimals [`integer(1)`][integer]\cr the number of decimal digits that
+#'   should be reliably represented, not supported yet.
+#' @param range [`numeric(2)`][numeric]\cr the ratio between the smallest and
+#'   largest possible value to be reliably represented, not supported yet.
+#' @param fields [`list(3)`][list]\cr list that controls how many bits are
+#'   allocated to \code{sign}, \code{exponent} and \code{mantissa} for encoding
+#'   the numeric values.
+#' @details For background information study for instance
+#'   \href{https://www.cs.cornell.edu/~tomf/notes/cps104/floating}{'Floating
+#'   Point' by Thomas Finley} and check out
+#'   \href{https://float.exposed/}{https://float.exposed/} to play around with
+#'   floating point encoding.
+#' @importFrom checkmate assertNumeric assertIntegerish assertList assert
+#'   testNull testIntegerish assertNames assertChoice
 #' @importFrom dplyr case_when
 
 .determineEncoding <- function(x, precision = "single", decimals = NULL,
@@ -178,7 +189,7 @@
   }
 
   if(is.null(range)){
-    range <- range(x, na.rm = TRUE)
+    range <- 0L
   }
 
   if(!is.null(fields)){

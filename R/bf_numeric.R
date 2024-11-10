@@ -18,8 +18,12 @@
 #' @param registry [`registry(1)`][registry]\cr a bitfield registry that has
 #'   been defined with \code{\link{bf_registry}}; if it's undefined, an empty
 #'   registry will be defined on-the-fly.
-#' @details The length of the bitfield depends on the floating point digits of
-#'   the numeric values returned with this function...
+#' @details The length of the bitfield depends on the floating point precision
+#'   of the numeric values returned with this function. This is given as a
+#'   sequence of 3 integers of the form \[1.5.10\]. The first position
+#'   encodes how many bit are used (0 or 1), the second position encodes how
+#'   many exponent bits are used and the third position encodes how many
+#'   mantissa fields are used. See \code{\link{.determineEncoding}} for details.
 #' @return an object of class 'registry' with the additional flag defined here.
 #' @examples
 #' bf_numeric(x = tbl_bityield, source = "yield")
