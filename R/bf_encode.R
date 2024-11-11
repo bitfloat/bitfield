@@ -41,21 +41,16 @@ bf_encode <- function(registry){
     if(!is.logical(theVals)){
 
       # get the integer part of the binary value
-      # theVals <- c(theVals[4], theVals[10], 329.390625)
-      # theVals <- c(theVals, 329.390625)
       intBits <- .toBin(x = as.integer(theVals), pad = TRUE)
 
       if(!is.integer(theVals)){
         # good explanation: https://www.cs.cornell.edu/~tomf/notes/cps104/floating
-        # bin<->dec       : https://www.rapidtables.com/convert/number/binary-to-decimal.html
 
         # get the decimal part of the binary value and ...
         decBits <- .toBin(x = theVals, dec = TRUE)
 
         # 1. transform to scientific notation, then ...
-        temp <- paste0(intBits, decBits)
-        # the first value must be 101001001.011001 -> remove "." after finishing
-        temp <- gsub("^(.{1})(.*)$", "\\1.\\2", str_remove(temp, "^0+"))
+        temp <- gsub("^(.{1})(.*)$", "\\1.\\2", str_remove(paste0(intBits, decBits), "^0+"))
 
         # 2. encode as bit sequence
         sign <- as.integer(0 > theVals)

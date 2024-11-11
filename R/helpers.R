@@ -170,16 +170,6 @@
   assertList(x = fields, null.ok = TRUE)
   assert(!testNull(x = precision), !testNull(x = fields))
 
-  # - study unum values that may allow more accurate and/or more highly
-  #   compressed storage of information (https://de.wikipedia.org/wiki/Unum_(Zahlenformat))
-  # - https://blog.demofox.org/2017/11/21/floating-point-precision/
-  # - assess how likely digits values of (much) larger than 7 digits would be and
-  #   discuss this in the paper. 7 is the boundary of float32 values
-  # - how about "machine digits" instead? https://fncbook.github.io/v1.0/intro/floating-point.html,
-  #   i.e., the smallest values that can be mapped within a certain range
-  # - https://trekhleb.dev/static/131599cc123194bea250477696211e3a/78ed4/02-half-precision-floating-point-number-explained.png
-  # - how to encode -27.15625 in half-precision and also in a least-bits usage form
-
   if(is.null(decimals)){
     if(!testIntegerish(x)){
       decimals <- max(nchar(x) - nchar(as.integer(x))-1)
@@ -213,17 +203,7 @@
       # minBits <- max(ceiling(log2(max(min(abs(x)), 1))), 1) # if the smallest value is smaller than 1, take 1 as value
       # maxBits <- ceiling(log2(max(x)))
       # expRange <- maxBits - minBits + 1
-      # # how many different exponents (n) do I have? If I have more exponents than
-      # # 0:n, for instance only from 3:n (because there are no values with exponent
-      # # 2^0, 2^1 and 2^2), I do need to adapt the bias to offset the bit-encoded
-      # # exponent values so they start at 0 and thus only take n-3 bit combinations,
-      # # which can be drastically less than for 0:n. A practical example would be if
-      # # I have numbers that are several magnitudes larger than 0 but don't include 0,
-      # # let's say from 7'000'000 to 10'000'000. They would have the exponents 10^6
-      # # and 10^7 (i.e., 7.0 * 10^6 and 1.0 * 10^7). If I encode the range from 10^0
-      # # to 10^7, I need three bits, whereas if I encode the range from 10^6 to 10^7,
-      # # I need only two bits. This obviously compounds with larger ranges, and even
-      # # more so in base2, in which I have to consider the ranges actually.
+      #
       # exp <- expRange
       #
       # xInt <- x * 10^decimals

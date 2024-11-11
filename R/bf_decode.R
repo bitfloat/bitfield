@@ -40,8 +40,6 @@
 
 bf_decode <- function(x, registry, flags = NULL, sep = NULL, verbose = TRUE){
 
-  # library(dplyr); library(checkmate); library(purrr); library(rlang); library(tidyr); library(stringr); flags = NULL; sep = NULL
-
   assertDataFrame(x = x, types = "integer", any.missing = FALSE)
   assertClass(x = registry, classes = "registry")
   assertCharacter(x = sep, len = 1, null.ok = TRUE)
