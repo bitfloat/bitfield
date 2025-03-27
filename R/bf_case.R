@@ -9,39 +9,45 @@
 #'   defined later in the sequence overwrite cases earlier in the sequence.
 #' @param pos [`integerish(.)`][integer]\cr the position(s) in the bitfield that
 #'   should be set.
-#' @param na.val description
-#' @param description description
-#' @param prov description
-#' @param registry description
+#' @param na.val [`character(1)`][character]\cr optional value that should be
+#'   used to substitute NA values in the input data.
+#' @param description [`character(.)`][character]\cr optional description that
+#'   should be used instead of the default function-specific description. This
+#'   description is used in the registry legend, so it should have as many
+#'   entries as there will be entries per the respective flag in the legend (two
+#'   for a binary flag, as many as there are cases for a cases flag and one for
+#'   count or numeric flags).
+#' @param registry [`registry(1)`][registry]\cr a bitfield registry that has
+#'   been defined with \code{\link{bf_registry}}; if it's undefined, an empty
+#'   registry will be defined on-the-fly.
+#' @return an object of class 'registry' with the additional flag defined here.
 #' @examples
-#' registry <- bf_case(x = bityield, exclusive = FALSE,
+#' registry <- bf_case(x = tbl_bityield, exclusive = FALSE,
 #'                     yield >= 11,
 #'                     yield < 11 & yield > 9,
 #'                     yield < 9 & commodity == "maize")
 #' @importFrom checkmate assertDataFrame assertLogical assertTRUE assertList
-#' @importFrom rlang enquos eval_tidy as_label `:=` get_expr quo_get_expr quos
-#'   parse_expr quo_set_env quo
+#' @importFrom rlang enquos eval_tidy as_label `:=` get_expr env_bind
 #' @importFrom purrr map reduce
 #' @importFrom tibble as_tibble
 #' @importFrom dplyr rename bind_cols filter if_else
 #' @export
 
-bf_case <- function(x, ..., exclusive = TRUE,
-                    pos = NULL, na.val = NULL, description = NULL, prov = NULL,
-                    registry = NULL){
+bf_case <- function(x, ..., exclusive = TRUE, pos = NULL, na.val = NULL,
+                    description = NULL, registry = NULL){
 
   assertDataFrame(x = x)
   assertLogical(x = exclusive, len = 1)
   assertIntegerish(x = pos, lower = 1, min.len = 1, unique = TRUE, null.ok = TRUE)
   assertIntegerish(x = na.val, lower = 0, len = 1, null.ok = TRUE)
-  assertList(x = prov, types = "character", any.missing = FALSE, null.ok = TRUE)
 
   if(is.null(registry)){
-    registry <- bf_registry(name = "nameless_registry", description = "descriptionless_registry")
+    registry <- bf_registry(name = "new_registry")
   }
 
   thisName <- paste0("cases")
   cases <- enquos(..., .named = TRUE)
+  # return(cases)
 
   temp <- bind_cols(map(cases, function(ix){
     blubb <- eval_tidy(expr = ix, data = x)
@@ -85,7 +91,11 @@ bf_case <- function(x, ..., exclusive = TRUE,
 
   # replace NA values
   if(any(is.na(out))){
+    if(is.null(na.val)) stop("there are NA values in the bit representation, please define 'na.val'.")
     out[is.na(out)] <- na.val
+    naProv <- paste0("substituteValue: NA->", na.val)
+  } else {
+    naProv <- NULL
   }
 
   # update position if it's not set
@@ -107,20 +117,18 @@ bf_case <- function(x, ..., exclusive = TRUE,
 
   # update flag metadata ...
   if(is.null(description)){
-    description <- paste0("the observation has the case [", case_expr, "].")
+    for(i in seq_along(case_expr)){
+      description <- c(description, paste0("the observation has case ", i," [", case_expr[i], "]."))
+    }
   }
 
   enc <- list(sign = 0L,
               exponent = 0L,
-              significand = nBits,
+              mantissa = nBits,
               bias = 0L)
 
-  if(is.null(prov)){
-    prov <- "{OBS}"
-  }
-
-  prov <- list(wasDerivedFrom = prov,
-               wasGeneratedBy = paste0("encodingAsBinary: 0.0.", nBits, "/0"))
+  prov <- list(wasDerivedFrom = "{OBS}",
+               wasGeneratedBy = c(naProv, paste0("encodingAsBinary: 0.0.", nBits, "/0")))
 
   # ... and store everything in the registry
   temp <- list(description = description,
@@ -129,6 +137,7 @@ bf_case <- function(x, ..., exclusive = TRUE,
                provenance = prov)
 
   registry@flags[[thisName]] <- temp
+  registry <- .updateMD5(registry)
 
   # assign tentative flags values into the current environment
   env_bind(.env = bf_env, !!thisName := out)

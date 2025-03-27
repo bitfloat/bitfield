@@ -4,7 +4,16 @@
 \alias{bf_type}
 \title{Build a bit flag by checking for the type}
 \usage{
-bf_type(x, test, type = NULL, coerce = FALSE)
+bf_type(
+  x,
+  test,
+  type = NULL,
+  coerce = FALSE,
+  pos = NULL,
+  na.val = NULL,
+  description = NULL,
+  registry = NULL
+)
 }
 \arguments{
 \item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the table that contains
@@ -20,10 +29,26 @@ values are \code{"integer"}, \code{"numeric"}, \code{"character"} or
 \item{coerce}{\code{\link[=logical]{logical(1)}}\cr whether or not to carry out a more
 aggressive test, where the values are coerced to the target type and those
 that end up not having NA-values are reported as \code{TRUE}.}
+
+\item{pos}{\code{\link[=integer]{integerish(.)}}\cr the position(s) in the bitfield that
+should be set.}
+
+\item{na.val}{\code{\link[=character]{character(1)}}\cr optional value that should be
+used to substitute NA values in the input data.}
+
+\item{description}{\code{\link[=character]{character(.)}}\cr optional description that
+should be used instead of the default function-specific description. This
+description is used in the registry legend, so it should have as many
+entries as there will be entries per the respective flag in the legend (two
+for a binary flag, as many as there are cases for a cases flag and one for
+count or numeric flags).}
+
+\item{registry}{\code{\link[=registry]{registry(1)}}\cr a bitfield registry that has
+been defined with \code{\link{bf_registry}}; if it's undefined, an empty
+registry will be defined on-the-fly.}
 }
 \value{
-a logical vector of the same length as \code{test} with attributes
-\code{name}, \code{description} and \code{triple}.
+an object of class 'registry' with the additional flag defined here.
 }
 \description{
 Build a bit flag by checking for the type
@@ -51,5 +76,5 @@ values \code{0L} and \code{1L}. For all other values, including \code{NA},
 this function returns \code{FALSE}. }
 }
 \examples{
-bf_type(x = bityield, test = "y", type = "character", coerce = TRUE)
+bf_type(x = tbl_bityield, test = "y", type = "character", coerce = TRUE)
 }

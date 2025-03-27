@@ -6,6 +6,8 @@
 #'   the value.
 #' @param dec [`logical(1)`][logical]\cr whether to transform the decimal part
 #'   to bits, or the integer part.
+#' @param pad [`logical(1)`][logical]\cr whether to pad the binary value with 0
+#'   values.
 #' @details Additional details...
 #'
 #' @examples
@@ -14,11 +16,12 @@
 #' @importFrom checkmate assertIntegerish assertNumeric
 #' @importFrom stringr str_pad
 
-.toBin <- function(x, len, dec = FALSE){
+.toBin <- function(x, len = NULL, pad = TRUE, dec = FALSE){
 
   assertNumeric(x = x)
-  assertIntegerish(x = len, len = 1, any.missing = FALSE)
+  assertIntegerish(x = len, len = 1, any.missing = FALSE, null.ok = TRUE)
   assertLogical(x = dec, len = 1, any.missing = FALSE)
+  assertLogical(x = pad, len = 1, any.missing = FALSE)
 
   if(dec){
     x <- as.numeric(paste0(0, ".", str_split(x, "[.]", simplify = T)[,2]))
@@ -26,37 +29,64 @@
     temp <- map(.x = x, .f = function(ix){
       val <- ix
       bin <- NULL
-      i <- 0
-      while(val > 0 & i < len){
-        val <- val * 2
-        bin <- c(bin, val %/% 1)
-        val <- val - val %/% 1
-        i <-  i + 1
+
+      if(is.null(len)){
+
+        while(val > 0){
+          val <- val * 2
+          bin <- c(bin, val %/% 1)
+          val <- val - val %/% 1
+        }
+
+      } else {
+
+        i <- 0
+        while(val > 0 & i < len){
+          val <- val * 2
+          bin <- c(bin, val %/% 1)
+          val <- val - val %/% 1
+          i <-  i + 1
+        }
+
       }
       bin <- paste0(bin, collapse = "")
 
       return(bin)
     }) |> unlist()
+
   } else {
     x <- as.integer(x)
 
     temp <- map(.x = x, .f = function(ix){
       val <- ix
       bin <- NULL
-      i <- len
-      if(val == 0){
-        bin <- rep("0", len)
-      } else {
-        while(i > 0){
-          bin[i] <- val %% 2
+      if(!is.null(len)){
+
+        while(len > 0){
+          bin[len] <- val %% 2
           val <- val %/% 2
-          i <- i - 1
+          len <- len - 1
         }
+
+      } else {
+
+        while(val > 0){
+          bin <- c(val %% 2, bin)
+          val <- val %/% 2
+        }
+
+        if(is.null(bin)) bin <- 0
+
       }
+
       bin <- paste0(bin, collapse = "")
 
       return(bin)
     }) |> unlist()
+
+    if(pad){
+      temp <- str_pad(temp, width = max(nchar(temp)), pad = "0")
+    }
   }
 
   return(temp)
@@ -72,131 +102,176 @@
 #' @examples
 #' # example code
 #'
-#' @importFrom checkmate assertCharacter assertNames
+#' @importFrom checkmate assertCharacter assertNames testIntegerish
 #' @importFrom stringr str_split
 
-.toInt <- function(x){
+.toDec <- function(x){
 
-  assertCharacter(x = x)
+  assertCharacter(x = x, any.missing = FALSE)
 
-  temp <- str_split(x, "")
+  out <- map(.x = x, .f = function(ix){
 
-  map(seq_along(temp), function(y){
-    assertNames(x = temp[[y]], subset.of = c("1", "0"))
+    temp <- str_split(ix, "", simplify = TRUE)
+    radix <- which(temp == ".")
+    if(length(radix) == 0){
+      radix <- length(temp)+1
+      bits <- as.integer(temp)
+    } else {
+      assertIntegerish(x = radix, any.missing = FALSE, len = 1)
+      bits <- as.integer(temp[-radix])
+    }
+    assertSubset(x = bits, choices = c(0, 1))
 
-    sum(+(rev(temp[[y]]) == "1") * 2^(seq(temp[[y]])-1)) |>
-      as.integer()
-  }) |>
-    unlist()
+    sum(bits * 2^((seq(bits) * -1) + radix-1))
+  }) |> unlist()
+
+  # if it's integerish, convert it to integer
+  if(testIntegerish(out)){
+    out <- as.integer(out)
+  }
+
+  return(out)
 }
 
-#' Make encoding for floating point values
+#' Determine encoding for floating point values
 #'
-#' @param x description
-#' @param precision [`integer(1)`][integer]\cr the number of digits that should
-#'   be reliably represented, see Details.
-#' @param range [`(1)`][]\cr the ratio between the smallest and largest possible value to be
-#'   reliably represented, see Details.
-#' @param opts [`list(.)`][list]\cr options to control the encoding of the
-#'   binary representation of the numeric values, see Details.
-#' @details \code{precision} modifies the significand \code{range} modifies the
-#' exponent
-#'
-#' @examples
-#' # example code
-#'
-#' @importFrom checkmate assertIntegerish assertLogical
+#' @param x [`numeric(.)`][numeric]\cr a set of numeric values for which to
+#'   determine the floating point encoding.
+#' @param precision [`character(1)`][character]\cr option that determines the
+#'   configuration of the floating point encoding. Possible values are
+#'   \code{"half"} \[1.5.10\], \code{"bfloat16"} \[1.8.7\], \code{"tensor19"}
+#'   \[1.8.10\], \code{"fp24"} \[1.7.16\], \code{"pxr24"} \[1.8.15\],
+#'   \code{"single"} \[1.8.23\], \code{"double"} \[1.11.52\] and \code{"auto"}
+#'   (where the positions are determined based on the provided numeric values in
+#'   \code{x}; not supported yet).
+#' @param decimals [`integer(1)`][integer]\cr the number of decimal digits that
+#'   should be reliably represented, not supported yet.
+#' @param range [`numeric(2)`][numeric]\cr the ratio between the smallest and
+#'   largest possible value to be reliably represented, not supported yet.
+#' @param fields [`list(3)`][list]\cr list that controls how many bits are
+#'   allocated to \code{sign}, \code{exponent} and \code{mantissa} for encoding
+#'   the numeric values.
+#' @details For background information study for instance
+#'   \href{https://www.cs.cornell.edu/~tomf/notes/cps104/floating}{'Floating
+#'   Point' by Thomas Finley} and check out
+#'   \href{https://float.exposed/}{https://float.exposed/} to play around with
+#'   floating point encoding.
+#' @importFrom checkmate assertNumeric assertIntegerish assertList assert
+#'   testNull testIntegerish assertNames assertChoice
+#' @importFrom dplyr case_when
 
-.toEncoding <- function(x, precision = NULL, range = NULL, opts = NULL){
+.determineEncoding <- function(x, precision = "single", decimals = NULL,
+                               range = NULL, fields = NULL){
 
-  assertIntegerish(x = precision, len = 1, any.missing = FALSE, null.ok = TRUE)
+  assertNumeric(x = x)
+  assertIntegerish(x = decimals, len = 1, any.missing = FALSE, null.ok = TRUE)
   assertIntegerish(x = range, len = 1, any.missing = FALSE, null.ok = TRUE)
-  assertList(x = opts, null.ok = TRUE)
+  assertCharacter(x = precision, len = 1, any.missing = FALSE, null.ok = TRUE)
+  assertList(x = fields, null.ok = TRUE)
+  assert(!testNull(x = precision), !testNull(x = fields))
 
-  sign <- exp <- signif <- bias <- NULL
-  # implement also support for NaNs and Infs
-  # study unum values that may allow more accurate and/or more highly compressed storage of information (https://de.wikipedia.org/wiki/Unum_(Zahlenformat))
+  if(is.null(decimals)){
+    if(!testIntegerish(x)){
+      decimals <- max(nchar(x) - nchar(as.integer(x))-1)
+    } else {
+      decimals <- 0
+    }
+  }
 
-  if(!is.null(opts)){
-    assertNames(x = names(opts), subset.of = c("type", "significand", "exponent", "sign"))
+  if(is.null(range)){
+    range <- 0L
+  }
 
-    if(!is.null(opts$type)){
-      assertChoice(x = opts$type, choices = c("half", "bfloat16", "tensor19", "fp24", "pxr24", "single", "double"))
+  if(!is.null(fields)){
+    assertNames(x = names(fields), must.include = c("sign", "exponent", "mantissa"))
 
-      sign <- 1
-      exp <- case_when(opts$type == "half" ~ 5,
-                       opts$type == "bfloat16" ~ 8,
-                       opts$type == "tensor19" ~ 8,
-                       opts$type == "fp24" ~ 7,
-                       opts$type == "pxr24" ~ 8,
-                       opts$type == "single" ~ 8,
-                       opts$type == "double" ~ 11
-      )
+    assertChoice(x = fields$sign, choices = c(0L, 1L))
+    sign <- fields$sign
+    exp <- fields$exponent
+    mant <- fields$mantissa
 
-      signif <- case_when(opts$type == "half" ~ 10,
-                          opts$type == "bfloat16" ~ 7,
-                          opts$type == "tensor19" ~ 10,
-                          opts$type == "fp24" ~ 16,
-                          opts$type == "pxr24" ~ 15,
-                          opts$type == "single" ~ 23,
-                          opts$type == "double" ~ 52
-      )
+    precision <- NULL
+  }
 
-      bias <- 2**(exp-1)-1
+  if(!is.null(precision)){
+    assertChoice(x = precision, choices = c("half", "bfloat16", "tensor19", "fp24", "pxr24", "single", "double", "auto"))
+
+    if(precision == "auto"){
+      stop("work in process, please check in later to see whether this has been implemented!")
+      # sign <- ifelse(any(x < 0), 1L, 0L)
+      #
+      # minBits <- max(ceiling(log2(max(min(abs(x)), 1))), 1) # if the smallest value is smaller than 1, take 1 as value
+      # maxBits <- ceiling(log2(max(x)))
+      # expRange <- maxBits - minBits + 1
+      #
+      # exp <- expRange
+      #
+      # xInt <- x * 10^decimals
+      # xInt <- as.integer(round(xInt))
+      # mant <- ceiling(log2(max(xInt)))
 
     } else {
 
-      # implement here tests for whether the parameters make sense, and give errors if not
-      if(!is.null(opts$sign)){
-        assertChoice(x = opts$sign, choices = c(0L, 1L))
-        sign <- opts$sign
-      }
+      sign <- 1
+      exp <- case_when(precision == "half" ~ 5,
+                       precision == "bfloat16" ~ 8,
+                       precision == "tensor19" ~ 8,
+                       precision == "fp24" ~ 7,
+                       precision == "pxr24" ~ 8,
+                       precision == "single" ~ 8,
+                       precision == "double" ~ 11)
 
-      if(!is.null(opts$exponent)){
-
-        exp <- opts$exponent
-      }
-
-      if(!is.null(opts$significand)){
-
-        signif <- opts$significand
-      }
-
-      bias <- 2**(exp-1)-1
-
+      mant <- case_when(precision == "half" ~ 10,
+                        precision == "bfloat16" ~ 7,
+                        precision == "tensor19" ~ 10,
+                        precision == "fp24" ~ 16,
+                        precision == "pxr24" ~ 15,
+                        precision == "single" ~ 23,
+                        precision == "double" ~ 52)
     }
-
   }
 
-  # https://blog.demofox.org/2017/11/21/floating-point-precision/
-
-  # assess how likely precision values of (much) larger than 7 digits would be and discuss this in the paper. 7 is the boundary of float32 values
-  # how about "machine precision" instead? https://fncbook.github.io/v1.0/intro/floating-point.html, i.e., the smallest values that can be mapped within a certain range
-
-  if(is.null(sign)){
-    sign <- ifelse(any(x < 0), 1L, 0L)
-  }
-
-  if(is.null(exp)){
-    # range comes in here
-
-  }
-  if(is.null(signif)){
-    # precision comes in here
-
-    # x <- 329.390625
-    # xInt <- as.integer(x)
-    # signif <- ceiling(log2(max(xInt)))
-
-  }
-
-  if(is.null(bias)){
-    bias <- 2**(exp-1)-1
-  }
+  # implement here some tests that ensure the selected values don't fully cripple the input
 
   out <- list(sign = as.integer(sign),
               exponent = as.integer(exp),
-              significand = as.integer(signif),
-              bias = as.integer(bias))
+              mantissa = as.integer(mant),
+              bias = as.integer(2**(exp-1)-1))
 
+  return(out)
+}
+
+#' Determine and write MD5 sum
+#'
+#' @param x [`registry(1)`][registry]\cr registry for which to determine the MD5
+#'   checksum.
+#' @details This function follows the following algorithm: \itemize{
+#'   \item set the current MD5 checksum to NA_character_,
+#'   \item write the registry into the temporary directory,
+#'   \item calculate the checksum of this file and finally
+#'   \item store the checksum  in the md5 slot of the registry.}
+#' This means that when comparing the MD5 checksum in this slot, one first has to set that value also to NULL, otherwise the two values won't coincide.
+#' @return this function is called for its side-effect of storing the MD5 checksum in the md5 slot of the registry.
+#' @importFrom checkmate assertClass
+#' @importFrom tools md5sum
+#' @exportB
+
+.updateMD5 <- function(x){
+
+  assertClass(x = x, classes = "registry")
+
+  tempReg <- paste0(tempdir(), "/tempReg.rds")
+
+  temp <- out <- x
+  temp@md5 <- NA_character_
+  saveRDS(object = temp, file = tempReg)
+
+  tempSum <- md5sum(files = tempReg)
+  names(tempSum) <- NULL
+
+  unlink(x = tempReg)
+
+  out@md5 <- tempSum
+
+  return(out)
 }

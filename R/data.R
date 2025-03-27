@@ -8,11 +8,3 @@
 #'   indicates the year of harvest. All columns contain some sort of deviation
 #'   that may occur in data.
 "tbl_bityield"
-
-#' Example raster
-#'
-#' A 5 × 5 raster with yield data to showcase functionality of this package
-#' @format object of class \code{SpatRaster} with 5 rows, 5 columns and 2
-#'   layers, indicating a crop that is grown in a pixel and the respective
-#'   yield.
-"rst_bityield"

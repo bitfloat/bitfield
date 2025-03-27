@@ -7,13 +7,10 @@
 bf_numeric(
   x,
   source,
-  precision = NULL,
-  range = NULL,
-  options = NULL,
+  ...,
   pos = NULL,
   na.val = NULL,
   description = NULL,
-  prov = NULL,
   registry = NULL
 )
 }
@@ -24,30 +21,39 @@ bf_numeric(
 \item{source}{\code{\link[=character]{character(1)}}\cr the column in \code{x} from
 which to take the numeric value.}
 
-\item{precision}{\code{\link[=integer]{integerish(1)}}\cr description}
-
-\item{range}{\code{\link[=integer]{integerish(1)}}\cr description}
-
-\item{options}{\code{\link[=list]{list(.)}}\cr description}
+\item{...}{description}
 
 \item{pos}{\code{\link[=integer]{integerish(.)}}\cr the position(s) in the bitfield that
 should be set.}
 
-\item{na.val}{description}
+\item{na.val}{\code{\link[=character]{character(1)}}\cr optional value that should be
+used to substitute NA values in the input data.}
 
-\item{description}{description}
+\item{description}{\code{\link[=character]{character(.)}}\cr optional description that
+should be used instead of the default function-specific description. This
+description is used in the registry legend, so it should have as many
+entries as there will be entries per the respective flag in the legend (two
+for a binary flag, as many as there are cases for a cases flag and one for
+count or numeric flags).}
 
-\item{prov}{description}
-
-\item{registry}{description}
+\item{registry}{\code{\link[=registry]{registry(1)}}\cr a bitfield registry that has
+been defined with \code{\link{bf_registry}}; if it's undefined, an empty
+registry will be defined on-the-fly.}
+}
+\value{
+an object of class 'registry' with the additional flag defined here.
 }
 \description{
 Build a bit flag from a numeric value
 }
 \details{
 The length of the bitfield depends on the floating point precision
-of the numeric values returned with this function...
+of the numeric values returned with this function. This is given as a
+sequence of 3 integers of the form [1.5.10]. The first position
+encodes how many bit are used (0 or 1), the second position encodes how
+many exponent bits are used and the third position encodes how many
+mantissa fields are used. See \code{\link{.determineEncoding}} for details.
 }
 \examples{
-bf_numeric(x = bityield, precision = 3, source = "yield")
+bf_numeric(x = tbl_bityield, source = "yield")
 }

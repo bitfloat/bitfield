@@ -10,6 +10,19 @@
 #' @param coerce [`logical(1)`][logical]\cr whether or not to carry out a more
 #'   aggressive test, where the values are coerced to the target type and those
 #'   that end up not having NA-values are reported as \code{TRUE}.
+#' @param pos [`integerish(.)`][integer]\cr the position(s) in the bitfield that
+#'   should be set.
+#' @param na.val [`character(1)`][character]\cr optional value that should be
+#'   used to substitute NA values in the input data.
+#' @param description [`character(.)`][character]\cr optional description that
+#'   should be used instead of the default function-specific description. This
+#'   description is used in the registry legend, so it should have as many
+#'   entries as there will be entries per the respective flag in the legend (two
+#'   for a binary flag, as many as there are cases for a cases flag and one for
+#'   count or numeric flags).
+#' @param registry [`registry(1)`][registry]\cr a bitfield registry that has
+#'   been defined with \code{\link{bf_registry}}; if it's undefined, an empty
+#'   registry will be defined on-the-fly.
 #' @details When coercing values to \itemize{ \item integer, they are typically
 #'   truncated to the non-decimal part of the value. This function compares the
 #'   truncated value to the original value and thus returns \code{TRUE} only
@@ -30,22 +43,33 @@
 #'   \item logical, this function returns \code{TRUE} only for the integer(!)
 #'   values \code{0L} and \code{1L}. For all other values, including \code{NA},
 #'   this function returns \code{FALSE}. }
-#' @return a logical vector of the same length as \code{test} with attributes
-#'   \code{name}, \code{description} and \code{triple}.
+#' @return an object of class 'registry' with the additional flag defined here.
 #' @examples
-#' bf_type(x = bityield, test = "y", type = "character", coerce = TRUE)
+#' bf_type(x = tbl_bityield, test = "y", type = "character", coerce = TRUE)
 #' @importFrom checkmate assertDataFrame assertSubset assertCharacter
 #'   assertChoice assertLogical
+#' @importFrom rlang env_bind
 #' @importFrom purrr map_lgl
 #' @export
 
-bf_type <- function(x, test, type = NULL, coerce = FALSE){
+bf_type <- function(x, test, type = NULL, coerce = FALSE, pos = NULL,
+                    na.val = NULL, description = NULL, registry = NULL){
 
   assertDataFrame(x = x)
   assertSubset(x = test, choices = names(x))
   assertCharacter(x = type, len = 1, any.missing = FALSE, ignore.case = TRUE)
   assertChoice(x = type, choices = c("integer", "numeric", "character", "logical"))
   assertLogical(x = coerce, len = 1, any.missing = FALSE)
+  assertIntegerish(x = pos, lower = 1, min.len = 1, unique = TRUE, null.ok = TRUE)
+  assertIntegerish(x = na.val, lower = 0, len = 1, null.ok = TRUE)
+  assertCharacter(x = description, len = 2, null.ok = TRUE)
+  assertClass(x = registry, classes = "registry", null.ok = TRUE)
+
+  if(is.null(registry)){
+    registry <- bf_registry(name = "new_registry")
+  }
+
+  thisName <- paste0("type_", test)
 
   if(!coerce){
 
@@ -118,9 +142,57 @@ bf_type <- function(x, test, type = NULL, coerce = FALSE){
 
   }
 
-  attr(out, which = "name") <- paste0("type_", test)
-  attr(out, which = "description") <- c(paste0("{FALSE} the value in column '", test, "' does not have type '", type, "'."), paste0("{TRUE}  the value in column '", test, "' has type '", type, "'."))
-  attr(out, which = "triple") <- paste0(test, "|type|'", type, "'")
+  # replace NA values
+  if(any(is.na(out))){
+    if(is.null(na.val)) stop("there are NA values in the bit representation, please define 'na.val'.")
+    out[is.na(out)] <- na.val
+    naProv <- paste0("substituteValue: NA->", na.val)
+  } else {
+    naProv <- NULL
+  }
 
-  return(out)
+  # update position if it's not set
+  if(is.null(pos)){
+    pos <- registry@width + 1L
+  } else {
+    # include test that checks whether sufficient positions are set, and give an error if not
+  }
+
+  # update the registry
+  registry@width <- registry@width + 1L
+  if(registry@length == 0L){
+    registry@length <- length(out)
+  } else {
+    if(registry@length != length(out)){
+      stop(paste0("this flag doesn't have as many items, as there are observations in the bitfield."))
+    }
+  }
+
+  # update flag metadata ...
+  if(is.null(description)){
+    description <- c(paste0("{FALSE} the value in column '", test, "' does not have type '", type, "'."),
+                     paste0("{TRUE}  the value in column '", test, "' has type '", type, "'."))
+  }
+
+  enc <- list(sign = 0L,
+              exponent = 0L,
+              mantissa = 1L,
+              bias = 0L)
+
+  prov <- list(wasDerivedFrom = test,
+               wasGeneratedBy = c(paste0("testValue: is.", type, "(", test, ")"), naProv, "encodeAsBinary: 0.0.1/0"))
+
+  # ... and store everything in the registry
+  temp <- list(description = description,
+               position = pos,
+               encoding = enc,
+               provenance = prov)
+
+  registry@flags[[thisName]] <- temp
+  registry <- .updateMD5(registry)
+
+  # assign tentative flags values into the current environment
+  env_bind(.env = bf_env, !!thisName := out)
+
+  return(registry)
 }

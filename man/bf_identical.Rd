@@ -4,25 +4,53 @@
 \alias{bf_identical}
 \title{Build a bit flag by checking whether two columns are identical}
 \usage{
-bf_identical(x, test, against)
+bf_identical(
+  x,
+  test,
+  against,
+  pos = NULL,
+  na.val = NULL,
+  description = NULL,
+  registry = NULL
+)
 }
 \arguments{
 \item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the table that contains
 \code{test} and \code{against}.}
 
 \item{test}{\code{\link[=character]{character(1)}}\cr the column in \code{x} that is
-checked against \code{against}.}
+checked \code{against}.}
 
 \item{against}{\code{\link[=character]{character(1)}}\cr the column in \code{x} that is
 checked against \code{test}.}
+
+\item{pos}{\code{\link[=integer]{integerish(.)}}\cr the position(s) in the bitfield that
+should be set.}
+
+\item{na.val}{\code{\link[=character]{character(1)}}\cr optional value that should be
+used to substitute NA values in the input data.}
+
+\item{description}{\code{\link[=character]{character(.)}}\cr optional description that
+should be used instead of the default function-specific description. This
+description is used in the registry legend, so it should have as many
+entries as there will be entries per the respective flag in the legend (two
+for a binary flag, as many as there are cases for a cases flag and one for
+count or numeric flags).}
+
+\item{registry}{\code{\link[=registry]{registry(1)}}\cr a bitfield registry that has
+been defined with \code{\link{bf_registry}}; if it's undefined, an empty
+registry will be defined on-the-fly.}
+}
+\value{
+an object of class 'registry' with the additional flag defined here.
 }
 \description{
 Build a bit flag by checking whether two columns are identical
 }
 \details{
 This function compares the values of two columns element-wise and
-returns \code{TRUE} when they are identical.
+returns \code{TRUE} when the two columns are identical.
 }
 \examples{
-bf_identical(x = bityield, test = "x", against = "y")
+bf_identical(x = tbl_bityield, test = "x", against = "y", na.val = 0)
 }

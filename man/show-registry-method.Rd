@@ -12,3 +12,10 @@
 \description{
 Print registry in the console (not working yet)
 }
+\details{
+This method produces an overview of the registry by printing a
+header with information about the setup of the bitfield and a table with
+one line for each flag in the bitfield. The table shows the start position
+of each flag, the encoding type (see \code{\link{.determineEncoding}}), the
+bitfield operator type and the columns that are tested by the flag.
+}
