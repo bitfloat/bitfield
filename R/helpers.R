@@ -254,7 +254,7 @@
 #' @return this function is called for its side-effect of storing the MD5 checksum in the md5 slot of the registry.
 #' @importFrom checkmate assertClass
 #' @importFrom tools md5sum
-#' @exportB
+#' @export
 
 .updateMD5 <- function(x){
 
@@ -274,4 +274,42 @@
   out@md5 <- tempSum
 
   return(out)
+}
+
+
+#' Extract values and metadata from terra::SpatRaster
+#'
+#' @param x [SpatRaster(1)][terra::SpatRaster]\cr the SpatRaster object.
+#' @details This function simply extracts the values from \code{x} and appends
+#'   the raster metadata as attributes.
+#' @return the function that extracts values and metadata.
+#' @importFrom checkmate assertClass
+#' @importFrom terra values nrow ncol res ext crs
+#' @export
+
+.rast <- function(x){
+
+  assertClass(x = x, classes = "SpatRaster")
+
+  # Create the accessor function that will extract values when called
+  accessor <- function() {
+    values <- terra::values(x)
+
+    # Return values along with metadata about the raster
+    attr(values, "rast_meta") <- list(
+      nrow = nrow(x),
+      ncol = ncol(x),
+      res = res(x),
+      ext = ext(x),
+      crs = crs(x)
+    )
+
+    return(values)
+  }
+
+  # Set class so bitfield operators can recognize this is a raster accessor
+  class(accessor) <- c("bf_rast", "function")
+
+  return(accessor)
+
 }
