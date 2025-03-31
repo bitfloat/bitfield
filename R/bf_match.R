@@ -1,9 +1,8 @@
 #' Build a bit flag by comparing a column with a set
 #'
-#' @param x [`data.frame(1)`][data.frame]\cr the table that contains
-#'   \code{test}.
-#' @param test [`character(1)`][character]\cr the column in \code{x} for which a
-#'   match is checked.
+#' @param x the object to build bit flags for.
+#' @param test [`character(1)`][character]\cr the column or layer in \code{x}
+#'   for which a match is checked.
 #' @param set a vector of the same class as in \code{test} against which a set
 #'   operation is performed.
 #' @param negate [`logical(1)`][logical]\cr whether or not to determine a subset
@@ -21,7 +20,8 @@
 #' @param registry [`registry(1)`][registry]\cr a bitfield registry that has
 #'   been defined with \code{\link{bf_registry}}; if it's undefined, an empty
 #'   registry will be defined on-the-fly.
-#' @return an object of class 'registry' with the additional flag defined here.
+#' @return an (updated) object of class 'registry' with the additional flag
+#'   defined here.
 #' @examples
 #' bf_match(x = tbl_bityield, test = "commodity", set = c("soybean", "maize"))
 #' @importFrom checkmate assertDataFrame assertSubset assertClass
@@ -31,9 +31,6 @@
 bf_match <- function(x, test, set, negate = FALSE, pos = NULL, na.val = NULL,
                      description = NULL, registry = NULL){
 
-  assertDataFrame(x = x)
-  assertSubset(x = test, choices = names(x))
-  assertClass(x = set, classes = class(x[[test]]))
   assertIntegerish(x = pos, lower = 1, min.len = 1, unique = TRUE, null.ok = TRUE)
   assertIntegerish(x = na.val, lower = 0, len = 1, null.ok = TRUE)
   assertCharacter(x = description, len = 2, null.ok = TRUE)
@@ -45,17 +42,26 @@ bf_match <- function(x, test, set, negate = FALSE, pos = NULL, na.val = NULL,
 
   thisName <- paste0("match_", test)
 
-  if(negate){
-    out <- !x[[test]] %in% set
-    typeProv <- "!"
-    theDesc <- c(paste0("{FALSE} the value in column '", test, "' is not disjoint from the set [", paste0(set, collapse = "|"), "]."),
-                 paste0("{TRUE}  the value in column '", test, "' is disjoint from the set [", paste0(set, collapse = "|"), "]."))
+  if(inherits(x, "bf_rast")){
+    assertSubset(x = test, choices = colnames(x()))
+    out <- x()[,test] %in% set
+    where <- "layer"
   } else {
+    assertDataFrame(x = x)
+    assertSubset(x = test, choices = names(x))
     out <- x[[test]] %in% set
-    typeProv <- NULL
-    theDesc <- c(paste0("{FALSE} the value in column '", test, "' is not included in the set [", paste0(set, collapse = "|"), "]."),
-                 paste0("{TRUE}  the value in column '", test, "' is included in the set [", paste0(set, collapse = "|"), "]."))
+    where <- "column"
   }
+
+  if(negate){
+    out <- !out
+    type <- "disjoint"
+    typeProv <- "!"
+  } else {
+    type <- "included"
+    typeProv <- NULL
+  }
+
   # replace NA values
   if(any(is.na(out))){
     if(is.null(na.val)) stop("there are NA values in the bit representation, please define 'na.val'.")
@@ -84,7 +90,8 @@ bf_match <- function(x, test, set, negate = FALSE, pos = NULL, na.val = NULL,
 
   # update flag metadata ...
   if(is.null(description)){
-    description <- theDesc
+    description <- c(paste0("{FALSE} the value in ", where, " '", test, "' is not ", type, " in the set [", paste0(set, collapse = "|"), "]."),
+                     paste0("{TRUE}  the value in ", where, " '", test, "' is ", type, " in the set [", paste0(set, collapse = "|"), "]."))
   }
 
   enc <- list(sign = 0L,
@@ -103,6 +110,12 @@ bf_match <- function(x, test, set, negate = FALSE, pos = NULL, na.val = NULL,
 
   registry@flags[[thisName]] <- temp
   registry <- .updateMD5(registry)
+
+  # reconstruct out if it comes from a raster
+  if(inherits(x, "bf_rast")){
+    md <- attr(x(), "rast_meta")
+    out <- rast(vals = out, ncols = md$ncol, nrows = md$nrow, res = md$res, extent = md$ext, names = test, crs = md$crs)
+  }
 
   # assign tentative flags values into the current environment
   env_bind(.env = bf_env, !!thisName := out)

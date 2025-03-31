@@ -1,9 +1,8 @@
 #' Build a bit flag by checking for the type
 #'
-#' @param x [`data.frame(1)`][data.frame]\cr the table that contains
-#'   \code{test}.
-#' @param test [`character(1)`][character]\cr the column in \code{x} for which
-#'   the type is identified.
+#' @param x the object to build bit flags for.
+#' @param test [`character(1)`][character]\cr the column or layer in \code{x}
+#'   for which the type is identified.
 #' @param type [`character(1)`][character]\cr the for which to check, possible
 #'   values are \code{"integer"}, \code{"numeric"}, \code{"character"} or
 #'   \code{"logical"}.
@@ -37,13 +36,14 @@
 #'   \code{FALSE} for \code{NA} and \code{NaN}-values, and also for the special
 #'   case \code{NA_real_}, as this is not supported in many other programs that
 #'   might provide data for or use them from this function. \item character,
-#'   this function returns \code{FALSE} for Inf and \code{NA}, and also for the
-#'   special cases of \code{NA_character_}, as this is not supported in many
-#'   other programs that might provide data for or use them from this function.
-#'   \item logical, this function returns \code{TRUE} only for the integer(!)
-#'   values \code{0L} and \code{1L}. For all other values, including \code{NA},
-#'   this function returns \code{FALSE}. }
-#' @return an object of class 'registry' with the additional flag defined here.
+#'   this function returns \code{FALSE} for \code{Inf} and \code{NA}, and also
+#'   for the special cases of \code{NA_character_}, as this is not supported in
+#'   many other programs that might provide data for or use them from this
+#'   function. \item logical, this function returns \code{TRUE} only for the
+#'   integer(!) values \code{0L} and \code{1L}. For all other values, including
+#'   \code{NA}, this function returns \code{FALSE}. }
+#' @return an (updated) object of class 'registry' with the additional flag
+#'   defined here.
 #' @examples
 #' bf_type(x = tbl_bityield, test = "y", type = "character", coerce = TRUE)
 #' @importFrom checkmate assertDataFrame assertSubset assertCharacter
@@ -55,12 +55,11 @@
 bf_type <- function(x, test, type = NULL, coerce = FALSE, pos = NULL,
                     na.val = NULL, description = NULL, registry = NULL){
 
-  assertDataFrame(x = x)
-  assertSubset(x = test, choices = names(x))
   assertCharacter(x = type, len = 1, any.missing = FALSE, ignore.case = TRUE)
   assertChoice(x = type, choices = c("integer", "numeric", "character", "logical"))
   assertLogical(x = coerce, len = 1, any.missing = FALSE)
   assertIntegerish(x = pos, lower = 1, min.len = 1, unique = TRUE, null.ok = TRUE)
+  assertClass(x = na.val, classes = type, null.ok = TRUE)
   assertIntegerish(x = na.val, lower = 0, len = 1, null.ok = TRUE)
   assertCharacter(x = description, len = 2, null.ok = TRUE)
   assertClass(x = registry, classes = "registry", null.ok = TRUE)
@@ -69,25 +68,37 @@ bf_type <- function(x, test, type = NULL, coerce = FALSE, pos = NULL,
     registry <- bf_registry(name = "new_registry")
   }
 
-  thisName <- paste0("type_", test)
+  thisName <- paste0("type_", test, "_", type)
+
+  if(inherits(x, "bf_rast")){
+    assertSubset(x = test, choices = colnames(x()))
+    tempOut <- x()[,test]
+    where <- "layer"
+  } else {
+    assertDataFrame(x = x)
+    assertSubset(x = test, choices = names(x))
+    tempOut <- x[[test]]
+    where <- "column"
+  }
 
   if(!coerce){
 
     if(type == "integer"){
-      out <- map_lgl(x[[test]], is.integer)
+      out <- map_lgl(tempOut, is.integer)
     } else if(type == "numeric"){
-      out <- map_lgl(x[[test]], is.numeric)
+      out <- map_lgl(tempOut, is.numeric)
     } else if(type == "character"){
-      out <- map_lgl(x[[test]], is.character)
+      out <- map_lgl(tempOut, is.character)
     } else {
-      out <- map_lgl(x[[test]], is.logical)
+      out <- map_lgl(tempOut, is.logical)
     }
+    out[is.na(tempOut)] <- NA
 
   } else {
 
     if(type == "integer"){
 
-      out <- map_lgl(x[[test]], function(ix){
+      out <- map_lgl(tempOut, function(ix){
         temp <- as.integer(ix)
         if(!is.na(temp) & !is.nan(temp) & temp == ix){
           is.integer(temp)
@@ -98,8 +109,8 @@ bf_type <- function(x, test, type = NULL, coerce = FALSE, pos = NULL,
 
     } else if(type == "numeric"){
 
-      out <- map_lgl(x[[test]], function(ix){
-        temp <- as.numeric(ix)
+      out <- map_lgl(tempOut, function(ix){
+        temp <- suppressWarnings(as.numeric(ix))
         if(!is.na(temp) & !is.nan(temp)){
           is.numeric(temp)
         } else {
@@ -109,7 +120,7 @@ bf_type <- function(x, test, type = NULL, coerce = FALSE, pos = NULL,
 
     } else if(type == "character"){
 
-      out <- map_lgl(x[[test]], function(ix){
+      out <- map_lgl(tempOut, function(ix){
         if(!is.infinite(ix)){
           temp <- as.character(ix)
         } else {
@@ -124,8 +135,8 @@ bf_type <- function(x, test, type = NULL, coerce = FALSE, pos = NULL,
 
     } else {
 
-      allBin <- all(x[[test]] %in% c(0L, 1L))
-      out <- map_lgl(x[[test]], function(ix){
+      allBin <- all(tempOut %in% c(0L, 1L))
+      out <- map_lgl(tempOut, function(ix){
         if(is.integer(ix) & allBin){
           temp <- as.logical(ix)
         } else {
@@ -170,8 +181,8 @@ bf_type <- function(x, test, type = NULL, coerce = FALSE, pos = NULL,
 
   # update flag metadata ...
   if(is.null(description)){
-    description <- c(paste0("{FALSE} the value in column '", test, "' does not have type '", type, "'."),
-                     paste0("{TRUE}  the value in column '", test, "' has type '", type, "'."))
+    description <- c(paste0("{FALSE} the value in ", where, " '", test, "' does not have type '", type, "'."),
+                     paste0("{TRUE}  the value in ", where, " '", test, "' has type '", type, "'."))
   }
 
   enc <- list(sign = 0L,
@@ -190,6 +201,12 @@ bf_type <- function(x, test, type = NULL, coerce = FALSE, pos = NULL,
 
   registry@flags[[thisName]] <- temp
   registry <- .updateMD5(registry)
+
+  # reconstruct out if it comes from a raster
+  if(inherits(x, "bf_rast")){
+    md <- attr(x(), "rast_meta")
+    out <- rast(vals = out, ncols = md$ncol, nrows = md$nrow, res = md$res, extent = md$ext, names = test, crs = md$crs)
+  }
 
   # assign tentative flags values into the current environment
   env_bind(.env = bf_env, !!thisName := out)

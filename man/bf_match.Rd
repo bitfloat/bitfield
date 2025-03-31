@@ -16,10 +16,10 @@ bf_match(
 )
 }
 \arguments{
-\item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the object to build bit flags for.}
+\item{x}{the object to build bit flags for.}
 
-\item{test}{\code{\link[=character]{character(1)}}\cr the column in \code{x} for which a
-match is checked.}
+\item{test}{\code{\link[=character]{character(1)}}\cr the column or layer in \code{x}
+for which a match is checked.}
 
 \item{set}{a vector of the same class as in \code{test} against which a set
 operation is performed.}
@@ -45,7 +45,8 @@ been defined with \code{\link{bf_registry}}; if it's undefined, an empty
 registry will be defined on-the-fly.}
 }
 \value{
-an object of class 'registry' with the additional flag defined here.
+an (updated) object of class 'registry' with the additional flag
+defined here.
 }
 \description{
 Build a bit flag by comparing a column with a set

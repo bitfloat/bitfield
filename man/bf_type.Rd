@@ -16,10 +16,10 @@ bf_type(
 )
 }
 \arguments{
-\item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the object to build bit flags for.}
+\item{x}{the object to build bit flags for.}
 
-\item{test}{\code{\link[=character]{character(1)}}\cr the column in \code{x} for which
-the type is identified.}
+\item{test}{\code{\link[=character]{character(1)}}\cr the column or layer in \code{x}
+for which the type is identified.}
 
 \item{type}{\code{\link[=character]{character(1)}}\cr the for which to check, possible
 values are \code{"integer"}, \code{"numeric"}, \code{"character"} or
@@ -47,7 +47,8 @@ been defined with \code{\link{bf_registry}}; if it's undefined, an empty
 registry will be defined on-the-fly.}
 }
 \value{
-an object of class 'registry' with the additional flag defined here.
+an (updated) object of class 'registry' with the additional flag
+defined here.
 }
 \description{
 Build a bit flag by checking for the type
@@ -67,12 +68,12 @@ as \code{1L} (an integer) or \code{"1"} (a character), but not \code{"1L"}
 \code{FALSE} for \code{NA} and \code{NaN}-values, and also for the special
 case \code{NA_real_}, as this is not supported in many other programs that
 might provide data for or use them from this function. \item character,
-this function returns \code{FALSE} for \code{Inf} and \code{NA}, and also for the
-special cases of \code{NA_character_}, as this is not supported in many
-other programs that might provide data for or use them from this function.
-\item logical, this function returns \code{TRUE} only for the integer(!)
-values \code{0L} and \code{1L}. For all other values, including \code{NA},
-this function returns \code{FALSE}. }
+this function returns \code{FALSE} for \code{Inf} and \code{NA}, and also
+for the special cases of \code{NA_character_}, as this is not supported in
+many other programs that might provide data for or use them from this
+function. \item logical, this function returns \code{TRUE} only for the
+integer(!) values \code{0L} and \code{1L}. For all other values, including
+\code{NA}, this function returns \code{FALSE}. }
 }
 \examples{
 bf_type(x = tbl_bityield, test = "y", type = "character", coerce = TRUE)
