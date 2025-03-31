@@ -15,8 +15,7 @@ bf_case(
 )
 }
 \arguments{
-\item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the table that contains tests
-defined in \code{...}.}
+\item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the object to build bit flags for.}
 
 \item{...}{\cr any set of (mutually exclusive) statements that results in a
 logical return value}

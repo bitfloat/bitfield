@@ -27,8 +27,8 @@ Decode (unpack) a bitfield
 }
 \examples{
 # grow registry
-reg <- bf_na(x = tbl_bityield, test = "commodity")
-reg <- bf_match(x = tbl_bityield, test = "commodity", set = c("soybean", "maize"),
+reg <- bf_na(x = bf_tbl, test = "commodity")
+reg <- bf_match(x = bf_tbl, test = "commodity", set = c("soybean", "maize"),
                 registry = reg)
 reg
 
@@ -41,5 +41,5 @@ flags <- bf_decode(x = field, registry = reg, sep = "-")
 flags
 
 # more reader friendly
-cbind(tbl_bityield, bf_decode(x = field, registry = reg, verbose = FALSE))
+cbind(bf_tbl, bf_decode(x = field, registry = reg, verbose = FALSE))
 }

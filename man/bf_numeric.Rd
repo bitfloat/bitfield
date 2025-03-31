@@ -15,8 +15,7 @@ bf_numeric(
 )
 }
 \arguments{
-\item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the table that contains
-\code{source}.}
+\item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the object to build bit flags for.}
 
 \item{source}{\code{\link[=character]{character(1)}}\cr the column in \code{x} from
 which to take the numeric value.}

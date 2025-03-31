@@ -16,11 +16,10 @@ bf_range(
 )
 }
 \arguments{
-\item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the table that contains
-\code{test}.}
+\item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the object to build bit flags for.}
 
 \item{test}{\code{\link[=character]{character(1)}}\cr the column in \code{x} for which a
-range is checked.}
+range is checked (the values in that column must be numeric).}
 
 \item{min}{\code{\link[=numeric]{numeric(1)}}\cr the minimum allowed value.}
 

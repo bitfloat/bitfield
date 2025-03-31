@@ -16,8 +16,7 @@ bf_match(
 )
 }
 \arguments{
-\item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the table that contains
-\code{test}.}
+\item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the object to build bit flags for.}
 
 \item{test}{\code{\link[=character]{character(1)}}\cr the column in \code{x} for which a
 match is checked.}

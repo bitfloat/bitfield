@@ -7,11 +7,10 @@
 bf_inf(x, test, pos = NULL, na.val = NULL, description = NULL, registry = NULL)
 }
 \arguments{
-\item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the table that contains
-\code{test}.}
+\item{x}{the object to build bit flags for.}
 
-\item{test}{\code{\link[=character]{character(1)}}\cr the column in \code{x} that is
-checked for Inf values.}
+\item{test}{\code{\link[=character]{character(1)}}\cr the column or layer in \code{x}
+that is checked for Inf values.}
 
 \item{pos}{\code{\link[=integer]{integerish(.)}}\cr the position(s) in the bitfield that
 should be set.}
@@ -31,11 +30,12 @@ been defined with \code{\link{bf_registry}}; if it's undefined, an empty
 registry will be defined on-the-fly.}
 }
 \value{
-an object of class 'registry' with the additional flag defined here.
+an (updated) object of class 'registry' with the additional flag
+defined here.
 }
 \description{
 Build a bit flag by checking whether values are Inf
 }
 \examples{
-bf_inf(x = tbl_bityield, test = "y")
+bf_inf(x = bf_tbl, test = "y")
 }

@@ -16,8 +16,7 @@ bf_type(
 )
 }
 \arguments{
-\item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the table that contains
-\code{test}.}
+\item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the object to build bit flags for.}
 
 \item{test}{\code{\link[=character]{character(1)}}\cr the column in \code{x} for which
 the type is identified.}
@@ -68,7 +67,7 @@ as \code{1L} (an integer) or \code{"1"} (a character), but not \code{"1L"}
 \code{FALSE} for \code{NA} and \code{NaN}-values, and also for the special
 case \code{NA_real_}, as this is not supported in many other programs that
 might provide data for or use them from this function. \item character,
-this function returns \code{FALSE} for Inf and \code{NA}, and also for the
+this function returns \code{FALSE} for \code{Inf} and \code{NA}, and also for the
 special cases of \code{NA_character_}, as this is not supported in many
 other programs that might provide data for or use them from this function.
 \item logical, this function returns \code{TRUE} only for the integer(!)
