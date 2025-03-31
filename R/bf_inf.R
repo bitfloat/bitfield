@@ -1,7 +1,6 @@
 #' Build a bit flag by checking whether values are Inf
 #'
-#' @param x [`data.frame(1)`][data.frame]\cr the table that contains
-#'   \code{test}.
+#' @param x [`data.frame(1)`][data.frame]\cr the object to build bit flags for.
 #' @param test [`character(1)`][character]\cr the column in \code{x} that is
 #'   checked for Inf values.
 #' @param pos [`integerish(.)`][integer]\cr the position(s) in the bitfield that
@@ -27,8 +26,6 @@
 bf_inf <- function(x, test, pos = NULL, na.val = NULL, description = NULL,
                    registry = NULL){
 
-  assertDataFrame(x = x)
-  assertSubset(x = test, choices = names(x))
   assertIntegerish(x = pos, lower = 1, min.len = 1, unique = TRUE, null.ok = TRUE)
   assertIntegerish(x = na.val, lower = 0, len = 1, null.ok = TRUE)
   assertCharacter(x = description, len = 2, null.ok = TRUE)
@@ -40,7 +37,16 @@ bf_inf <- function(x, test, pos = NULL, na.val = NULL, description = NULL,
 
   thisName <- paste0("inf_", test)
 
-  out <- is.infinite(x[[test]])
+  if(inherits(x, "bf_rast")){
+    assertSubset(x = test, choices = colnames(x()))
+    out <- is.infinite(x()[,test])
+    where <- "layer"
+  } else {
+    assertDataFrame(x = x)
+    assertSubset(x = test, choices = names(x))
+    out <- is.infinite(x[[test]])
+    where <- "column"
+  }
 
   # replace NA values
   if(any(is.na(out))){
@@ -70,8 +76,8 @@ bf_inf <- function(x, test, pos = NULL, na.val = NULL, description = NULL,
 
   # update flag metadata ...
   if(is.null(description)){
-    description <- c(paste0("{FALSE} the value in column '", test, "' is not Inf."),
-                     paste0("{TRUE}  the value in column '", test, "' is Inf."))
+    description <- c(paste0("{FALSE} the value in ", where, " '", test, "' is not Inf."),
+                     paste0("{TRUE}  the value in ", where, " '", test, "' is Inf."))
   }
 
   enc <- list(sign = 0L,
@@ -90,6 +96,12 @@ bf_inf <- function(x, test, pos = NULL, na.val = NULL, description = NULL,
 
   registry@flags[[thisName]] <- temp
   registry <- .updateMD5(registry)
+
+  # reconstruct out if it comes from a raster
+  if(inherits(x, "bf_rast")){
+    md <- attr(x(), "rast_meta")
+    out <- rast(vals = out, ncols = md$ncol, nrows = md$nrow, res = md$res, extent = md$ext, names = test, crs = md$crs)
+  }
 
   # assign tentative flags values into the current environment
   env_bind(.env = bf_env, !!thisName := out)

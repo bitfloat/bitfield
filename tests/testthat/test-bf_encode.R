@@ -1,6 +1,11 @@
-library(bitfield)
-context("bf_encode")
+test_that("...", {
 
-test_that("multiplication works", {
-  expect_equal(2 * 2, 4)
+})
+
+test_that("warning", {
+
+})
+
+test_that("errors", {
+
 })

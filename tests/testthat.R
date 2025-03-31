@@ -8,5 +8,9 @@
 
 library(testthat)
 library(bitfield)
+library(terra)
 
 test_check("bitfield")
+
+# - explicitly test all assertions in the errors section of each test
+# - doublecheck all test and remove empty tests

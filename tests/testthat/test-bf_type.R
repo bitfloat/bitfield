@@ -1,6 +1,130 @@
-library(bitfield)
-context("bf_type")
+test_that("bf_type writes correct registry", {
 
-test_that("multiplication works", {
-  expect_equal(2 * 2, 4)
+  # run operator
+  reg <- bf_type(bf_tbl, test = "x", type = "integer")
+
+  # check registry
+  expect_s4_class(reg, "registry")
+  expect_equal(reg@width, 1L)
+  expect_equal(reg@length, 10L)
+
+  # check flags
+  expect_true("type_x_integer" %in% names(reg@flags))
+  expect_equal(reg@flags$type_x_integer$pos, 1)
+  expect_equal(reg@flags$type_x_integer$encoding$sign, 0)
+  expect_equal(reg@flags$type_x_integer$encoding$exponent, 0)
+  expect_equal(reg@flags$type_x_integer$encoding$mantissa, 1)
+  expect_equal(reg@flags$type_x_integer$encoding$bias, 0)
+
+  # test updating an existing registry
+  reg <- bf_type(bf_tbl, test = "yield", type = "character", coerce = FALSE, registry = reg)
+  expect_equal(reg@width, 2L)
+  expect_equal(reg@length, 10L)
+  expect_true("type_yield_character" %in% names(reg@flags))
+  expect_equal(reg@flags$type_yield_character$pos, 2)
+  expect_true(length(reg@flags) == 2L)
+
+})
+
+test_that("bf_type correctly identifies integers", {
+
+  # # Test with coerce=FALSE on integer column
+  # dat <- data.frame(col = c(1L, 2L, 3L))
+  # reg <- bf_type(x = dat, test = "col", type = "integer", coerce = FALSE)
+  # expect_identical(object = bf_env$type_col_integer, expected = rep(TRUE, 3))
+  #
+  # # Test with coerce=FALSE on non-integer columns
+  # dat <- data.frame(col = c(1.0, 2.0, 3.0))
+  # reg <- bf_type(x = dat, test = "col", type = "integer", coerce = FALSE)
+  # expect_identical(object = bf_env$type_col_integer, expected = rep(FALSE, 3))
+  #
+  # # Test with coerce=TRUE on whole number numeric column
+  # dat <- data.frame(col = c(1.0, 2.0, 3.0))
+  # reg <- bf_type(x = dat, test = "col", type = "integer", coerce = TRUE)
+  # expect_identical(object = bf_env$type_col_integer, expected = rep(TRUE, 3))
+  #
+  # # Test with coerce=TRUE on decimal number column
+  # dat <- data.frame(col = c(1.1, 2.2, 3.0))
+  # reg <- bf_type(x = dat, test = "col", type = "integer", coerce = TRUE)
+  # expect_equal(bf_env$type_col_integer, c(FALSE, FALSE, TRUE))
+})
+
+test_that("bf_type correctly identifies numerics", {
+
+  # # Test with coerce=FALSE on numeric column
+  # dat <- data.frame(col = c(1.0, 2.5, 3.0))
+  # reg <- bf_type(x = dat, test = "col", type = "numeric", coerce = FALSE)
+  # expect_identical(object = bf_env$type_col_numeric, expected = rep(TRUE, 3))
+  #
+  # # Test integers are also identified as numeric
+  # dat <- data.frame(col = c(1L, 2L, 3L))
+  # reg <- bf_type(x = dat, test = "col", type = "numeric", coerce = FALSE)
+  # expect_identical(object = bf_env$type_col_numeric, expected = rep(TRUE, 3))
+  #
+  # # Test with coerce=TRUE on convertible character column
+  # dat <- data.frame(col = c("1", "2", "3"))
+  # reg <- bf_type(x = dat, test = "col", type = "numeric", coerce = TRUE)
+  # expect_identical(object = bf_env$type_col_numeric, expected = rep(TRUE, 3))
+  #
+  # # Test with coerce=TRUE on non-convertible character column
+  # dat <- data.frame(col = c("a", "b", "3"))
+  # reg <- bf_type(x = dat, test = "col", type = "numeric", coerce = TRUE)
+  #
+  # expect_equal(bf_env$type_col_numeric, c(FALSE, FALSE, TRUE))
+})
+
+test_that("bf_type correctly identifies characters", {
+
+  # # Test with coerce=FALSE on character column
+  # dat <- data.frame(col = c("1", "2", "3"))
+  # reg <- bf_type(x = dat, test = "col", type = "character", coerce = FALSE)
+  # expect_identical(object = bf_env$type_col_character, expected = rep(TRUE, 3))
+  #
+  # # Test with coerce=TRUE on numeric column
+  # dat <- data.frame(col = c(1.0, 2.5, 3.0))
+  # reg <- bf_type(x = dat, test = "col", type = "character", coerce = TRUE)
+  # expect_identical(object = bf_env$type_col_character, expected = rep(TRUE, 3))
+  #
+  # # Test with Infinity values
+  # dat <- data.frame(col = c("text", Inf, "more"))
+  # reg <- bf_type(x = dat, test = "col", type = "character")
+  # expect_identical(object = bf_env$type_col_character, expected = rep(TRUE, 3))
+})
+
+test_that("bf_type correctly identifies logicals", {
+
+  # # Test with coerce=FALSE on logical column
+  # dat <- data.frame(col = c(TRUE, FALSE, TRUE))
+  # reg <- bf_type(x = dat, test = "col", type = "logical")
+  # expect_identical(object = bf_env$type_col_logical, expected = rep(TRUE, 3))
+  #
+  # # Test with coerce=TRUE on binary integer column
+  # dat <- data.frame(col = c(0L, 1L, 0L))
+  # reg <- bf_type(x = dat, test = "col", type = "logical", coerce = TRUE)
+  # expect_identical(object = bf_env$type_col_logical, expected = rep(TRUE, 3))
+  #
+  # # Test with coerce=TRUE on non-binary integer column
+  # dat <- data.frame(col = c(0L, 1L, 2L))
+  # reg <- bf_type(x = dat, test = "col", type = "logical", coerce = TRUE)
+  # expect_identical(object = bf_env$type_col_logical, expected = rep(FALSE, 3))
+})
+
+test_that("bf_type correctly handles NA values", {
+
+  # # Test with NA values and na.val provided
+  # dat <- data.frame(col = c(1L, NA_integer_, 3L))
+  # reg <- bf_type(x = dat, test = "col", type = "integer", coerce = FALSE, na.val = FALSE)
+  # expect_equal(bf_env$type_col_integer, c(TRUE, FALSE, TRUE))
+  #
+  # # Test with NA values and no na.val (should error)
+  # dat <- data.frame(col = c(1.0, NA_real_, 3.0))
+  # expect_error(
+  #   bf_type(x = dat, test = "col", type = "numeric", coerce = FALSE),
+  #   "there are NA values in the bit representation, please define 'na.val'."
+  # )
+  #
+  # # Test coercion with NA values
+  # dat <- data.frame(col = c("1", NA_character_, "3"))
+  # reg <- bf_type(x = dat, test = "col", type = "numeric", coerce = TRUE, na.val = 0)
+  # expect_equal(bf_env$type_col, c(TRUE, FALSE, TRUE))
 })

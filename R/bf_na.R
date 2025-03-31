@@ -1,13 +1,10 @@
 #' Build a bit flag by checking whether values are NA
 #'
-#' @param x [`data.frame(1)`][data.frame]\cr the table that contains
-#'   \code{test}.
+#' @param x the object to build bit flags for.
 #' @param test [`character(1)`][character]\cr the column in \code{x} that is
 #'   checked for NA values.
 #' @param pos [`integerish(.)`][integer]\cr the position(s) in the bitfield that
 #'   should be set.
-#' @param na.val [`character(1)`][character]\cr optional value that should be
-#'   used to substitute NA values in the input data.
 #' @param description [`character(.)`][character]\cr optional description that
 #'   should be used instead of the default function-specific description. This
 #'   description is used in the registry legend, so it should have as many
@@ -20,17 +17,15 @@
 #' @return an object of class 'registry' with the additional flag defined here.
 #' @examples
 #' bf_na(x = tbl_bityield, test = "y")
-#' @importFrom checkmate assertDataFrame assertSubset
+#' @importFrom checkmate assertIntegerish assertCharacter assertClass
+#'   assertDataFrame assertSubset
 #' @importFrom rlang env_bind
+#' @importFrom terra rast
 #' @export
 
-bf_na <- function(x, test, pos = NULL, na.val = NULL, description = NULL,
-                  registry = NULL){
+bf_na <- function(x, test, pos = NULL, description = NULL, registry = NULL){
 
-  assertDataFrame(x = x)
-  assertSubset(x = test, choices = names(x))
   assertIntegerish(x = pos, lower = 1, min.len = 1, unique = TRUE, null.ok = TRUE)
-  assertIntegerish(x = na.val, lower = 0, len = 1, null.ok = TRUE)
   assertCharacter(x = description, len = 2, null.ok = TRUE)
   assertClass(x = registry, classes = "registry", null.ok = TRUE)
 
@@ -40,15 +35,15 @@ bf_na <- function(x, test, pos = NULL, na.val = NULL, description = NULL,
 
   thisName <- paste0("na_", test)
 
-  out <- is.na(x[[test]])
-
-  # replace NA values
-  if(any(is.na(out))){
-    if(is.null(na.val)) stop("there are NA values in the bit representation, please define 'na.val'.")
-    out[is.na(out)] <- na.val
-    naProv <- paste0("substituteValue: NA->", na.val)
+  if(inherits(x, "bf_rast")){
+    assertSubset(x = test, choices = colnames(x()))
+    out <- is.na(x()[,test])
+    where <- "layer"
   } else {
-    naProv <- NULL
+    assertDataFrame(x = x)
+    assertSubset(x = test, choices = names(x))
+    out <- is.na(x[[test]])
+    where <- "column"
   }
 
   # update position if it's not set
@@ -70,8 +65,8 @@ bf_na <- function(x, test, pos = NULL, na.val = NULL, description = NULL,
 
   # update flag metadata ...
   if(is.null(description)){
-    description <- c(paste0("{FALSE} the value in column '", test, "' is not NA."),
-                     paste0("{TRUE}  the value in column '", test, "' is NA."))
+    description <- c(paste0("{FALSE} the value in ", where, " '", test, "' is not NA."),
+                     paste0("{TRUE}  the value in ", where, " '", test, "' is NA."))
   }
 
   enc <- list(sign = 0L,
@@ -80,7 +75,7 @@ bf_na <- function(x, test, pos = NULL, na.val = NULL, description = NULL,
               bias = 0L)
 
   prov <- list(wasDerivedFrom = test,
-               wasGeneratedBy = c("testValue: is.na(", test, ")", naProv, "encodeAsBinary: 0.0.1/0"))
+               wasGeneratedBy = c(paste0("testValue: is.na(", test, ")"), "encodeAsBinary: 0.0.1/0"))
 
   # ... and store everything in the registry
   temp <- list(description = description,
@@ -90,6 +85,12 @@ bf_na <- function(x, test, pos = NULL, na.val = NULL, description = NULL,
 
   registry@flags[[thisName]] <- temp
   registry <- .updateMD5(registry)
+
+  # reconstruct out if it comes from a raster
+  if(inherits(x, "bf_rast")){
+    md <- attr(x(), "rast_meta")
+    out <- rast(vals = out, ncols = md$ncol, nrows = md$nrow, res = md$res, extent = md$ext, names = test, crs = md$crs)
+  }
 
   # assign tentative flags values into the current environment
   env_bind(.env = bf_env, !!thisName := out)
