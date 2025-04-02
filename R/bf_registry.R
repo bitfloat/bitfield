@@ -45,11 +45,11 @@ bf_registry <- function(name = NULL, description = NULL){
              description = description,
              flags = list())
 
-  # store the environment name in the options
-  oldOptions <- options()
-  on.exit(options(oldOptions))
-
-  options(bf_env = name)
+  # # store the environment name in the options
+  # oldOptions <- options()
+  # on.exit(options(oldOptions))
+  #
+  # options(bf_env = name)
 
   return(out)
 
