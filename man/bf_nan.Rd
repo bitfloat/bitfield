@@ -15,8 +15,8 @@ that is checked for NaN values.}
 \item{pos}{\code{\link[=integer]{integerish(.)}}\cr the position(s) in the bitfield that
 should be set.}
 
-\item{na.val}{\code{\link[=character]{character(1)}}\cr optional value that should be
-used to substitute NA values in the input data.}
+\item{na.val}{\code{\link[=logical]{logical(1)}}\cr value that needs to be given, if the
+test for this flag results in \code{NA}s.}
 
 \item{description}{\code{\link[=character]{character(.)}}\cr optional description that
 should be used instead of the default function-specific description. This
@@ -37,5 +37,5 @@ defined here.
 Build a bit flag by checking whether values are NaN
 }
 \examples{
-bf_nan(x = tbl_bityield, test = "y")
+bf_nan(x = bf_tbl, test = "y")
 }

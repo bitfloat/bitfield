@@ -15,10 +15,10 @@ bf_identical(
 )
 }
 \arguments{
-\item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the object to build bit flags for.}
+\item{x}{the object to build bit flags for.}
 
-\item{test}{\code{\link[=character]{character(1)}}\cr the column in \code{x} that is
-checked \code{against}.}
+\item{test}{\code{\link[=character]{character(1)}}\cr the column or layer in \code{x}
+that is checked \code{against}.}
 
 \item{against}{\code{\link[=character]{character(1)}}\cr the column in \code{x} that is
 checked against \code{test}.}
@@ -26,8 +26,8 @@ checked against \code{test}.}
 \item{pos}{\code{\link[=integer]{integerish(.)}}\cr the position(s) in the bitfield that
 should be set.}
 
-\item{na.val}{\code{\link[=character]{character(1)}}\cr optional value that should be
-used to substitute NA values in the input data.}
+\item{na.val}{\code{\link[=logical]{logical(1)}}\cr value that needs to be given, if the
+test for this flag results in \code{NA}s.}
 
 \item{description}{\code{\link[=character]{character(.)}}\cr optional description that
 should be used instead of the default function-specific description. This
@@ -41,7 +41,8 @@ been defined with \code{\link{bf_registry}}; if it's undefined, an empty
 registry will be defined on-the-fly.}
 }
 \value{
-an object of class 'registry' with the additional flag defined here.
+an (updated) object of class 'registry' with the additional flag
+defined here.
 }
 \description{
 Build a bit flag by checking whether two columns are identical
@@ -51,5 +52,5 @@ This function compares the values of two columns element-wise and
 returns \code{TRUE} when the two columns are identical.
 }
 \examples{
-bf_identical(x = tbl_bityield, test = "x", against = "y", na.val = 0)
+bf_identical(x = bf_tbl, test = "x", against = "y", na.val = 0)
 }

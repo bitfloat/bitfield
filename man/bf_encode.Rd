@@ -17,7 +17,7 @@ description
 Build a bitfield from a bit registry
 }
 \examples{
-myRegistry <- bf_na(tbl_bityield, "y")
+myRegistry <- bf_na(bf_tbl, "y")
 
 myBitfield <- bf_encode(registry = myRegistry)
 }

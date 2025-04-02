@@ -16,24 +16,26 @@ bf_length(
 )
 }
 \arguments{
-\item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the object to build bit flags for.}
+\item{x}{the object to build bit flags for.}
 
-\item{test}{\code{\link[=character]{character(1)}}\cr the column in \code{x} for which
-the length is determined.}
+\item{test}{\code{\link[=character]{character(1)}}\cr the column or layer in \code{x}
+for which the length is determined.}
 
 \item{dec}{\code{\link[=character]{character(1)}}\cr regex-compatible symbol that
 separates the decimals from the numeric value (such as \code{\\.} in case
 the decimal symbol is a ".").}
 
 \item{fill}{\code{\link[=logical]{logical(1)}}\cr whether the function should consider
-decimals lengths from 0 through the maximum length in \code{x[[test]]}, or
-whether it should only document existing decimal lengths.}
+lengths from 0 through the maximum length in \code{x[[test]]}, or whether it
+should only document occurring lengths (this may be useful if the bitfield
+shall be extended downstream, where the smaller lengths added by \code{fill
+  = TRUE} should be representable).}
 
 \item{pos}{\code{\link[=integer]{integerish(.)}}\cr the position(s) in the bitfield that
 should be set.}
 
-\item{na.val}{\code{\link[=character]{character(1)}}\cr optional value that should be
-used to substitute NA values in the input data.}
+\item{na.val}{\code{\link[=logical]{logical(1)}}\cr value that needs to be given, if the
+test for this flag results in \code{NA}s.}
 
 \item{description}{\code{\link[=character]{character(.)}}\cr optional description that
 should be used instead of the default function-specific description. This
@@ -47,14 +49,15 @@ been defined with \code{\link{bf_registry}}; if it's undefined, an empty
 registry will be defined on-the-fly.}
 }
 \value{
-an object of class 'registry' with the additional flag defined here.
+an (updated) object of class 'registry' with the additional flag
+defined here.
 }
 \description{
 Build a bit flag by counting aspects of an entity
 }
 \details{
 The console output of various classes shows decimals that are not
-present or round decimals away that are present, even for ordinary numeric
+present or round decimals that are present, even for ordinary numeric
 vectors. If a bit flag doesn't seem to coincide with the values you see in
 the console, double check the values with \code{\link{str}}.
 
@@ -63,6 +66,6 @@ precision:
 \href{https://en.wikipedia.org/wiki/Decimal_degrees}{https://en.wikipedia.org/wiki/Decimal_degrees}
 }
 \examples{
-bf_length(x = tbl_bityield, test = "y")
-bf_length(x = tbl_bityield, test = "y", dec = "\\\\.")
+bf_length(x = bf_tbl, test = "commodity")
+bf_length(x = bf_tbl, test = "y", dec = "\\\\.")
 }

@@ -15,7 +15,10 @@ bf_apply(
 )
 }
 \arguments{
-\item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the object to build bit flags for.}
+\item{x}{the object to build bit flags for.}
+
+\item{na.val}{\code{\link[=logical]{logical(1)}}\cr value that needs to be given, if the
+test for this flag results in \code{NA}s.}
 }
 \description{
 Build a bit flag by applying a standard encoding

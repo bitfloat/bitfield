@@ -32,8 +32,8 @@ that end up not having NA-values are reported as \code{TRUE}.}
 \item{pos}{\code{\link[=integer]{integerish(.)}}\cr the position(s) in the bitfield that
 should be set.}
 
-\item{na.val}{\code{\link[=character]{character(1)}}\cr optional value that should be
-used to substitute NA values in the input data.}
+\item{na.val}{\code{\link[=logical]{logical(1)}}\cr value that needs to be given, if the
+test for this flag results in \code{NA}s.}
 
 \item{description}{\code{\link[=character]{character(.)}}\cr optional description that
 should be used instead of the default function-specific description. This
@@ -76,5 +76,5 @@ integer(!) values \code{0L} and \code{1L}. For all other values, including
 \code{NA}, this function returns \code{FALSE}. }
 }
 \examples{
-bf_type(x = tbl_bityield, test = "y", type = "character", coerce = TRUE)
+bf_type(x = bf_tbl, test = "y", type = "character", coerce = TRUE)
 }

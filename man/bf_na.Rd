@@ -4,7 +4,7 @@
 \alias{bf_na}
 \title{Build a bit flag by checking whether values are NA}
 \usage{
-bf_na(x, test, pos = NULL, description = NULL, registry = NULL)
+bf_na(x, test, pos = NULL, na.val = NULL, description = NULL, registry = NULL)
 }
 \arguments{
 \item{x}{the object to build bit flags for.}
@@ -14,6 +14,9 @@ that is checked for NA values.}
 
 \item{pos}{\code{\link[=integer]{integerish(.)}}\cr the position(s) in the bitfield that
 should be set.}
+
+\item{na.val}{\code{\link[=logical]{logical(1)}}\cr value that needs to be given, if the
+test for this flag results in \code{NA}s.}
 
 \item{description}{\code{\link[=character]{character(.)}}\cr optional description that
 should be used instead of the default function-specific description. This

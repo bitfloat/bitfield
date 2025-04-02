@@ -15,18 +15,18 @@ bf_numeric(
 )
 }
 \arguments{
-\item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the object to build bit flags for.}
+\item{x}{the object to build bit flags for.}
 
-\item{source}{\code{\link[=character]{character(1)}}\cr the column in \code{x} from
-which to take the numeric value.}
+\item{source}{\code{\link[=character]{character(1)}}\cr the column or layer in \code{x}
+from which to take the numeric value.}
 
 \item{...}{description}
 
 \item{pos}{\code{\link[=integer]{integerish(.)}}\cr the position(s) in the bitfield that
 should be set.}
 
-\item{na.val}{\code{\link[=character]{character(1)}}\cr optional value that should be
-used to substitute NA values in the input data.}
+\item{na.val}{\code{\link[=logical]{logical(1)}}\cr value that needs to be given, if the
+test for this flag results in \code{NA}s.}
 
 \item{description}{\code{\link[=character]{character(.)}}\cr optional description that
 should be used instead of the default function-specific description. This
@@ -40,7 +40,8 @@ been defined with \code{\link{bf_registry}}; if it's undefined, an empty
 registry will be defined on-the-fly.}
 }
 \value{
-an object of class 'registry' with the additional flag defined here.
+an (updated) object of class 'registry' with the additional flag
+defined here.
 }
 \description{
 Build a bit flag from a numeric value
@@ -48,11 +49,11 @@ Build a bit flag from a numeric value
 \details{
 The length of the bitfield depends on the floating point precision
 of the numeric values returned with this function. This is given as a
-sequence of 3 integers of the form [1.5.10]. The first position
-encodes how many bit are used (0 or 1), the second position encodes how
-many exponent bits are used and the third position encodes how many
-mantissa fields are used. See \code{\link{.determineEncoding}} for details.
+sequence of 3 integers of the form [1.5.10]. The first position encodes
+how many bit are used (0 or 1), the second position encodes how many
+exponent bits are used and the third position encodes how many significant
+fields are used. See \code{\link{.determineEncoding}} for details.
 }
 \examples{
-bf_numeric(x = tbl_bityield, source = "yield")
+bf_numeric(x = bf_tbl, source = "yield")
 }

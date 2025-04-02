@@ -15,10 +15,10 @@ bf_case(
 )
 }
 \arguments{
-\item{x}{\code{\link[=data.frame]{data.frame(1)}}\cr the object to build bit flags for.}
+\item{x}{the object to build bit flags for.}
 
-\item{...}{\cr any set of (mutually exclusive) statements that results in a
-logical return value}
+\item{...}{\cr any set of statements that determine which case(s) the
+observations in column(s) or layer(s) are part.}
 
 \item{exclusive}{\code{\link[=logical]{logical(1)}}\cr whether the function should check
 that the cases are mutually exclusive, or whether it would allow that cases
@@ -27,8 +27,8 @@ defined later in the sequence overwrite cases earlier in the sequence.}
 \item{pos}{\code{\link[=integer]{integerish(.)}}\cr the position(s) in the bitfield that
 should be set.}
 
-\item{na.val}{\code{\link[=character]{character(1)}}\cr optional value that should be
-used to substitute NA values in the input data.}
+\item{na.val}{\code{\link[=integer]{integerish(1)}}\cr value that needs to be given, if
+the test for this flag results in \code{NA}s.}
 
 \item{description}{\code{\link[=character]{character(.)}}\cr optional description that
 should be used instead of the default function-specific description. This
@@ -42,13 +42,14 @@ been defined with \code{\link{bf_registry}}; if it's undefined, an empty
 registry will be defined on-the-fly.}
 }
 \value{
-an object of class 'registry' with the additional flag defined here.
+an (updated) object of class 'registry' with the additional flag
+defined here.
 }
 \description{
 Build a bit flag by checking for cases
 }
 \examples{
-registry <- bf_case(x = tbl_bityield, exclusive = FALSE,
+registry <- bf_case(x = bf_tbl, exclusive = FALSE,
                     yield >= 11,
                     yield < 11 & yield > 9,
                     yield < 9 & commodity == "maize")
