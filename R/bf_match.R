@@ -31,8 +31,9 @@
 bf_match <- function(x, test, set, negate = FALSE, pos = NULL, na.val = NULL,
                      description = NULL, registry = NULL){
 
+  assertLogical(x = negate, len = 1, any.missing = FALSE, null.ok = TRUE)
   assertIntegerish(x = pos, lower = 1, min.len = 1, unique = TRUE, null.ok = TRUE)
-  assertIntegerish(x = na.val, lower = 0, len = 1, null.ok = TRUE)
+  assertLogical(x = na.val, len = 1, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = description, len = 2, null.ok = TRUE)
   assertClass(x = registry, classes = "registry", null.ok = TRUE)
 
@@ -42,22 +43,25 @@ bf_match <- function(x, test, set, negate = FALSE, pos = NULL, na.val = NULL,
 
   thisName <- paste0("match_", test)
 
+  # extract values in x
   if(inherits(x, "bf_rast")){
     assertSubset(x = test, choices = colnames(x()))
-    out <- x()[,test] %in% set
+    tempOut <- x()[,test]
     where <- "layer"
   } else {
     assertDataFrame(x = x)
     assertSubset(x = test, choices = names(x))
-    out <- x[[test]] %in% set
+    tempOut <- x[[test]]
     where <- "column"
   }
 
+  # determine flag values
   if(negate){
-    out <- !out
+    out <- !tempOut %in% set
     type <- "disjoint"
     typeProv <- "!"
   } else {
+    out <- tempOut %in% set
     type <- "included"
     typeProv <- NULL
   }

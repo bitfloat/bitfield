@@ -46,7 +46,15 @@ bf_case <- function(x, ..., exclusive = TRUE, pos = NULL, na.val = NULL,
     registry <- bf_registry(name = "new_registry")
   }
 
-  thisName <- paste0("cases")
+  if(is.null(names(registry@flags))){
+    thisName <- "cases_1"
+  } else{
+    if(str_detect(string = names(registry@flags), pattern = "cases_")){
+      thisName <- paste0("cases_", str_count(names(registry@flags), "cases_")+1)
+    } else {
+      thisName <- paste0("cases_1")
+    }
+  }
   cases <- enquos(..., .named = TRUE)
   # return(cases)
 
@@ -139,6 +147,12 @@ bf_case <- function(x, ..., exclusive = TRUE, pos = NULL, na.val = NULL,
 
   registry@flags[[thisName]] <- temp
   registry <- .updateMD5(registry)
+
+  # reconstruct out if it comes from a raster
+  if(inherits(x, "bf_rast")){
+    md <- attr(x(), "rast_meta")
+    out <- rast(vals = out, ncols = md$ncol, nrows = md$nrow, res = md$res, extent = md$ext, names = test, crs = md$crs)
+  }
 
   # assign tentative flags values into the current environment
   env_bind(.env = bf_env, !!thisName := out)

@@ -28,7 +28,7 @@ bf_inf <- function(x, test, pos = NULL, na.val = NULL, description = NULL,
                    registry = NULL){
 
   assertIntegerish(x = pos, lower = 1, min.len = 1, unique = TRUE, null.ok = TRUE)
-  assertIntegerish(x = na.val, lower = 0, len = 1, null.ok = TRUE)
+  assertLogical(x = na.val, len = 1, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = description, len = 2, null.ok = TRUE)
   assertClass(x = registry, classes = "registry", null.ok = TRUE)
 
@@ -38,16 +38,20 @@ bf_inf <- function(x, test, pos = NULL, na.val = NULL, description = NULL,
 
   thisName <- paste0("inf_", test)
 
+  # extract values in x
   if(inherits(x, "bf_rast")){
     assertSubset(x = test, choices = colnames(x()))
-    out <- is.infinite(x()[,test])
+    tempOut <- x()[,test]
     where <- "layer"
   } else {
     assertDataFrame(x = x)
     assertSubset(x = test, choices = names(x))
-    out <- is.infinite(x[[test]])
+    tempOut <- x[[test]]
     where <- "column"
   }
+
+  # determine flag values
+  out <- is.infinite(tempOut)
 
   # replace NA values
   if(any(is.na(out))){

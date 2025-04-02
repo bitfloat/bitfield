@@ -26,9 +26,11 @@
 #' @importFrom terra rast
 #' @export
 
-bf_na <- function(x, test, pos = NULL, description = NULL, registry = NULL){
+bf_na <- function(x, test, pos = NULL, na.val = NULL, description = NULL,
+                  registry = NULL){
 
   assertIntegerish(x = pos, lower = 1, min.len = 1, unique = TRUE, null.ok = TRUE)
+  assertLogical(x = na.val, len = 1, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = description, len = 2, null.ok = TRUE)
   assertClass(x = registry, classes = "registry", null.ok = TRUE)
 
@@ -38,15 +40,28 @@ bf_na <- function(x, test, pos = NULL, description = NULL, registry = NULL){
 
   thisName <- paste0("na_", test)
 
+  # extract values in x
   if(inherits(x, "bf_rast")){
     assertSubset(x = test, choices = colnames(x()))
-    out <- is.na(x()[,test])
+    tempOut <- x()[,test]
     where <- "layer"
   } else {
     assertDataFrame(x = x)
     assertSubset(x = test, choices = names(x))
-    out <- is.na(x[[test]])
+    tempOut <- x[[test]]
     where <- "column"
+  }
+
+  # determine flag values
+  out <- is.na(tempOut)
+
+  # replace NA values
+  if(any(is.na(out))){
+    if(is.null(na.val)) stop("there are NA values in the bit representation, please define 'na.val'.")
+    out[is.na(out)] <- na.val
+    naProv <- paste0("substituteValue: NA->", na.val)
+  } else {
+    naProv <- NULL
   }
 
   # update position if it's not set
