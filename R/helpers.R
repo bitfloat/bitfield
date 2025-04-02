@@ -172,7 +172,7 @@
 
   if(is.null(decimals)){
     if(!testIntegerish(x)){
-      decimals <- max(nchar(x) - nchar(as.integer(x))-1)
+      decimals <- suppressWarnings(max(nchar(x) - nchar(as.integer(x))-1, na.rm = TRUE))
     } else {
       decimals <- 0
     }
