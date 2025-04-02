@@ -9,8 +9,8 @@
 #'   or a disjoint match.
 #' @param pos [`integerish(.)`][integer]\cr the position(s) in the bitfield that
 #'   should be set.
-#' @param na.val [`character(1)`][character]\cr optional value that should be
-#'   used to substitute NA values in the input data.
+#' @param na.val [`logical(1)`][logical]\cr value that needs to be given, if the
+#'   test for this flag results in \code{NA}s.
 #' @param description [`character(.)`][character]\cr optional description that
 #'   should be used instead of the default function-specific description. This
 #'   description is used in the registry legend, so it should have as many
@@ -23,7 +23,7 @@
 #' @return an (updated) object of class 'registry' with the additional flag
 #'   defined here.
 #' @examples
-#' bf_match(x = tbl_bityield, test = "commodity", set = c("soybean", "maize"))
+#' bf_match(x = bf_tbl, test = "commodity", set = c("soybean", "maize"))
 #' @importFrom checkmate assertDataFrame assertSubset assertClass
 #' @importFrom rlang env_bind
 #' @export

@@ -4,7 +4,7 @@
 #'   encoded into a bitfield.
 #' @return description
 #' @examples
-#' myRegistry <- bf_na(tbl_bityield, "y")
+#' myRegistry <- bf_na(bf_tbl, "y")
 #'
 #' myBitfield <- bf_encode(registry = myRegistry)
 #' @importFrom checkmate assertClass assertCharacter assertLogical

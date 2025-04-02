@@ -1,15 +1,14 @@
 #' Build a bit flag by checking for a range
 #'
-#' @param x [`data.frame(1)`][data.frame]\cr the table that contains
-#'   \code{test}.
-#' @param test [`character(1)`][character]\cr the column in \code{x} for which a
-#'   range is checked.
+#' @param x the object to build bit flags for.
+#' @param test [`character(1)`][character]\cr the column or layer in \code{x}
+#'   for which a range is checked (the values in that column must be numeric).
 #' @param min [`numeric(1)`][numeric]\cr the minimum allowed value.
 #' @param max [`numeric(1)`][numeric]\cr the maximum allowed value.
 #' @param pos [`integerish(.)`][integer]\cr the position(s) in the bitfield that
 #'   should be set.
-#' @param na.val [`character(1)`][character]\cr optional value that should be
-#'   used to substitute NA values in the input data.
+#' @param na.val [`logical(1)`][logical]\cr value that needs to be given, if the
+#'   test for this flag results in \code{NA}s.
 #' @param description [`character(.)`][character]\cr optional description that
 #'   should be used instead of the default function-specific description. This
 #'   description is used in the registry legend, so it should have as many
@@ -22,9 +21,10 @@
 #' @details when leaving either \code{min} or \code{max} at NULL they are set to
 #'   the minimum or maximum value of \code{test}, respectively, thereby carrying
 #'   out a "less than max" or "greater than min" operation.
-#' @return an object of class 'registry' with the additional flag defined here.
+#' @return an (updated) object of class 'registry' with the additional flag
+#'   defined here.
 #' @examples
-#' bf_range(x = tbl_bityield, test = "y", min = 50, max = 59, na.val = 0)
+#' bf_range(x = bf_tbl, test = "y", min = 50, max = 59, na.val = 0)
 #' @importFrom checkmate assertDataFrame assertSubset assertNumeric
 #'   assertIntegerish assertCharacter assertClass
 #' @importFrom rlang env_bind

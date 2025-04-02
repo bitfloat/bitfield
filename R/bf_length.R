@@ -1,19 +1,20 @@
 #' Build a bit flag by counting aspects of an entity
 #'
-#' @param x [`data.frame(1)`][data.frame]\cr the table that contains
-#'   \code{test}.
-#' @param test [`character(1)`][character]\cr the column in \code{x} for which
-#'   the length is determined.
+#' @param x the object to build bit flags for.
+#' @param test [`character(1)`][character]\cr the column or layer in \code{x}
+#'   for which the length is determined.
 #' @param dec [`character(1)`][character]\cr regex-compatible symbol that
 #'   separates the decimals from the numeric value (such as \code{\\.} in case
 #'   the decimal symbol is a ".").
 #' @param fill [`logical(1)`][logical]\cr whether the function should consider
-#'   decimals lengths from 0 through the maximum length in `x[[test]]`, or
-#'   whether it should only document existing decimal lengths.
+#'   lengths from 0 through the maximum length in `x[[test]]`, or whether it
+#'   should only document occurring lengths (this may be useful if the bitfield
+#'   shall be extended downstream, where the smaller lengths added by \code{fill
+#'   = TRUE} should be representable).
 #' @param pos [`integerish(.)`][integer]\cr the position(s) in the bitfield that
 #'   should be set.
-#' @param na.val [`character(1)`][character]\cr optional value that should be
-#'   used to substitute NA values in the input data.
+#' @param na.val [`logical(1)`][logical]\cr value that needs to be given, if the
+#'   test for this flag results in \code{NA}s.
 #' @param description [`character(.)`][character]\cr optional description that
 #'   should be used instead of the default function-specific description. This
 #'   description is used in the registry legend, so it should have as many
@@ -24,17 +25,18 @@
 #'   been defined with \code{\link{bf_registry}}; if it's undefined, an empty
 #'   registry will be defined on-the-fly.
 #' @details The console output of various classes shows decimals that are not
-#'   present or round decimals away that are present, even for ordinary numeric
+#'   present or round decimals that are present, even for ordinary numeric
 #'   vectors. If a bit flag doesn't seem to coincide with the values you see in
 #'   the console, double check the values with \code{\link{str}}.
 #'
 #'   Determine the number of decimals of coordinates to determine their
 #'   precision:
 #'   \href{https://en.wikipedia.org/wiki/Decimal_degrees}{https://en.wikipedia.org/wiki/Decimal_degrees}
-#' @return an object of class 'registry' with the additional flag defined here.
+#' @return an (updated) object of class 'registry' with the additional flag
+#'   defined here.
 #' @examples
-#' bf_length(x = tbl_bityield, test = "y")
-#' bf_length(x = tbl_bityield, test = "y", dec = "\\.")
+#' bf_length(x = bf_tbl, test = "commodity")
+#' bf_length(x = bf_tbl, test = "y", dec = "\\.")
 #' @importFrom checkmate assertDataFrame assertSubset
 #' @importFrom stringr str_length str_extract
 #' @importFrom rlang expr env_bind parse_expr

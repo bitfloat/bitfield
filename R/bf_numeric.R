@@ -1,14 +1,13 @@
 #' Build a bit flag from a numeric value
 #'
-#' @param x [`data.frame(1)`][data.frame]\cr the table that contains
-#'   \code{source}.
-#' @param source [`character(1)`][character]\cr the column in \code{x} from
-#'   which to take the numeric value.
+#' @param x the object to build bit flags for.
+#' @param source [`character(1)`][character]\cr the column or layer in \code{x}
+#'   from which to take the numeric value.
 #' @param ... description
 #' @param pos [`integerish(.)`][integer]\cr the position(s) in the bitfield that
 #'   should be set.
-#' @param na.val [`character(1)`][character]\cr optional value that should be
-#'   used to substitute NA values in the input data.
+#' @param na.val [`logical(1)`][logical]\cr value that needs to be given, if the
+#'   test for this flag results in \code{NA}s.
 #' @param description [`character(.)`][character]\cr optional description that
 #'   should be used instead of the default function-specific description. This
 #'   description is used in the registry legend, so it should have as many
@@ -20,13 +19,14 @@
 #'   registry will be defined on-the-fly.
 #' @details The length of the bitfield depends on the floating point precision
 #'   of the numeric values returned with this function. This is given as a
-#'   sequence of 3 integers of the form \[1.5.10\]. The first position
-#'   encodes how many bit are used (0 or 1), the second position encodes how
-#'   many exponent bits are used and the third position encodes how many
-#'   mantissa fields are used. See \code{\link{.determineEncoding}} for details.
-#' @return an object of class 'registry' with the additional flag defined here.
+#'   sequence of 3 integers of the form \[1.5.10\]. The first position encodes
+#'   how many bit are used (0 or 1), the second position encodes how many
+#'   exponent bits are used and the third position encodes how many significant
+#'   fields are used. See \code{\link{.determineEncoding}} for details.
+#' @return an (updated) object of class 'registry' with the additional flag
+#'   defined here.
 #' @examples
-#' bf_numeric(x = tbl_bityield, source = "yield")
+#' bf_numeric(x = bf_tbl, source = "yield")
 #' @importFrom checkmate assert assertDataFrame assertSubset assertIntegerish
 #'   assertList testNull
 #' @importFrom rlang env_bind

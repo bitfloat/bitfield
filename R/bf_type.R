@@ -11,8 +11,8 @@
 #'   that end up not having NA-values are reported as \code{TRUE}.
 #' @param pos [`integerish(.)`][integer]\cr the position(s) in the bitfield that
 #'   should be set.
-#' @param na.val [`character(1)`][character]\cr optional value that should be
-#'   used to substitute NA values in the input data.
+#' @param na.val [`logical(1)`][logical]\cr value that needs to be given, if the
+#'   test for this flag results in \code{NA}s.
 #' @param description [`character(.)`][character]\cr optional description that
 #'   should be used instead of the default function-specific description. This
 #'   description is used in the registry legend, so it should have as many
@@ -45,7 +45,7 @@
 #' @return an (updated) object of class 'registry' with the additional flag
 #'   defined here.
 #' @examples
-#' bf_type(x = tbl_bityield, test = "y", type = "character", coerce = TRUE)
+#' bf_type(x = bf_tbl, test = "y", type = "character", coerce = TRUE)
 #' @importFrom checkmate assertDataFrame assertSubset assertCharacter
 #'   assertChoice assertLogical
 #' @importFrom rlang env_bind
@@ -70,6 +70,7 @@ bf_type <- function(x, test, type = NULL, coerce = FALSE, pos = NULL,
 
   thisName <- paste0("type_", test, "_", type)
 
+  # extract values in x
   if(inherits(x, "bf_rast")){
     assertSubset(x = test, choices = colnames(x()))
     tempOut <- x()[,test]
@@ -81,6 +82,7 @@ bf_type <- function(x, test, type = NULL, coerce = FALSE, pos = NULL,
     where <- "column"
   }
 
+  # determine flag values
   if(!coerce){
 
     if(type == "integer"){

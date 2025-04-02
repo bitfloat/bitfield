@@ -1,16 +1,15 @@
 #' Build a bit flag by checking for cases
 #'
-#' @param x [`data.frame(1)`][data.frame]\cr the table that contains tests
-#'   defined in \code{...}.
-#' @param ... \cr any set of (mutually exclusive) statements that results in a
-#'   logical return value
+#' @param x the object to build bit flags for.
+#' @param ... \cr any set of statements that determine which case(s) the
+#'   observations in column(s) or layer(s) are part.
 #' @param exclusive [`logical(1)`][logical]\cr whether the function should check
 #'   that the cases are mutually exclusive, or whether it would allow that cases
 #'   defined later in the sequence overwrite cases earlier in the sequence.
 #' @param pos [`integerish(.)`][integer]\cr the position(s) in the bitfield that
 #'   should be set.
-#' @param na.val [`character(1)`][character]\cr optional value that should be
-#'   used to substitute NA values in the input data.
+#' @param na.val [`integerish(1)`][integer]\cr value that needs to be given, if
+#'   the test for this flag results in \code{NA}s.
 #' @param description [`character(.)`][character]\cr optional description that
 #'   should be used instead of the default function-specific description. This
 #'   description is used in the registry legend, so it should have as many
@@ -20,14 +19,16 @@
 #' @param registry [`registry(1)`][registry]\cr a bitfield registry that has
 #'   been defined with \code{\link{bf_registry}}; if it's undefined, an empty
 #'   registry will be defined on-the-fly.
-#' @return an object of class 'registry' with the additional flag defined here.
+#' @return an (updated) object of class 'registry' with the additional flag
+#'   defined here.
 #' @examples
-#' registry <- bf_case(x = tbl_bityield, exclusive = FALSE,
+#' registry <- bf_case(x = bf_tbl, exclusive = FALSE,
 #'                     yield >= 11,
 #'                     yield < 11 & yield > 9,
 #'                     yield < 9 & commodity == "maize")
 #' @importFrom checkmate assertDataFrame assertLogical assertTRUE assertList
 #' @importFrom rlang enquos eval_tidy as_label `:=` get_expr env_bind
+#' @importFrom stringr str_detect str_count
 #' @importFrom purrr map reduce
 #' @importFrom tibble as_tibble
 #' @importFrom dplyr rename bind_cols filter if_else

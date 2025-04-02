@@ -1,12 +1,12 @@
 #' Build a bit flag by checking whether values are NaN
 #'
-#' @param x [`data.frame(1)`][data.frame]\cr the object to build bit flags for.
-#' @param test [`character(1)`][character]\cr the column in \code{x} that is
-#'   checked for NaN values.
+#' @param x the object to build bit flags for.
+#' @param test [`character(1)`][character]\cr the column or layer in \code{x}
+#'   that is checked for NaN values.
 #' @param pos [`integerish(.)`][integer]\cr the position(s) in the bitfield that
 #'   should be set.
-#' @param na.val [`character(1)`][character]\cr optional value that should be
-#'   used to substitute NA values in the input data.
+#' @param na.val [`logical(1)`][logical]\cr value that needs to be given, if the
+#'   test for this flag results in \code{NA}s.
 #' @param description [`character(.)`][character]\cr optional description that
 #'   should be used instead of the default function-specific description. This
 #'   description is used in the registry legend, so it should have as many
@@ -16,9 +16,10 @@
 #' @param registry [`registry(1)`][registry]\cr a bitfield registry that has
 #'   been defined with \code{\link{bf_registry}}; if it's undefined, an empty
 #'   registry will be defined on-the-fly.
-#' @return an object of class 'registry' with the additional flag defined here.
+#' @return an (updated) object of class 'registry' with the additional flag
+#'   defined here.
 #' @examples
-#' bf_nan(x = tbl_bityield, test = "y")
+#' bf_nan(x = bf_tbl, test = "y")
 #' @importFrom checkmate assertDataFrame assertSubset assertIntegerish
 #'   assertCharacter assertClass
 #' @importFrom rlang env_bind

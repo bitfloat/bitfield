@@ -1,15 +1,14 @@
 #' Build a bit flag by checking whether two columns are identical
 #'
-#' @param x [`data.frame(1)`][data.frame]\cr the table that contains
-#'   \code{test} and \code{against}.
-#' @param test [`character(1)`][character]\cr the column in \code{x} that is
-#'   checked \code{against}.
+#' @param x the object to build bit flags for.
+#' @param test [`character(1)`][character]\cr the column or layer in \code{x}
+#'   that is checked \code{against}.
 #' @param against [`character(1)`][character]\cr the column in \code{x} that is
 #'   checked against \code{test}.
 #' @param pos [`integerish(.)`][integer]\cr the position(s) in the bitfield that
 #'   should be set.
-#' @param na.val [`character(1)`][character]\cr optional value that should be
-#'   used to substitute NA values in the input data.
+#' @param na.val [`logical(1)`][logical]\cr value that needs to be given, if the
+#'   test for this flag results in \code{NA}s.
 #' @param description [`character(.)`][character]\cr optional description that
 #'   should be used instead of the default function-specific description. This
 #'   description is used in the registry legend, so it should have as many
@@ -21,9 +20,10 @@
 #'   registry will be defined on-the-fly.
 #' @details This function compares the values of two columns element-wise and
 #'   returns \code{TRUE} when the two columns are identical.
-#' @return an object of class 'registry' with the additional flag defined here.
+#' @return an (updated) object of class 'registry' with the additional flag
+#'   defined here.
 #' @examples
-#' bf_identical(x = tbl_bityield, test = "x", against = "y", na.val = 0)
+#' bf_identical(x = bf_tbl, test = "x", against = "y", na.val = 0)
 #' @importFrom checkmate assertDataFrame assertSubset
 #' @importFrom rlang env_bind
 #' @export
