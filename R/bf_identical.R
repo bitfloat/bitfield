@@ -31,11 +31,8 @@
 bf_identical <- function(x, test, against, pos = NULL, na.val = NULL,
                          description = NULL, registry = NULL){
 
-  assertDataFrame(x = x)
-  assertSubset(x = test, choices = names(x))
-  assertSubset(x = against, choices = names(x))
   assertIntegerish(x = pos, lower = 1, min.len = 1, unique = TRUE, null.ok = TRUE)
-  assertIntegerish(x = na.val, lower = 0, len = 1, null.ok = TRUE)
+  assertLogical(x = na.val, len = 1, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = description, len = 2, null.ok = TRUE)
   assertClass(x = registry, classes = "registry", null.ok = TRUE)
 
@@ -45,7 +42,23 @@ bf_identical <- function(x, test, against, pos = NULL, na.val = NULL,
 
   thisName <- paste0("identical_", test, "_", against)
 
-  out <- x[[test]] == x[[against]]
+  # extract values in x
+  if(inherits(x, "bf_rast")){
+    assertSubset(x = test, choices = colnames(x()))
+    assertSubset(x = against, choices = colnames(x()))
+    tempOut <- x()[,test]
+    tempAgainst <- x()[,against]
+    where <- "layer"
+  } else {
+    assertDataFrame(x = x)
+    assertSubset(x = test, choices = names(x))
+    assertSubset(x = against, choices = names(x))
+    tempOut <- x[[test]]
+    tempAgainst <- x[[against]]
+    where <- "column"
+  }
+
+  out <- tempOut == tempAgainst
 
   # replace NA values
   if(any(is.na(out))){
@@ -75,8 +88,8 @@ bf_identical <- function(x, test, against, pos = NULL, na.val = NULL,
 
   # update flag metadata ...
   if(is.null(description)){
-    description <- c(paste0("{FALSE} the value in '", test, "' is distinct from the value in '", against, "'."),
-                     paste0("{TRUE}  the value in '", test, "' is identical to the value in '", against, "'."))
+    description <- c(paste0("{FALSE} the value in ", where, " '", test, "' is distinct from the value in ", where, " '", against, "'."),
+                     paste0("{TRUE}  the value in ", where, " '", test, "' is identical to the value in ", where, " '", against, "'."))
   }
 
   enc <- list(sign = 0L,
@@ -95,6 +108,12 @@ bf_identical <- function(x, test, against, pos = NULL, na.val = NULL,
 
   registry@flags[[thisName]] <- temp
   registry <- .updateMD5(registry)
+
+  # reconstruct out if it comes from a raster
+  if(inherits(x, "bf_rast")){
+    md <- attr(x(), "rast_meta")
+    out <- rast(vals = out, ncols = md$ncol, nrows = md$nrow, res = md$res, extent = md$ext, names = test, crs = md$crs)
+  }
 
   # assign tentative flags values into the current environment
   env_bind(.env = bf_env, !!thisName := out)

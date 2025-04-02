@@ -35,8 +35,6 @@
 bf_numeric <- function(x, source, ..., pos = NULL, na.val = NULL,
                        description = NULL, registry = NULL){
 
-  assertDataFrame(x = x)
-  assertSubset(x = source, choices = names(x))
   assertIntegerish(x = pos, lower = 1, min.len = 1, unique = TRUE, null.ok = TRUE)
   assertIntegerish(x = na.val, lower = 0, len = 1, null.ok = TRUE)
   assertCharacter(x = description, len = 1, null.ok = TRUE)
@@ -48,7 +46,20 @@ bf_numeric <- function(x, source, ..., pos = NULL, na.val = NULL,
 
   thisName <- paste0("numeric_", source)
 
-  out <- x[[source]]
+  # extract values in x
+  if(inherits(x, "bf_rast")){
+    assertSubset(x = source, choices = colnames(x()))
+    tempOut <- x()[,source]
+    where <- "layer"
+  } else {
+    assertDataFrame(x = x)
+    assertSubset(x = source, choices = names(x))
+    tempOut <- x[[source]]
+    where <- "column"
+  }
+
+  # determine flag values
+  out <- tempOut
 
   # determine floating point encoding
   enc <- .determineEncoding(x = out, ...)
@@ -82,7 +93,7 @@ bf_numeric <- function(x, source, ..., pos = NULL, na.val = NULL,
   # update flag metadata ...
   if(is.null(description)){
     # barcode <- paste0(c(rep("-", sign), "|", rep("-", exponent), "|", rep("-", mantissa)), collapse = "")
-    description <- paste0("the bits encode the numeric value in column '", source, "' [", enc$sign, ".", enc$exponent, ".", enc$mantissa, "].")
+    description <- paste0("the bits encode the numeric value in ", where, " '", source, "' [", enc$sign, ".", enc$exponent, ".", enc$mantissa, "].")
   }
 
   prov <- list(wasDerivedFrom = source,
@@ -96,6 +107,12 @@ bf_numeric <- function(x, source, ..., pos = NULL, na.val = NULL,
 
   registry@flags[[thisName]] <- temp
   registry <- .updateMD5(registry)
+
+  # reconstruct out if it comes from a raster
+  if(inherits(x, "bf_rast")){
+    md <- attr(x(), "rast_meta")
+    out <- rast(vals = out, ncols = md$ncol, nrows = md$nrow, res = md$res, extent = md$ext, names = source, crs = md$crs)
+  }
 
   # assign tentative flags values into the current environment
   env_bind(.env = bf_env, !!thisName := out)

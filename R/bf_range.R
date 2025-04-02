@@ -33,12 +33,10 @@
 bf_range <- function(x, test, min = NULL, max = NULL, pos = NULL, na.val = NULL,
                      description = NULL, registry = NULL){
 
-  assertDataFrame(x = x)
-  assertSubset(x = test, choices = names(x))
   assertNumeric(x = min, finite = TRUE, null.ok = TRUE)
   assertNumeric(x = max, finite = TRUE, null.ok = TRUE)
   assertIntegerish(x = pos, lower = 1, min.len = 1, unique = TRUE, null.ok = TRUE)
-  assertIntegerish(x = na.val, lower = 0, len = 1, null.ok = TRUE)
+  assertLogical(x = na.val, len = 1, null.ok = TRUE)
   assertCharacter(x = description, len = 2, null.ok = TRUE)
   assertClass(x = registry, classes = "registry", null.ok = TRUE)
 
@@ -46,12 +44,33 @@ bf_range <- function(x, test, min = NULL, max = NULL, pos = NULL, na.val = NULL,
     registry <- bf_registry(name = "new_registry")
   }
 
-  thisName <- paste0("range_", test)
+  if(is.null(names(registry@flags))){
+    thisName <- paste0("range_", test)
+  } else{
+    if(str_detect(string = names(registry@flags), pattern = paste0("range_", test))){
+      thisName <- paste0("range_", test, "_", str_count(names(registry@flags), "range_")+1)
+    } else {
+      thisName <- paste0("range_", test)
+    }
+  }
 
-  if(is.null(min)) min <- min(x[[test]], na.rm = TRUE)
-  if(is.null(max)) max <- max(x[[test]], na.rm = TRUE)
+  # extract values in x
+  if(inherits(x, "bf_rast")){
+    assertSubset(x = test, choices = colnames(x()))
+    tempOut <- x()[,test]
+    where <- "layer"
+  } else {
+    assertDataFrame(x = x)
+    assertSubset(x = test, choices = names(x))
+    tempOut <- x[[test]]
+    where <- "column"
+  }
 
-  out <- x[[test]] >= min & x[[test]] <= max
+  if(is.null(min)) min <- min(tempOut, na.rm = TRUE)
+  if(is.null(max)) max <- max(tempOut, na.rm = TRUE)
+
+  # determine flag values
+  out <- tempOut >= min & tempOut <= max
 
   # replace NA values
   if(any(is.na(out))){
@@ -81,8 +100,8 @@ bf_range <- function(x, test, min = NULL, max = NULL, pos = NULL, na.val = NULL,
 
   # update flag metadata ...
   if(is.null(description)){
-    description <- c(paste0("the value in column '", test, "' ranges between [", min, ",", max, "]."),
-                     paste0("the value in column '", test, "' is outside the range [", min, ",", max, "]."))
+    description <- c(paste0("{FALSE} the value in ", where, " '", test, "' is outside the range [", min, ",", max, "]."),
+                     paste0("{TRUE}  the value in ", where, " '", test, "' ranges between [", min, ",", max, "]."))
   }
 
   enc <- list(sign = 0L,
@@ -101,6 +120,12 @@ bf_range <- function(x, test, min = NULL, max = NULL, pos = NULL, na.val = NULL,
 
   registry@flags[[thisName]] <- temp
   registry <- .updateMD5(registry)
+
+  # reconstruct out if it comes from a raster
+  if(inherits(x, "bf_rast")){
+    md <- attr(x(), "rast_meta")
+    out <- rast(vals = out, ncols = md$ncol, nrows = md$nrow, res = md$res, extent = md$ext, names = test, crs = md$crs)
+  }
 
   # assign tentative flags values into the current environment
   env_bind(.env = bf_env, !!thisName := out)
