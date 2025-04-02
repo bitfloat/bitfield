@@ -46,8 +46,6 @@
 bf_length <- function(x, test, dec = NULL, fill = TRUE, pos = NULL, na.val = NULL,
                       description = NULL, registry = NULL){
 
-  assertDataFrame(x = x)
-  assertSubset(x = test, choices = names(x))
   assertCharacter(x = dec, len = 1, null.ok = TRUE)
   assertLogical(x = fill, len = 1, any.missing = FALSE)
   assertIntegerish(x = pos, lower = 1, min.len = 1, unique = TRUE, null.ok = TRUE)
@@ -60,60 +58,73 @@ bf_length <- function(x, test, dec = NULL, fill = TRUE, pos = NULL, na.val = NUL
   }
 
   if(!is.null(dec)){
-    testVals <- str_length(str_extract(x[[test]], paste0("(?<=", dec, ")\\d+")))
-    testVals[is.na(testVals)] <- 0L
-    testVals[is.nan(testVals)] <- 0L
-    testVals[is.infinite(testVals)] <- 0L
-
     thisName <- paste0("decimals_", test)
   } else {
-    testVals <- str_length(x[[test]])
-    testVals[is.na(x[[test]])] <- 0L
-    testVals[is.nan(x[[test]])] <- 0L
-    testVals[is.infinite(x[[test]])] <- 0L
-
     thisName <- paste0("length_", test)
   }
 
-  temp <- bind_cols(x, test = testVals)
-
-  if(fill){
-    tempVals <- 0:max(testVals)
+  # extract values in x
+  if(inherits(x, "bf_rast")){
+    assertSubset(x = test, choices = colnames(x()))
+    tempOut <- x()[,test]
+    where <- "layer"
   } else {
-    tempVals <- unique(testVals)
+    assertDataFrame(x = x)
+    assertSubset(x = test, choices = names(x))
+    tempOut <- x[[test]]
+    where <- "column"
   }
 
-  temp <- bind_cols(
-    map(seq_along(tempVals), function(ix){
-      blubb <- eval_tidy(expr = parse_expr(expr(!!paste0("test == ", tempVals[ix]))), data = temp)
-      blubb <- as_tibble(blubb)
-      rename(blubb, !!paste0("d", ix) := value)
-    })
-  )
+  if(!is.null(dec)){
+    out <- str_length(str_extract(tempOut, paste0("(?<=", dec, ")\\d+")))
+  } else {
+    out <- str_length(tempOut)
+  }
+  out[is.na(tempOut)] <- 0L
+  out[is.nan(tempOut)] <- 0L
+  out[is.infinite(tempOut)] <- 0L
 
-  status <- bind_cols(
-    map(seq_along(temp), function(ix){
-      temp[[ix]][temp[[ix]]] <- ix
-      as_tibble(temp[ix])
-    })
-  )
+  # not sure anymore why I need this code
+  # testVals <- out
+  # temp <- bind_cols(x, test = testVals)
 
-  out <- reduce(status, function(first, second){
-    if_else(second != 0, second, first)
-  })
+  if(fill){
+    bitVals <- 0:max(out)
+  } else {
+    bitVals <- unique(out)
+  }
 
-  out <- tempVals[out]
+  # temp <- bind_cols(
+  #   map(seq_along(tempVals), function(ix){
+  #     blubb <- eval_tidy(expr = parse_expr(expr(!!paste0("test == ", tempVals[ix]))), data = temp)
+  #     blubb <- as_tibble(blubb)
+  #     rename(blubb, !!paste0("d", ix) := value)
+  #   })
+  # )
+  #
+  # status <- bind_cols(
+  #   map(seq_along(temp), function(ix){
+  #     temp[[ix]][temp[[ix]]] <- ix
+  #     as_tibble(temp[ix])
+  #   })
+  # )
+  #
+  # out <- reduce(status, function(first, second){
+  #   if_else(second != 0, second, first)
+  # })
+  #
+  # out <- tempVals[out]
 
-  len <- as.integer(ceiling(log2(length(unique(tempVals)))))
+  len <- as.integer(ceiling(log2(length(unique(bitVals)))))
 
   if(!is.null(dec)){
     mantissa <- 0L
     exponent <- len
-    theDesc <- paste0("the bits encode the number of decimals in column '", test, "'.")
+    theDesc <- paste0("the bits encode the number of decimals in ", where, " '", test, "'.")
   } else {
     mantissa <- len
     exponent <- 0L
-    theDesc <- paste0("the bits encode the value length in column '", test, "'.")
+    theDesc <- paste0("the bits encode the value length in ", where, " '", test, "'.")
   }
 
   # replace NA values
@@ -153,7 +164,7 @@ bf_length <- function(x, test, dec = NULL, fill = TRUE, pos = NULL, na.val = NUL
               bias = 0L)
 
   prov <- list(wasDerivedFrom = test,
-               wasGeneratedBy = c(naProv, paste0("encodingAsBinary: 0.", exponent, ".", mantissa, "/0")))
+               wasGeneratedBy = c(naProv, paste0("encodeAsBinary: 0.", exponent, ".", mantissa, "/0")))
 
   # ... and store everything in the registry
   temp <- list(description = description,
@@ -163,6 +174,12 @@ bf_length <- function(x, test, dec = NULL, fill = TRUE, pos = NULL, na.val = NUL
 
   registry@flags[[thisName]] <- temp
   registry <- .updateMD5(registry)
+
+  # reconstruct out if it comes from a raster
+  if(inherits(x, "bf_rast")){
+    md <- attr(x(), "rast_meta")
+    out <- rast(vals = out, ncols = md$ncol, nrows = md$nrow, res = md$res, extent = md$ext, names = test, crs = md$crs)
+  }
 
   # assign tentative flags values into the current environment
   env_bind(.env = bf_env, !!thisName := out)
