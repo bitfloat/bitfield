@@ -67,5 +67,5 @@ precision:
 }
 \examples{
 bf_length(x = bf_tbl, test = "commodity")
-bf_length(x = bf_tbl, test = "y", dec = "\\\\.")
+bf_length(x = bf_tbl, test = "y", dec = "\\\\.", na.val = 0)
 }
