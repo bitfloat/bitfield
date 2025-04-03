@@ -36,7 +36,7 @@
 #'   defined here.
 #' @examples
 #' bf_length(x = bf_tbl, test = "commodity")
-#' bf_length(x = bf_tbl, test = "y", dec = "\\.")
+#' bf_length(x = bf_tbl, test = "y", dec = "\\.", na.val = 0)
 #' @importFrom checkmate assertDataFrame assertSubset
 #' @importFrom stringr str_length str_extract
 #' @importFrom rlang expr env_bind parse_expr
@@ -89,7 +89,7 @@ bf_length <- function(x, test, dec = NULL, fill = TRUE, pos = NULL, na.val = NUL
   # temp <- bind_cols(x, test = testVals)
 
   if(fill){
-    bitVals <- 0:max(out)
+    bitVals <- 0:max(out, na.rm = TRUE)
   } else {
     bitVals <- unique(out)
   }

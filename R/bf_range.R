@@ -24,7 +24,7 @@
 #' @return an (updated) object of class 'registry' with the additional flag
 #'   defined here.
 #' @examples
-#' bf_range(x = bf_tbl, test = "y", min = 50, max = 59, na.val = 0)
+#' bf_range(x = bf_tbl, test = "y", min = 50, max = 59, na.val = FALSE)
 #' @importFrom checkmate assertDataFrame assertSubset assertNumeric
 #'   assertIntegerish assertCharacter assertClass
 #' @importFrom rlang env_bind

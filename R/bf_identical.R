@@ -23,7 +23,7 @@
 #' @return an (updated) object of class 'registry' with the additional flag
 #'   defined here.
 #' @examples
-#' bf_identical(x = bf_tbl, test = "x", against = "y", na.val = 0)
+#' bf_identical(x = bf_tbl, test = "x", against = "y", na.val = FALSE)
 #' @importFrom checkmate assertDataFrame assertSubset
 #' @importFrom rlang env_bind
 #' @export
