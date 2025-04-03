@@ -2,7 +2,7 @@
 #'
 #' @param x the object to build bit flags for.
 #' @param ... \cr any set of statements that determine which case(s) the
-#'   observations in column(s) or layer(s) are part.
+#'   observations in column(s) or layer(s) are part of.
 #' @param exclusive [`logical(1)`][logical]\cr whether the function should check
 #'   that the cases are mutually exclusive, or whether it would allow that cases
 #'   defined later in the sequence overwrite cases earlier in the sequence.
@@ -37,7 +37,6 @@
 bf_case <- function(x, ..., exclusive = TRUE, pos = NULL, na.val = NULL,
                     description = NULL, registry = NULL){
 
-  assertDataFrame(x = x)
   assertLogical(x = exclusive, len = 1)
   assertIntegerish(x = pos, lower = 1, min.len = 1, unique = TRUE, null.ok = TRUE)
   assertIntegerish(x = na.val, lower = 0, len = 1, null.ok = TRUE)
@@ -55,11 +54,22 @@ bf_case <- function(x, ..., exclusive = TRUE, pos = NULL, na.val = NULL,
       thisName <- paste0("cases_1")
     }
   }
+
+  # extract values in x
+  if(inherits(x, "bf_rast")){
+    tempOut <- as.data.frame(x())
+    where <- "layer"
+  } else {
+    assertDataFrame(x = x)
+    tempOut <- x
+    where <- "column"
+  }
+
   cases <- enquos(..., .named = TRUE)
   # return(cases)
 
   temp <- bind_cols(map(cases, function(ix){
-    blubb <- eval_tidy(expr = ix, data = x)
+    blubb <- eval_tidy(expr = ix, data = tempOut)
     blubb <- as_tibble(blubb)
     rename(blubb, !!as_label(ix) := value)
   }))
@@ -67,8 +77,8 @@ bf_case <- function(x, ..., exclusive = TRUE, pos = NULL, na.val = NULL,
 
   if(exclusive){
 
-    test <- filter(temp, rowSums(temp) != 1)
-    assertTRUE(x = dim(test)[1] == 0, .var.name = "overlapping columns == 0")
+    test <- filter(temp, rowSums(temp) > 1)
+    assertTRUE(x = dim(test)[1] == 0, .var.name = "overlapping cases == 0")
 
   }
 
@@ -89,6 +99,12 @@ bf_case <- function(x, ..., exclusive = TRUE, pos = NULL, na.val = NULL,
   case_expr <- map(seq_along(cases), function(ix){
     get_expr(cases[[ix]])
   })
+
+  case_cols <- map(seq_along(cases), function(ix){
+    temp <- unlist(str_split(as.character(get_expr(cases[[ix]])), " "))
+    temp[temp %in% colnames(tempOut)]
+  }) |> unlist() |>
+    unique()
 
   if(any(out == 0)){
     case_expr <- c(list("none"), case_expr)
@@ -136,7 +152,7 @@ bf_case <- function(x, ..., exclusive = TRUE, pos = NULL, na.val = NULL,
               mantissa = nBits,
               bias = 0L)
 
-  prov <- list(wasDerivedFrom = "{OBS}",
+  prov <- list(wasDerivedFrom = paste0(case_cols, collapse = ", "),
                wasGeneratedBy = c(naProv, paste0("encodingAsBinary: 0.0.", nBits, "/0")))
 
   # ... and store everything in the registry
@@ -151,7 +167,7 @@ bf_case <- function(x, ..., exclusive = TRUE, pos = NULL, na.val = NULL,
   # reconstruct out if it comes from a raster
   if(inherits(x, "bf_rast")){
     md <- attr(x(), "rast_meta")
-    out <- rast(vals = out, ncols = md$ncol, nrows = md$nrow, res = md$res, extent = md$ext, names = test, crs = md$crs)
+    out <- rast(vals = out, ncols = md$ncol, nrows = md$nrow, res = md$res, extent = md$ext, names = thisName, crs = md$crs)
   }
 
   # assign tentative flags values into the current environment
