@@ -1,18 +1,4 @@
-test_that("...", {
-
-})
-
-test_that("warning", {
-
-})
-
-test_that("errors", {
-
-})
-
-
-# Test registry creation
-test_that("Registry creation works", {
+test_that("registry creation works", {
 
   # Create an empty registry
   test_reg <- bf_registry(name = "test_registry",

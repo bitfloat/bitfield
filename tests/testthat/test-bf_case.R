@@ -21,9 +21,9 @@ test_that("bf_case writes correct registry", {
   expect_equal(reg@flags$cases_1$encoding$bias, 0)
 
   # test other metadata
-  expect_true(all(c("wasDerivedFrom", "wasGeneratedBy") %in% names(reg@flags$na_year$provenance)))
-  expect_equal(unlist(reg@flags$na_year$provenance, use.names = F), c("year", "testValue: is.na(year)", "encodeAsBinary: 0.0.1/0"))
-  expect_equal(reg@flags$na_year$description, c("{FALSE} the value in column 'year' is not NA.", "{TRUE}  the value in column 'year' is NA."))
+  expect_true(all(c("wasDerivedFrom", "wasGeneratedBy") %in% names(reg@flags$cases_1$provenance)))
+  expect_equal(unlist(reg@flags$cases_1$provenance, use.names = F), c("yield, commodity", "encodingAsBinary: 0.0.2/0"))
+  expect_equal(reg@flags$cases_1$description, c("the observation has case 1 [yield >= 11].", "the observation has case 2 [yield < 11 & yield > 9].", "the observation has case 3 [yield < 9 & commodity == \"maize\"]."))
 
   # test updating an existing registry
   reg <- bf_case(bf_tbl, commodity == "maize", commodity == "soybean", commodity == "honey", registry = reg)
@@ -38,32 +38,33 @@ test_that("bf_case writes correct registry", {
 test_that("bf_na write the correct object into bf_env", {
 
   # run operator
-  reg <- bf_na(bf_tbl, test = "year")
   reg <- bf_case(bf_tbl, exclusive = FALSE,
                  yield >= 11,
                  yield < 11 & yield > 9,
                  yield < 9 & commodity == "maize")
 
   # test that the intermediate output is correct
-  expect_equal(bf_env$na_year, c(F, T, F, F, F, F, F, F, F, F))
+  expect_equal(bf_env$cases_1, c(0, 0, 0, 2, 0, 2, 0, 1, 1, 0))
 
 })
 
 test_that("bf_na handles rast objects correctly", {
 
-  bf_rst <- rast(matrix(1:9, 3, 3))
+  bf_rst <- c(rast(matrix(1:9, 3, 3)), rast(matrix(9:1, 3, 3)))
+  names(bf_rst) <- c("lyr.1", "lyr.2")
+  bf_rst[3] <- NA
 
   # run operator
-  reg <- bf_case(.rast(bf_rst), lyr.1 < 5, lyr.1 > 5)
+  reg <- bf_case(.rast(bf_rst), lyr.1 < 5, lyr.1 > 5, is.na(lyr.2))
 
   # check registry
   expect_s4_class(reg, "registry")
-  expect_equal(reg@width, 1L)
+  expect_equal(reg@width, 2L)
   expect_equal(reg@length, 9L)
   expect_equal(reg@name, "new_registry")
 
   # test that the intermediate output is correct
-  expect_equal(values(bf_env$na_lyr.1, mat = FALSE), c(F, F, F, F, T, F, F, F, F))
+  expect_equal(values(bf_env$cases_1, mat = FALSE), c(1, 1, 3, 1, 0, 2, 1, 2, 2))
 
 })
 
@@ -73,7 +74,7 @@ test_that("errors", {
   dat <- data.frame(col = c(1, 2, 3))
 
   # run operator
-  reg <- bf_case(dat, test = "col", lyr.1 < 5, lyr.1 > 5)
+  reg <- bf_case(dat, col < 5, col > 5)
 
   expect_error(
     reg <- bf_case(bf_tbl, exclusive = FALSE,

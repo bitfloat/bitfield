@@ -44,20 +44,20 @@ test_that("bf_na write the correct object into bf_env", {
 
 test_that("bf_na handles rast objects correctly", {
 
-  # bf_rst <- rast(matrix(1:9, 3, 3))
-  # bf_rst[5] <- NA
-  #
-  # # run operator
-  # reg <- bf_na(.rast(bf_rst), test = "lyr.1")
-  #
-  # # check registry
-  # expect_s4_class(reg, "registry")
-  # expect_equal(reg@width, 1L)
-  # expect_equal(reg@length, 9L)
-  # expect_equal(reg@name, "new_registry")
-  #
-  # # test that the intermediate output is correct
-  # expect_equal(values(bf_env$na_lyr.1, mat = FALSE), c(F, F, F, F, T, F, F, F, F))
+  bf_rst <- rast(matrix(seq(0, 1, length.out = 9), 3, 3))
+  bf_rst[5] <- NA
+
+  # run operator
+  reg <- bf_numeric(.rast(bf_rst), source = "lyr.1", na.val = 0L)
+
+  # check registry
+  expect_s4_class(reg, "registry")
+  expect_equal(reg@width, 32L)
+  expect_equal(reg@length, 9L)
+  expect_equal(reg@name, "new_registry")
+
+  # test that the intermediate output is correct
+  expect_equal(values(bf_env$numeric_lyr.1, mat = FALSE), c(0.000, 0.375, 0.750, 0.125, 0.000, 0.875, 0.250, 0.625, 1.000))
 
 })
 
