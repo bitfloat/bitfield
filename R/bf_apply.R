@@ -1,9 +1,25 @@
 #' Build a bit flag by applying a standard encoding
 #'
-#' @param x [`data.frame(1)`][data.frame]\cr the object to build bit flags for.
+#' @param x the object to build bit flags for.
+#' @param test [`character(1)`][character]\cr the column or layer in \code{x}
+#'   that is checked ...
+#' @param type [`character(1)`][character]\cr .
+#' @param pos [`integerish(.)`][integer]\cr the position(s) in the bitfield that
+#'   should be set.
+#' @param na.val [`logical(1)`][logical]\cr value that needs to be given, if the
+#'   test for this flag results in \code{NA}s.
+#' @param description [`character(.)`][character]\cr optional description that
+#'   should be used instead of the default function-specific description. This
+#'   description is used in the registry legend, so it should have as many
+#'   entries as there will be entries per the respective flag in the legend (two
+#'   for a binary flag, as many as there are cases for a cases flag and one for
+#'   count or numeric flags).
+#' @param registry [`registry(1)`][registry]\cr a bitfield registry that has
+#'   been defined with \code{\link{bf_registry}}; if it's undefined, an empty
+#'   registry will be defined on-the-fly.
 
-bf_apply <- function(x, test, standard, pos = NULL, na.val = NULL,
-                     description = NULL, registry = NULL){
+bf_standard <- function(x, test, type, pos = NULL, na.val = NULL,
+                        description = NULL, registry = NULL){
 
 
 
