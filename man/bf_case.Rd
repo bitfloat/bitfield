@@ -18,7 +18,7 @@ bf_case(
 \item{x}{the object to build bit flags for.}
 
 \item{...}{\cr any set of statements that determine which case(s) the
-observations in column(s) or layer(s) are part.}
+observations in column(s) or layer(s) are part of.}
 
 \item{exclusive}{\code{\link[=logical]{logical(1)}}\cr whether the function should check
 that the cases are mutually exclusive, or whether it would allow that cases

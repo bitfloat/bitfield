@@ -52,5 +52,5 @@ This function compares the values of two columns element-wise and
 returns \code{TRUE} when the two columns are identical.
 }
 \examples{
-bf_identical(x = bf_tbl, test = "x", against = "y", na.val = 0)
+bf_identical(x = bf_tbl, test = "x", against = "y", na.val = FALSE)
 }
