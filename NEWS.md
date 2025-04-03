@@ -1,3 +1,10 @@
+# bitfield 0.4.0
+
+- include the `.rast()` function for simple handling of gridded objects.
+- unit tests for all functions.
+- introduction of a small set of standard encodings in `bf_stds` and the function `bf_standards()` to create flags from those.
+
+
 # bitfield 0.3.0
 
 - major revision of the template function body for the bitfield operators
