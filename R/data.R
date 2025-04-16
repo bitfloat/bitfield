@@ -8,3 +8,10 @@
 #'   indicates the year of harvest. All columns contain some sort of deviation
 #'   that may occur in data.
 "bf_tbl"
+
+#' Internal operators
+#'
+#' @format a list containing encodings for the basic operators. Each operator is
+#'   a list with elements 'description', 'encoding_type', 'bits', 'test',
+#'   'require', 'extends', 'extends_note', 'version', and 'reference'.
+"bf_internal"
