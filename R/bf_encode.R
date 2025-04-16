@@ -2,11 +2,13 @@
 #'
 #' @param registry [`registry(1)`][registry]\cr the bit registry that should be
 #'   encoded into a bitfield.
-#' @return description
+#' @return data.frame of the same length as the input data. Depending on type
+#'   and amount of operators, this can a table with any number of columns, each
+#'   of which encodes a sequence of 32 bits into an integer.
 #' @examples
-#' myRegistry <- bf_na(bf_tbl, "y")
+#' reg <- bf_test(operator = "na", data = bf_tbl, x = y)
 #'
-#' myBitfield <- bf_encode(registry = myRegistry)
+#' field <- bf_encode(registry = reg)
 #' @importFrom checkmate assertClass assertCharacter assertLogical
 #' @importFrom tibble tibble
 #' @importFrom purrr map map_int
@@ -14,6 +16,7 @@
 #' @importFrom stringr str_split str_split_i str_sub str_pad str_remove
 #' @importFrom tidyselect everything
 #' @importFrom tidyr separate_wider_position
+#' @importFrom rlang  `:=`
 #' @export
 
 bf_encode <- function(registry){

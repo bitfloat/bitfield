@@ -1,23 +1,23 @@
-#'Decode (unpack) a bitfield
+#' Decode (unpack) a bitfield
 #'
-#'@param x [`integerish(1)`][integer]\cr table of the integer representation of
-#'  the bitfield.
-#'@param registry [`registry(1)`][registry]\cr the registry that should be used
-#'  to decode the bitfield.
-#'@param flags [`character(.)`][character]\cr the name(s) of flags to extract
-#'  from this bitfield; leave at \code{NULL} to extract the full bitfield.
-#'@param sep [`character(1)`][character]\cr a symbol with which, if given, the
-#'  distinct fields shall be separated.
-#'@param verbose [`logical(1)`][logical]\cr whether or not to return the
-#'  registry legend.
+#' @param x [`integerish(1)`][integer]\cr table of the integer representation of
+#'   the bitfield.
+#' @param registry [`registry(1)`][registry]\cr the registry that should be used
+#'   to decode the bitfield.
+#' @param flags [`character(.)`][character]\cr the name(s) of flags to extract
+#'   from this bitfield; leave at \code{NULL} to extract the full bitfield.
+#' @param sep [`character(1)`][character]\cr a symbol with which, if given, the
+#'   distinct fields shall be separated.
+#' @param verbose [`logical(1)`][logical]\cr whether or not to return the
+#'   registry legend.
 #' @examples
-#' # grow registry
-#' reg <- bf_na(x = bf_tbl, test = "commodity")
-#' reg <- bf_match(x = bf_tbl, test = "commodity", set = c("soybean", "maize"),
+#' # build registry
+#' reg <- bf_test(operator = "na", data = bf_tbl, x = commodity)
+#' reg <- bf_test(operator = "matches", data = bf_tbl, x = commodity, set = c("soybean", "maize"),
 #'                 registry = reg)
 #' reg
 #'
-#'# encode the flags into a bitfield
+#' # encode the flags into a bitfield
 #' field <- bf_encode(registry = reg)
 #' field
 #'
@@ -27,16 +27,16 @@
 #'
 #' # more reader friendly
 #' cbind(bf_tbl, bf_decode(x = field, registry = reg, verbose = FALSE))
-#'@importFrom checkmate assertDataFrame assertNames assertClass assertCharacter
-#'  assertLogical
-#'@importFrom purrr map map_dbl map_chr
-#'@importFrom tibble tibble
-#'@importFrom dplyr bind_rows arrange group_by ungroup summarise rowwise mutate
-#'  left_join n first row_number
-#'@importFrom tidyr separate unite separate_longer_delim
-#'@importFrom rlang env_bind
-#'@importFrom stringr str_sub_all str_replace
-#'@export
+#' @importFrom checkmate assertDataFrame assertNames assertClass assertCharacter
+#'   assertLogical assertSubset
+#' @importFrom purrr map map_dbl map_chr
+#' @importFrom tibble tibble
+#' @importFrom dplyr bind_rows arrange group_by ungroup summarise rowwise mutate
+#'   left_join n first row_number if_else
+#' @importFrom tidyr separate unite separate_longer_delim
+#' @importFrom rlang env_bind `:=`
+#' @importFrom stringr str_sub_all str_replace
+#' @export
 
 bf_decode <- function(x, registry, flags = NULL, sep = NULL, verbose = TRUE){
 
