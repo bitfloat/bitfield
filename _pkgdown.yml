@@ -19,17 +19,7 @@ reference:
   - title: flag mappers
     desc: functions that provide all information to build the flags
     contents:
-      - bf_case
-      - bf_identical
-      - bf_inf
-      - bf_length
-      - bf_match
-      - bf_na
-      - bf_nan
-      - bf_null
-      - bf_numeric
-      - bf_range
-      - bf_type
+      - bf_test
   - title: classes
     desc: new classes that come with this package
     contents:
@@ -39,11 +29,13 @@ reference:
     contents:
       - .toBin
       - .toDec
-      - .determineEncoding
+      - .makeEncoding
       - .updateMD5
-  - title: example data
+      - .rast
+  - title: data
     contents:
-      - tbl_bityield
+      - bf_tbl
+      - bf_internal
 
 navbar:
   left:
