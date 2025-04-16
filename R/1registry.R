@@ -19,7 +19,7 @@ registry <- setClass(Class = "registry",
                      slots = c(width = "integer",
                                length = "integer",
                                name = "character",
-                               version = "character",
+                               version = "list",
                                md5 = "character",
                                description = "character",
                                flags = "list"
@@ -60,8 +60,8 @@ setValidity("registry", function(object){
   if(!.hasSlot(object = object, name = "version")){
     errors = c(errors, "the registry does not have a 'version' slot.")
   } else {
-    if(!is.character(object@version)){
-      errors = c(errors, "the slot 'version' is not a character.")
+    if(!is.list(object@version)){
+      errors = c(errors, "the slot 'version' is not a list.")
     }
 
   }
@@ -107,7 +107,7 @@ setValidity("registry", function(object){
 #' @details This method produces an overview of the registry by printing a
 #'   header with information about the setup of the bitfield and a table with
 #'   one line for each flag in the bitfield. The table shows the start position
-#'   of each flag, the encoding type (see \code{\link{.determineEncoding}}), the
+#'   of each flag, the encoding type (see \code{\link{.makeEncoding}}), the
 #'   bitfield operator type and the columns that are tested by the flag.
 #' @importFrom utils head
 #' @importFrom crayon yellow red cyan
@@ -120,12 +120,12 @@ setMethod(f = "show",
           signature = "registry",
           definition = function(object){
 
-            theNames <- map(names(object@flags), str_split, "_") |>
-              unlist(recursive = FALSE) |>
-              map(`[`, 1)
-            # theVars <- map(names(object@flags), str_split, "_") |>
-            #   unlist(recursive = FALSE) |>
-            #   map(`[`, 2)
+            theNames <- map(names(object@flags), function(string){
+              paste0(str_split(string, "_")[[1]][1], collapse = "-")
+            })
+            theVars <- map(names(object@flags), function(string){
+              paste0(str_split(string, "_")[[1]][-1], collapse = "-")
+            })
 
             if(length(object@flags) != 0){
 
@@ -133,19 +133,18 @@ setMethod(f = "show",
               minPos <- map(thePos, min) |>
                 unlist()
               theProv <- map(object@flags, "provenance")
-              theVars <- map(theProv, "wasDerivedFrom")
               theEnc <- map(map(theProv, "wasGeneratedBy"), last)
               theEnc <- map(theEnc, function(ix){
                 str_split(ix[[1]], ": ")[[1]][2]
               }) |> unlist()
 
 
-              colWidth <- c(max(3, max(nchar(minPos))) + 2, max(nchar(theEnc)) + 2, max(nchar(theNames)) + 1, 2)
+              colWidth <- c(max(3, max(nchar(minPos), 3)) + 1, max(nchar(theEnc), 8) + 1, max(nchar(theNames), 4) + 1, 2)
 
               theHeader <- paste0("  ",
-                                  "pos", paste0(rep(" ", colWidth[1] - 3 + 1), collapse = ""),
+                                  "pos", paste0(rep(" ", colWidth[1] - 3), collapse = ""),
                                   "encoding", paste0(rep(" ", colWidth[2] - 8), collapse = ""),
-                                  "type", paste0(rep(" ", colWidth[3] - 4 + 1), collapse = ""),
+                                  "type", paste0(rep(" ", colWidth[3] - 4), collapse = ""),
                                   "col", "\n")
               barcode <- rep("-", object@width + length(object@flags) - 1)
               bars <- unlist(minPos) + (1:length(object@flags))-1
@@ -157,10 +156,10 @@ setMethod(f = "show",
               cat(yellow(theHeader))
               for(i in seq_along(object@flags)){
                 theFlag <- paste0("  ",
-                                  minPos[[i]], paste0(rep(" ", colWidth[1] - nchar(minPos[[i]]) + 1), collapse = ""),
+                                  minPos[[i]], paste0(rep(" ", colWidth[1] - nchar(minPos[[i]])), collapse = ""),
                                   theEnc[[i]], paste0(rep(" ", colWidth[2] - nchar(theEnc)[i]), collapse = ""),
-                                  theNames[[i]], paste0(rep(" ", colWidth[3] - nchar(theNames[[i]]) + 1), collapse = ""),
-                                  na.omit(theVars[[i]]), "\n")
+                                  theNames[[i]], paste0(rep(" ", colWidth[3] - nchar(theNames[[i]])), collapse = ""),
+                                  as.character(theVars[[i]]), "\n")
                 cat(theFlag)
               }
 
