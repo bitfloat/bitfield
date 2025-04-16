@@ -19,17 +19,15 @@ library(magrittr)
 library(knitr)
 ```
 
-# bitfield <a href='https://github.com/ehrmanns/bitfield/'><img src='man/figures/logo.svg' align="right" height="200" /></a>
+# bitfield <a href='https://github.com/bitfloat/bitfield/'><img src='man/figures/logo.svg' align="right" height="200" /></a>
 
 <!-- badges: start -->
 <!-- [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/)](https://cran.r-project.org/package=) -->
 <!-- [![DOI](https://zenodo.org/badge/DOI/)](https://doi.org/) -->
 
-[![R-CMD-check](https://github.com/ehrmanns/bitfield/workflows/R-CMD-check/badge.svg)](https://github.com/ehrmanns/bitfield/actions)
-[![codecov](https://codecov.io/gh/ehrmanns/bitfield/branch/master/graph/badge.svg?token=hjppymcGr3)](https://codecov.io/gh/ehrmanns/bitfield)
-[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
-
-<!-- [![](http://cranlogs.r-pkg.org/badges/grand-total/)](https://cran.r-project.org/package=) -->
+[![R-CMD-check](https://github.com/bitfloat/bitfield/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bitfloat/bitfield/actions/workflows/R-CMD-check.yaml)
+[![codecov](https://codecov.io/gh/bitfloat/bitfield/graph/badge.svg?token=QZB36RION3)](https://codecov.io/gh/bitfloat/bitfield)
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 <!-- badges: end -->
 
 ## Overview

@@ -1,18 +1,16 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# bitfield <a href='https://github.com/ehrmanns/bitfield/'><img src='man/figures/logo.svg' align="right" height="200" /></a>
+# bitfield <a href='https://github.com/bitfloat/bitfield/'><img src='man/figures/logo.svg' align="right" height="200" /></a>
 
 <!-- badges: start -->
 <!-- [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/)](https://cran.r-project.org/package=) -->
 <!-- [![DOI](https://zenodo.org/badge/DOI/)](https://doi.org/) -->
 
-[![R-CMD-check](https://github.com/ehrmanns/bitfield/workflows/R-CMD-check/badge.svg)](https://github.com/ehrmanns/bitfield/actions)
-[![codecov](https://codecov.io/gh/ehrmanns/bitfield/branch/master/graph/badge.svg?token=hjppymcGr3)](https://codecov.io/gh/ehrmanns/bitfield)
+[![R-CMD-check](https://github.com/bitfloat/bitfield/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bitfloat/bitfield/actions/workflows/R-CMD-check.yaml)
+[![codecov](https://codecov.io/gh/bitfloat/bitfield/graph/badge.svg?token=QZB36RION3)](https://codecov.io/gh/bitfloat/bitfield)
 [![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
-
-<!-- [![](http://cranlogs.r-pkg.org/badges/grand-total/)](https://cran.r-project.org/package=) -->
+stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 <!-- badges: end -->
 
 ## Overview
@@ -236,11 +234,12 @@ bf_env[["nChar_y"]]
 #>  [1] 4 4 4 4 3 4 4 2 1 3
 ```
 
-Beware that numeric values that have been encoded in this way likely
+Beware that numeric values that have been encoded in this way, likely
 have a lower precision than the input values (which may not be a problem
-when only rounded values are of interest). This can be adjusted by
-setting the respective parameters in the operator that encodes numeric
-values (a vignette explaining this in detail will follow).
+in the frequent case where only rounded values are of interest). This
+can be adjusted by setting the respective parameters in the operator
+that encodes numeric values (a vignette explaining this in detail will
+follow).
 
 ``` r
 old <- options(pillar.sigfig = 7)

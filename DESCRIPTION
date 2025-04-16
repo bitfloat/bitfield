@@ -10,8 +10,8 @@ Authors@R: c(
 Description: Provides tools to record algorithmic and analytic meta data along a 
     workflow to store that in a bitfield, which can be published alongside any 
     (modelled) data products.
-URL: https://github.com/ehrmanns/bitfield, http://ehrmanns.github.io/bitfield
-BugReports: https://github.com/ehrmanns/bitfield/issues
+URL: https://github.com/bitfloat/bitfield, http://bitfloat.github.io/bitfield
+BugReports: https://github.com/bitfloat/bitfield/issues
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
