@@ -2,7 +2,7 @@
 
 - merge all functions into `bf_test()`.
 - remove `bf_standards()` and `bf_stds`.
-- merge the previous test-functions into a structure that is similar to `bd_stds`, i.e., a list with instructions and documentation for that operation/test, which will be called in `bf_test()`.
+- merge the previous test-functions into a structure that is similar to `bd_stds`, i.e., a list with instructions and documentation for that operation/test (`bf_internal`), which will be called in `bf_test()`.
 - revise determination of encoding with more user-friendly interface. Now, everything is specified in `bf_test()` with the `...` argument; documentation explains everything in much more detail.
 
 # bitfield 0.4.0
