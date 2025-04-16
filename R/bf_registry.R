@@ -8,6 +8,11 @@
 #' flag values.
 #' @return an empty registry that captures some metadata of the bitfield, but
 #'   doesn't contain any flags yet.
+#' @examples
+#' reg <- bf_registry(name = "currentWorkflow",
+#'                    description = "this is to document my current workflow so
+#'                                   that I can share it with my colleagues
+#'                                   alongside a publication.")
 #' @importFrom checkmate assertIntegerish assertCharacter
 #' @importFrom utils packageVersion
 #' @importFrom stringr str_replace_all
@@ -28,9 +33,7 @@ bf_registry <- function(name = NULL, description = NULL){
     name <- paste0("bf_", paste0(sample(c(LETTERS, letters), 12, TRUE), collapse = ""))
   }
 
-  bf_version <- str_replace_all(string = as.character(packageVersion("bitfield")), pattern = "[.]", replacement = "")
-  r_version <- str_replace_all(string = paste0(version$major, version$minor), pattern = "[.]", replacement = "")
-  version <- paste0(paste0(c(bf_version, r_version, format(Sys.Date(), "%Y%m%d")), collapse = "."))
+  version <- list(bitfield = as.character(packageVersion("bitfield")), r = paste0(version$major, ".", version$minor), date = format(Sys.Date(), "%Y-%m-%d"))
 
   # open a new environment
   .GlobalEnv[["bf_env"]] <- new_environment()
@@ -44,12 +47,6 @@ bf_registry <- function(name = NULL, description = NULL){
              md5 = NA_character_,
              description = description,
              flags = list())
-
-  # # store the environment name in the options
-  # oldOptions <- options()
-  # on.exit(options(oldOptions))
-  #
-  # options(bf_env = name)
 
   return(out)
 
