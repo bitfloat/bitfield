@@ -1,9 +1,15 @@
+# bitfield 0.5.0
+
+- merge all functions into `bf_test()`.
+- remove `bf_standards()` and `bf_stds`.
+- merge the previous test-functions into a structure that is similar to `bd_stds`, i.e., a list with instructions and documentation for that operation/test, which will be called in `bf_test()`.
+- revise determination of encoding with more user-friendly interface. Now, everything is specified in `bf_test()` with the `...` argument; documentation explains everything in much more detail.
+
 # bitfield 0.4.0
 
 - include the `.rast()` function for simple handling of gridded objects.
 - unit tests for all functions.
-- introduction of a small set of standard encodings in `bf_stds` and the function `bf_standards()` to create flags from those.
-
+- introduction of a small set of standard encodings in `bf_stds` and the function `bf_standard()` to create flags from those.
 
 # bitfield 0.3.0
 

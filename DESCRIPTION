@@ -1,7 +1,7 @@
 Package: bitfield
 Type: Package
 Title: Handle Bitfields to record Meta Data
-Version: 0.3.0
+Version: 0.5.0
 Authors@R: c(
     person("Steffen", "Ehrmann", role = c("aut", "cre"), 
            email = "steffen.ehrmann@posteo.de", 
@@ -21,6 +21,7 @@ Imports:
     checkmate,
     crayon,
     dplyr,
+    glue,
     methods,
     purrr,
     rlang,
