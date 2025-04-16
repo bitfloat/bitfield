@@ -19,7 +19,7 @@ test_that("bf_test writes correct registry", {
 
   # test other metadata
   expect_true(all(c("wasDerivedFrom", "wasGeneratedBy", "wasAssociatedWith") %in% names(reg@flags$na_y$provenance)))
-  expect_equal(unlist(reg@flags$na_y$provenance, use.names = F), c("bf_tbl", "useTest: na_1.0.0", "withArguments: x=y", "encodeAsBinary: 0.0.1/0", "HOMEBASE_steff"))
+  expect_equal(unlist(reg@flags$na_y$provenance, use.names = F)[1:4], c("bf_tbl", "useTest: na_1.0.0", "withArguments: x=y", "encodeAsBinary: 0.0.1/0"))
   expect_equal(reg@flags$na_y$description, c("'y' contains NA-values."))
 
   # test updating an existing registry
