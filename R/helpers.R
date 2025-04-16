@@ -102,7 +102,7 @@
 #' @examples
 #' # example code
 #'
-#' @importFrom checkmate assertCharacter assertNames testIntegerish
+#' @importFrom checkmate assertCharacter assertNames testIntegerish assertSubset
 #' @importFrom stringr str_split
 
 .toDec <- function(x){
@@ -133,125 +133,199 @@
   return(out)
 }
 
-#' Determine encoding for floating point values
+#' Determine encoding
 #'
-#' @param x [`numeric(.)`][numeric]\cr a set of numeric values for which to
-#'   determine the floating point encoding.
-#' @param precision [`character(1)`][character]\cr option that determines the
-#'   configuration of the floating point encoding. Possible values are
-#'   \code{"half"} \[1.5.10\], \code{"bfloat16"} \[1.8.7\], \code{"tensor19"}
-#'   \[1.8.10\], \code{"fp24"} \[1.7.16\], \code{"pxr24"} \[1.8.15\],
-#'   \code{"single"} \[1.8.23\], \code{"double"} \[1.11.52\] and \code{"auto"}
-#'   (where the positions are determined based on the provided numeric values in
-#'   \code{x}; not supported yet).
-#' @param decimals [`integer(1)`][integer]\cr the number of decimal digits that
-#'   should be reliably represented, not supported yet.
-#' @param range [`numeric(2)`][numeric]\cr the ratio between the smallest and
-#'   largest possible value to be reliably represented, not supported yet.
-#' @param fields [`list(3)`][list]\cr list that controls how many bits are
-#'   allocated to \code{sign}, \code{exponent} and \code{mantissa} for encoding
-#'   the numeric values.
-#' @details For background information study for instance
+#' @param var the variable for which to determine encoding.
+#' @param type the encoding type for which to determine encoding.
+#' @param ... [`list(.)`][list]\cr named list of options to determine encoding,
+#'   see Details.
+#' @details Floating point values are encoded with three fields that can be
+#'   readily stored as bit sequence. Any numeric value can be represented in
+#'   scientific notation, for example, the decimal 923.52 can be represented as
+#'   9.2352 * 10^2. These decimal values can be transformed to binary values,
+#'   which can then likewise be represented in scientific notation. Here, the 10
+#'   is replaced by a 2 (because we go from decimal to binary), for example the
+#'   binary value 101011.101 can be represented as 1.01011101 * 2^5. This
+#'   scientific notation can now be broken down into the three previously
+#'   mentioned fields, one for the sign (positive or negative), one for the
+#'   exponent and one for the remaining part, the mantissa (or significand). For
+#'   background information on how these fields are processed, study for
+#'   instance
 #'   \href{https://www.cs.cornell.edu/~tomf/notes/cps104/floating}{'Floating
 #'   Point' by Thomas Finley} and check out
 #'   \href{https://float.exposed/}{https://float.exposed/} to play around with
-#'   floating point encoding.
-#' @importFrom checkmate assertNumeric assertIntegerish assertList assert
-#'   testNull testIntegerish assertNames assertChoice
+#'   floating point encoding. Depending on the encoding needs, these three
+#'   values can be adapted, for example increase the exponent to provide a wider
+#'   range (i.e., smaller small and larger large values) or increase the
+#'   mantissa to provide more precision (i.e., more decimal digits). In the
+#'   scope of this package, these three values are documented with a tag of the
+#'   form \[x.y.z\], with x = number of sign bits (either 0 or 1), y = number of
+#'   exponent bits, and z number of mantissa bits.
+#'
+#'   When handling values that are not numeric, this package makes use of the
+#'   same system, only that sign and exponent are set to 0, while the mantissa
+#'   bits are set to either 1 (for binary responses \[0.0.1\]), or to whatever
+#'   number of cases are required (i.e., for 8 cases with 3 required bits,
+#'   resulting in the tag \[0.0.3\]).
+#'
+#'   Possible options (\code{...}) of this function are \itemize{
+#'     \item \code{precision}: switch that determines the configuration of the
+#'           \href{https://en.wikipedia.org/wiki/Bfloat16_floating-point_format}{floating point encoding}.
+#'           Possible values are \code{"half"} \[1.5.10\], \code{"bfloat16"}
+#'           \[1.8.7\], \code{"tensor19"} \[1.8.10\], \code{"fp24"} \[1.7.16\],
+#'           \code{"pxr24"} \[1.8.15\], \code{"single"} \[1.8.23\] and
+#'           \code{"double"} \[1.11.52\],
+#'     \item \code{fields}: list of custom values that control how many bits are
+#'           allocated to \code{sign}, \code{exponent} and \code{mantissa} for
+#'           encoding the numeric values,
+#'     \item \code{range}: the ratio between the smallest and largest possible
+#'           value to be reliably represented (modifies the exponent),
+#'     \item \code{decimals}: the number of decimal digits that should be
+#'           represented reliably (modifies the mantissa).
+#'   }
+#' @return list of the encoding values for sign, exponent and mantissa, and an
+#'   additional provenance term.
+#' @importFrom purrr map
+#' @importFrom checkmate assertIntegerish assertList testNull testIntegerish
+#'   assertNames assertChoice assertCharacter
 #' @importFrom dplyr case_when
 
-.determineEncoding <- function(x, precision = "single", decimals = NULL,
-                               range = NULL, fields = NULL){
+.makeEncoding <- function(var, type, ...){
 
-  assertNumeric(x = x)
-  assertIntegerish(x = decimals, len = 1, any.missing = FALSE, null.ok = TRUE)
-  assertIntegerish(x = range, len = 1, any.missing = FALSE, null.ok = TRUE)
-  assertCharacter(x = precision, len = 1, any.missing = FALSE, null.ok = TRUE)
-  assertList(x = fields, null.ok = TRUE)
-  assert(!testNull(x = precision), !testNull(x = fields))
+  assertChoice(x = type, choices = c("bool", "enum", "int", "float"))
 
-  if(is.null(decimals)){
-    if(!testIntegerish(x)){
-      decimals <- suppressWarnings(max(nchar(x) - nchar(as.integer(x))-1, na.rm = TRUE))
+  # set dots to arguments
+  encArgs <- map(unlist(list(...), recursive = FALSE), eval_tidy)
+  # return(encArgs)
+
+  for(name in c("format", "decimals", "range", "fields")){
+    if(name %in% names(encArgs)){
+      assign(name, encArgs[[name]], envir = environment())
     } else {
-      decimals <- 0
+      assign(name, NULL, envir = environment())
     }
   }
+  assertList(x = fields, null.ok = TRUE)
+  if(!is.null(fields)) assertNames(x = names(fields), permutation.of = c("sign", "exponent", "mantissa", "bias"))
+  assertIntegerish(x = decimals, len = 1, any.missing = FALSE, null.ok = TRUE)
+  if(!is.null(decimals)) assertIntegerish(x = decimals, len = 1, any.missing = FALSE)
+  assertIntegerish(x = range, len = 1, any.missing = FALSE, null.ok = TRUE)
+  if(!is.null(range)) assertIntegerish(x = range, len = 1, any.missing = FALSE)
+  assertCharacter(x = format, len = 1, any.missing = FALSE, null.ok = TRUE)
+  if(!is.null(format)) assertChoice(x = format, choices = c("half", "bfloat16", "tensor19", "fp24", "pxr24", "single", "double"))
 
-  if(is.null(range)){
-    range <- 0L
-  }
+  sign <- exp <- mant <- bias <- NULL
 
-  if(!is.null(fields)){
-    assertNames(x = names(fields), must.include = c("sign", "exponent", "mantissa"))
+  # determine variable sign
+  autoSign <- ifelse(any(var < 0, na.rm = TRUE), 1, 0)
 
-    assertChoice(x = fields$sign, choices = c(0L, 1L))
-    sign <- fields$sign
-    exp <- fields$exponent
-    mant <- fields$mantissa
+  # determine variable mantissa
+  xInt <- var * 10^max(decimals, 0)
+  xInt <- as.integer(xInt)
+  autoMant <- ceiling(log2(max(xInt, 2, na.rm = TRUE) + 1))
 
-    precision <- NULL
-  }
+  # determine variable exponent
+  expRange <- floor(log10(abs(var)))
+  bitSize <- max(max(expRange) - min(expRange), range)
+  autoExp <- ceiling(log2(bitSize + 1))
 
-  if(!is.null(precision)){
-    assertChoice(x = precision, choices = c("half", "bfloat16", "tensor19", "fp24", "pxr24", "single", "double", "auto"))
+  if(type == "bool"){
 
-    if(precision == "auto"){
-      stop("work in process, please check in later to see whether this has been implemented!")
-      # sign <- ifelse(any(x < 0), 1L, 0L)
-      #
-      # minBits <- max(ceiling(log2(max(min(abs(x)), 1))), 1) # if the smallest value is smaller than 1, take 1 as value
-      # maxBits <- ceiling(log2(max(x)))
-      # expRange <- maxBits - minBits + 1
-      #
-      # exp <- expRange
-      #
-      # xInt <- x * 10^decimals
-      # xInt <- as.integer(round(xInt))
-      # mant <- ceiling(log2(max(xInt)))
+    sign <- 0
+    exp <- 0
+    mant <- 1
 
-    } else {
+  } else if(type == "enum"){
+
+    sign <- 0
+    exp <- 0
+    mant <- autoMant
+
+  } else if(type == "int"){
+
+    sign <- autoSign
+    exp <- 0
+    mant <- autoMant
+
+  } else {
+
+    if(!is.null(format)){
 
       sign <- 1
-      exp <- case_when(precision == "half" ~ 5,
-                       precision == "bfloat16" ~ 8,
-                       precision == "tensor19" ~ 8,
-                       precision == "fp24" ~ 7,
-                       precision == "pxr24" ~ 8,
-                       precision == "single" ~ 8,
-                       precision == "double" ~ 11)
+      exp <- case_when(format == "half" ~ 5,
+                       format == "bfloat16" ~ 8,
+                       format == "tensor19" ~ 8,
+                       format == "fp24" ~ 7,
+                       format == "pxr24" ~ 8,
+                       format == "single" ~ 8,
+                       format == "double" ~ 11)
 
-      mant <- case_when(precision == "half" ~ 10,
-                        precision == "bfloat16" ~ 7,
-                        precision == "tensor19" ~ 10,
-                        precision == "fp24" ~ 16,
-                        precision == "pxr24" ~ 15,
-                        precision == "single" ~ 23,
-                        precision == "double" ~ 52)
+      mant <- case_when(format == "half" ~ 10,
+                        format == "bfloat16" ~ 7,
+                        format == "tensor19" ~ 10,
+                        format == "fp24" ~ 16,
+                        format == "pxr24" ~ 15,
+                        format == "single" ~ 23,
+                        format == "double" ~ 52)
+
+    } else {
+
+      sign <- autoSign
+      exp <- autoExp
+      mant <- autoMant
+
+    }
+
+  }
+
+  # possibly update the specific fields
+  if(!is.null(fields) & !is.null(fields$sign)){
+    assertChoice(x = fields$sign, choices = c(0, 1))
+    if(fields$sign < sign){
+      stop("It is not possible to set less than ", sign, " 'sign' bits.")
+    } else {
+      sign <- fields$sign
     }
   }
 
-  # implement here some tests that ensure the selected values don't fully cripple the input
+  if(!is.null(fields) & !is.null(fields$exponent)){
+    assertIntegerish(x = fields$exponent, lower = 0, len = 1, any.missing = FALSE)
+    if(fields$exponent < exp){
+      stop("It is not possible to set less than ", exp, " 'exponent' bits.")
+    } else {
+      exp <- fields$exponent
+    }
+  }
 
-  out <- list(sign = as.integer(sign),
+  if(!is.null(fields) & !is.null(fields$mantissa)){
+    assertIntegerish(x = fields$mantissa, lower = 0, len = 1, any.missing = FALSE)
+    if(fields$mantissa < mant){
+      stop("It is not possible to set less than ", mant, " 'mantissa' bits.")
+    } else {
+      mant <- fields$mantissa
+    }
+  }
+
+  enc <- list(sign = as.integer(sign),
               exponent = as.integer(exp),
               mantissa = as.integer(mant),
               bias = as.integer(2**(exp-1)-1))
 
-  return(out)
+  return(enc)
 }
 
 #' Determine and write MD5 sum
 #'
 #' @param x [`registry(1)`][registry]\cr registry for which to determine the MD5
 #'   checksum.
-#' @details This function follows the following algorithm: \itemize{
-#'   \item set the current MD5 checksum to NA_character_,
-#'   \item write the registry into the temporary directory,
-#'   \item calculate the checksum of this file and finally
-#'   \item store the checksum  in the md5 slot of the registry.}
-#' This means that when comparing the MD5 checksum in this slot, one first has to set that value also to NULL, otherwise the two values won't coincide.
-#' @return this function is called for its side-effect of storing the MD5 checksum in the md5 slot of the registry.
+#' @details This function follows the following algorithm: \itemize{ \item set
+#'   the current MD5 checksum to NA_character_, \item write the registry into
+#'   the temporary directory, \item calculate the checksum of this file and
+#'   finally \item store the checksum  in the md5 slot of the registry.} This
+#'   means that when comparing the MD5 checksum in this slot, one first has to
+#'   set that value also to NULL, otherwise the two values won't coincide.
+#' @return this function is called for its side-effect of storing the MD5
+#'   checksum in the md5 slot of the registry.
 #' @importFrom checkmate assertClass
 #' @importFrom tools md5sum
 #' @export
