@@ -201,13 +201,13 @@ bf_tbl |>
 |   0.0 |  0.0 | soybean   |  9.010452 | 2021  | 0-10-001-0100100010000001 |
 |  25.7 |  NaN | maize     | 13.169897 | 2021  | 0-01-011-0100101010010101 |
 
-The column `bf_binary`, in combination with the legend, can be read one
+The column `bf_bin`, in combination with the legend, can be read one
 step at a time. For example, considering the first bit, we see that no
 observation has an `NA` value and considering the second bit, we see
 that observations 4 and 6 have a `yield` smaller than 9 and a
-`commodity` value “maize” (case 3 with binary value `10`).
+`commodity` value “maize” (case 3 with binary value `11`).
 
-However, more computation friendly, we can also separate the bitfield
+Moreover, more computation friendly, we can also separate the bitfield
 into distinct columns per flag and we can load the decoded values from
 the package environment `bf_env`.
 
@@ -231,6 +231,7 @@ bf_decode(x = field, registry = reg, verbose = FALSE)
 ls(bf_env)
 #> [1] "case1_yield-commodity" "legend"                "na_x"                 
 #> [4] "nChar_y"               "numeric_yield"
+
 bf_env[["nChar_y"]]
 #>  [1] 4 4 4 4 3 4 4 2 1 3
 ```

@@ -136,19 +136,20 @@ bf_tbl |>
   kable()
 ```
 
-The column `bf_binary`, in combination with the legend, can be read one step at a time. For example, considering the first bit, we see that no observation has an `NA` value and considering the second bit, we see that observations 4 and 6 have a `yield` smaller than 9 and a `commodity` value "maize" (case 3 with binary value `10`).
+The column `bf_bin`, in combination with the legend, can be read one step at a time. For example, considering the first bit, we see that no observation has an `NA` value and considering the second bit, we see that observations 4 and 6 have a `yield` smaller than 9 and a `commodity` value "maize" (case 3 with binary value `11`).
 
-However, more computation friendly, we can also separate the bitfield into distinct columns per flag and we can load the decoded values from the package environment `bf_env`. 
+Moreover, more computation friendly, we can also separate the bitfield into distinct columns per flag and we can load the decoded values from the package environment `bf_env`. 
 
 ```{r}
 bf_decode(x = field, registry = reg, verbose = FALSE)
 
 # access values manually
 ls(bf_env)
+
 bf_env[["nChar_y"]]
 ```
 
-Beware that numeric values that have been encoded in this way likely have a lower precision than the input values (which may not be a problem when only rounded values are of interest). This can be adjusted by setting the respective parameters in the operator that encodes numeric values (a vignette explaining this in detail will follow).
+Beware that numeric values that have been encoded in this way, likely have a lower precision than the input values (which may not be a problem in the frequent case where only rounded values are of interest). This can be adjusted by setting the respective parameters in the operator that encodes numeric values (a vignette explaining this in detail will follow).
 
 ```{r}
 old <- options(pillar.sigfig = 7)
