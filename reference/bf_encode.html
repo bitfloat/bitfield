@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">bitfield</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0</span>
       </span>
     </div>
 
@@ -70,14 +70,16 @@ encoded into a bitfield.</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>description</p>
+    <p>data.frame of the same length as the input data. Depending on type
+and amount of operators, this can a table with any number of columns, each
+of which encodes a sequence of 32 bits into an integer.</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">myRegistry</span> <span class="op">&lt;-</span> <span class="fu"><a href="bf_na.html">bf_na</a></span><span class="op">(</span><span class="va">tbl_bityield</span>, <span class="st">"y"</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="bf_test.html">bf_test</a></span><span class="op">(</span>operator <span class="op">=</span> <span class="st">"na"</span>, data <span class="op">=</span> <span class="va">bf_tbl</span>, x <span class="op">=</span> <span class="va">y</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">myBitfield</span> <span class="op">&lt;-</span> <span class="fu">bf_encode</span><span class="op">(</span>registry <span class="op">=</span> <span class="va">myRegistry</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">field</span> <span class="op">&lt;-</span> <span class="fu">bf_encode</span><span class="op">(</span>registry <span class="op">=</span> <span class="va">reg</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
   </div>

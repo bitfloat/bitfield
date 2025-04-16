@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">bitfield</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0</span>
       </span>
     </div>
 
@@ -50,6 +50,19 @@
       <small>Source: <a href="https://github.com/ehrmanns/bitfield/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.5.0" id="bitfield-050">bitfield 0.5.0<a class="anchor" aria-label="anchor" href="#bitfield-050"></a></h2>
+<ul><li>merge all functions into <code><a href="../reference/bf_test.html">bf_test()</a></code>.</li>
+<li>remove <code>bf_standards()</code> and <code>bf_stds</code>.</li>
+<li>merge the previous test-functions into a structure that is similar to <code>bd_stds</code>, i.e., a list with instructions and documentation for that operation/test (<code>bf_internal</code>), which will be called in <code><a href="../reference/bf_test.html">bf_test()</a></code>.</li>
+<li>revise determination of encoding with more user-friendly interface. Now, everything is specified in <code><a href="../reference/bf_test.html">bf_test()</a></code> with the <code>...</code> argument; documentation explains everything in much more detail.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.4.0" id="bitfield-040">bitfield 0.4.0<a class="anchor" aria-label="anchor" href="#bitfield-040"></a></h2>
+<ul><li>include the <code><a href="../reference/dot-rast.html">.rast()</a></code> function for simple handling of gridded objects.</li>
+<li>unit tests for all functions.</li>
+<li>introduction of a small set of standard encodings in <code>bf_stds</code> and the function <code>bf_standard()</code> to create flags from those.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.3.0" id="bitfield-030">bitfield 0.3.0<a class="anchor" aria-label="anchor" href="#bitfield-030"></a></h2>
 <ul><li>major revision of the template function body for the bitfield operators</li>

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">bitfield</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0</span>
       </span>
     </div>
 
@@ -70,15 +70,21 @@ checksum.</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>this function is called for its side-effect of storing the MD5 checksum in the md5 slot of the registry.</p>
+    <p>this function is called for its side-effect of storing the MD5
+checksum in the md5 slot of the registry.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
-    <p>This function follows the following algorithm:</p><ul><li><p>set the current MD5 checksum to NA_character_,</p></li>
-<li><p>write the registry into the temporary directory,</p></li>
-<li><p>calculate the checksum of this file and finally</p></li>
+    <p>This function follows the following algorithm:</p><ul><li><p>set
+the current MD5 checksum to NA_character_,</p></li>
+<li><p>write the registry into
+the temporary directory,</p></li>
+<li><p>calculate the checksum of this file and
+finally</p></li>
 <li><p>store the checksum  in the md5 slot of the registry.</p></li>
-</ul><p>This means that when comparing the MD5 checksum in this slot, one first has to set that value also to NULL, otherwise the two values won't coincide.</p>
+</ul><p>This
+means that when comparing the MD5 checksum in this slot, one first has to
+set that value also to NULL, otherwise the two values won't coincide.</p>
     </div>
 
   </div>

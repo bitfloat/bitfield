@@ -21,7 +21,7 @@ a highly compressed form."><meta property="og:image" content="http://ehrmanns.gi
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">bitfield</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0</span>
       </span>
     </div>
 
@@ -66,27 +66,18 @@ a highly compressed form.</p>
 
     <div id="details">
     <h2>Details</h2>
-    <p>The general workflow consists of defining a registry, growing it by using the
-required bitfield operators, putting everything together to a bitfield,
-encoding this into an integer value that can be stored and published, or
-decoded and re-used in a downstream application.</p>
-<p>Operators have four distinct types, based on the flags they grow.</p><ul><li><p>binary operators, such as <code><a href="bf_na.html">bf_na</a></code> grow binary flags that
-encode yes/no decisions,</p></li>
-<li><p>case operators, such as <code><a href="bf_case.html">bf_case</a></code> grow flags that have
-one less values than there are cases to encode,</p></li>
-<li><p>count operators, such as <code><a href="bf_length.html">bf_length</a></code> grow flags that
-encode the count integers and</p></li>
-<li><p>numeric operators, such as <code><a href="bf_numeric.html">bf_numeric</a></code> grow binary
-floating point flags according to the given precision of the floating point
-encoding (for example 32 for single precision floating point values).</p></li>
-</ul></div>
+    <p>The general workflow consists of defining a registry, growing the bitfield by
+specifying tests via the operators, to encode this into an integer value that
+can be stored and published, or decoded and re-used in a downstream
+application.</p>
+    </div>
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index">
 <ul><li><p>Github project:
-<a href="https://github.com/EhrmannS/bitfield" class="external-link">https://github.com/EhrmannS/bitfield</a></p></li>
+<a href="https://github.com/bitfloat/bitfield" class="external-link">https://github.com/bitfloat/bitfield</a></p></li>
 <li><p>Report bugs:
-<a href="https://github.com/EhrmannS/bitfield/issues" class="external-link">https://github.com/EhrmannS/bitfield/issues</a></p></li>
+<a href="https://github.com/bitfloat/bitfield/issues" class="external-link">https://github.com/bitfloat/bitfield/issues</a></p></li>
 </ul></div>
     </div>
     <div id="author">
