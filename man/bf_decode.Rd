@@ -26,9 +26,9 @@ registry legend.}
 Decode (unpack) a bitfield
 }
 \examples{
-# grow registry
-reg <- bf_na(x = bf_tbl, test = "commodity")
-reg <- bf_match(x = bf_tbl, test = "commodity", set = c("soybean", "maize"),
+# build registry
+reg <- bf_test(operator = "na", data = bf_tbl, x = commodity)
+reg <- bf_test(operator = "matches", data = bf_tbl, x = commodity, set = c("soybean", "maize"),
                 registry = reg)
 reg
 

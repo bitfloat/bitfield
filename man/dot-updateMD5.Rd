@@ -11,16 +11,17 @@
 checksum.}
 }
 \value{
-this function is called for its side-effect of storing the MD5 checksum in the md5 slot of the registry.
+this function is called for its side-effect of storing the MD5
+checksum in the md5 slot of the registry.
 }
 \description{
 Determine and write MD5 sum
 }
 \details{
-This function follows the following algorithm: \itemize{
-\item set the current MD5 checksum to NA_character_,
-\item write the registry into the temporary directory,
-\item calculate the checksum of this file and finally
-\item store the checksum  in the md5 slot of the registry.}
-This means that when comparing the MD5 checksum in this slot, one first has to set that value also to NULL, otherwise the two values won't coincide.
+This function follows the following algorithm: \itemize{ \item set
+the current MD5 checksum to NA_character_, \item write the registry into
+the temporary directory, \item calculate the checksum of this file and
+finally \item store the checksum  in the md5 slot of the registry.} This
+means that when comparing the MD5 checksum in this slot, one first has to
+set that value also to NULL, otherwise the two values won't coincide.
 }
