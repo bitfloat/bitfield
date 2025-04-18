@@ -101,7 +101,7 @@ setValidity("registry", function(object){
 
 })
 
-#' Print registry in the console (not working yet)
+#' Print registry in the console
 #'
 #' @param object [`registry(1)`][registry]\cr object to \code{show}.
 #' @details This method produces an overview of the registry by printing a
