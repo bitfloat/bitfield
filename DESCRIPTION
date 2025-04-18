@@ -1,7 +1,7 @@
 Package: bitfield
 Type: Package
 Title: Handle Bitfields to record Meta Data
-Version: 0.5.0
+Version: 0.6.0
 Authors@R: c(
     person("Steffen", "Ehrmann", role = c("aut", "cre"), 
            email = "steffen.ehrmann@posteo.de", 
@@ -19,6 +19,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Imports: 
     checkmate,
+    codetools,
     crayon,
     dplyr,
     glue,
@@ -29,7 +30,8 @@ Imports:
     terra,
     tibble,
     tidyr,
-    tidyselect
+    tidyselect,
+    yaml
 Suggests: 
     knitr,
     rmarkdown,
