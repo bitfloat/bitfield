@@ -2,7 +2,7 @@ authors:
   Steffen Ehrmann:
     href:  https://orcid.org/0000-0002-2958-0796
 title: bitfield
-url: http://ehrmanns.github.io/bitfield
+url: http://bitfloat.github.io/bitfield
 development:
   mode: release
 
@@ -10,21 +10,21 @@ reference:
   - title: overview
     contents:
       - bitfield-package
-  - title: create, grow and unpack registry, combine into bitfield
-    desc: housekeeping functions
+  - title: Main workflow
+    desc: These functions make up the core of this package
     contents:
-      - bf_decode
-      - bf_encode
       - bf_registry
-  - title: flag mappers
-    desc: functions that provide all information to build the flags
-    contents:
-      - bf_test
+      - bf_protocol
+      - bf_map
+      - bf_encode
+      - bf_decode
   - title: classes
     desc: new classes that come with this package
     contents:
       - registry-class
       - show,registry-method
+      - protocol-class
+      - show,protocol-method
   - title: helpers
     contents:
       - .toBin
@@ -32,10 +32,15 @@ reference:
       - .makeEncoding
       - .updateMD5
       - .rast
+      - .toYaml
+      - .fromYaml
+      - .pushGithub
+      - .pullGithub
+      - .listGithub
   - title: data
     contents:
       - bf_tbl
-      - bf_internal
+      - bf_pcl
 
 navbar:
   left:
