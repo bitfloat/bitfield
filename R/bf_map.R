@@ -1,30 +1,32 @@
 #' Build a bit flag
 #'
-#' @param operator [`character(1)`][character]\cr the operator based on which
-#'   the flag should be built, see Details.
+#' This function maps values from a dataset into bit flags that can be encoded
+#' into a bitfield.
+#' @param protocol [`character(1)`][character]\cr the protocol based on
+#'   which the flag should be determined, see Details.
 #' @param data the object to build bit flags for.
-#' @param ... the operator-specific arguments for building a test, see Details.
+#' @param ... the protocol-specific arguments for building a test, see Details.
 #' @param pos [`integerish(.)`][integer]\cr the position(s) in the bitfield that
 #'   should be set.
 #' @param name [`character(1)`][character]\cr optional flag-name.
 #' @param na.val value, of the same encoding type as the flag, that needs to be
 #'   given, if the test for this flag results in \code{NA}s.
 #' @param description [`character(.)`][character]\cr optional description that
-#'   should be used instead of the default operator-specific description. This
+#'   should be used instead of the default protocol-specific description. This
 #'   description is used in the registry legend, so it should have as many
 #'   entries as there will be flags (two for a binary flag, as many as there are
 #'   cases for a enumeration flag and one for integer or numeric flags).
 #' @param registry [`registry(1)`][registry]\cr a bitfield registry that has
 #'   been defined with \code{\link{bf_registry}}; if it's undefined, an empty
 #'   registry will be defined on-the-fly.
-#' @details \code{operator} can either be the name of an internal encoding, a
-#'   newly built local encoding or one that has been imported  from the bitfield
-#'   community standards repo on github. Any \code{operator} has specific
+#' @details \code{protocol} can either be the name of an internal item \code{\link{bf_plc}}, a
+#'   newly built local protocol or one that has been imported from the bitfield
+#'   community standards repo on github. Any \code{protocol} has specific
 #'   arguments, typically at least the name of the column containing the
 #'   variable values (\code{x}). To make this function as general as possible,
 #'   all of these arguments are specified via the \code{...} argument of
-#'   \code{bf_test}. Internal
-#'   operators are: \itemize{
+#'   \code{bf_map}. Internal
+#'   protocols are: \itemize{
 #'     \item \code{na} (x): test whether a variable contains \code{NA}-values
 #'           (\emph{boolean}).
 #'     \item \code{nan} (x): test whether a variable contains \code{NaN}-values
@@ -67,7 +69,13 @@
 #'
 #'   When testing for cases, they are evaluate in the order they have been
 #'   defined in. If an observation is part of two cases, it will thus have the
-#'   value of the last case it matches.
+#'   value of the last case it matches. The encoding type of cases is given as
+#'   \emph{enumeration}, which means that the values can be either
+#'   \code{integer} or \code{factor}. Both are handled as if they were integers
+#'   internally, so even though an enumeration data type could in principle also
+#'   be a \code{character}, this is possible within the scope of this package.
+#'   Bitflag protocols that extend the \emph{case} protocol must thus always
+#'   result in integer values.
 #' @return an (updated) object of class 'registry' with the additional flag
 #'   defined here.
 #' @examples
@@ -77,22 +85,22 @@
 #' formalArgs(bf_internal[[opr]]$test)
 #'
 #' # put the test together
-#' bf_test(operator = opr, data = bf_tbl, x = x, y = y, na.val = FALSE)
+#' bf_map(protocol = opr, data = bf_tbl, x = x, y = y, na.val = FALSE)
 #'
 #' # some other examples of ...
 #' # boolean encoding
-#' bf_test(operator = "matches", data = bf_tbl, x = commodity, set = c("soybean", "honey"))
-#' bf_test(operator = "range", data = bf_tbl, x = yield, min = 10.4, max = 11)
+#' bf_map(protocol = "matches", data = bf_tbl, x = commodity, set = c("soybean", "honey"))
+#' bf_map(protocol = "range", data = bf_tbl, x = yield, min = 10.4, max = 11)
 #'
 #' # enumeration encoding
-#' bf_test(operator = "case", data = bf_tbl,
+#' bf_map(protocol = "case", data = bf_tbl,
 #'         yield >= 11, yield < 11 & yield > 9, yield < 9 & commodity == "maize")
 #'
 #' # integer encoding
-#' bf_test(operator = "integer", data = bf_tbl, x = as.integer(year), na.val = 0L)
+#' bf_map(protocol = "integer", data = bf_tbl, x = as.integer(year), na.val = 0L)
 #'
 #' # floating-point encoding
-#' bf_test(operator = "numeric", data = bf_tbl, x = yield, decimals = 2)
+#' bf_map(protocol = "numeric", data = bf_tbl, x = yield, decimals = 2)
 #'
 #' @importFrom rlang enquos eval_tidy exec env_bind get_expr `:=`
 #' @importFrom purrr map safely list_rbind
@@ -104,10 +112,10 @@
 #' @importFrom methods formalArgs
 #' @export
 
-bf_test <- function(operator, data, ..., name = NULL, pos = NULL, na.val = NULL,
-                    description = NULL, registry = NULL){
+bf_map <- function(protocol, data, ..., name = NULL, pos = NULL, na.val = NULL,
+                   description = NULL, registry = NULL){
 
-  assertCharacter(x = operator, len = 1, any.missing = FALSE)
+  assertCharacter(x = protocol, len = 1, any.missing = FALSE)
   assertCharacter(x = name, len = 1, any.missing = FALSE, null.ok = TRUE)
   assertIntegerish(x = pos, lower = 1, min.len = 1, unique = TRUE, null.ok = TRUE)
   assertClass(x = registry, classes = "registry", null.ok = TRUE)
@@ -128,18 +136,20 @@ bf_test <- function(operator, data, ..., name = NULL, pos = NULL, na.val = NULL,
   }
 
   # determine intermediate flag values ----
-  if(operator %in% c("na", "nan", "inf", "identical", "range", "type", "matches", "grepl", "case", "nChar", "nInt", "nDec", "integer", "numeric")){
-    attrib <- bf_internal[[operator]]
+  if(protocol %in% c("na", "nan", "inf", "identical", "range", "type", "matches", "grepl", "case", "nChar", "nInt", "nDec", "integer", "numeric")){
+    attrib <- bf_pcl[[protocol]]
   } else {
-    assertNames(x = operator, subset.of = names(bf_opr))
-    attrib <- bf_opr[[operator]]
+    attrib <- get(protocol)
+    assertClass(x = attrib, classes = "bitflag")
   }
 
-  # evaluate arguments of the operator ----
+  # evaluate arguments of the protocol ----
   tidyArgs <- map(args, eval_tidy, data = tempData)
 
-  # call operator ----
-  if(!is.null(attrib$require)) map(attrib$require, safely(~require(.x, character.only = TRUE, quietly = TRUE, warn.conflicts = FALSE)))
+  # call protocol ----
+  if(!is.null(attrib$require)){
+    map(attrib$require, safely(~require(.x, character.only = TRUE, quietly = TRUE, warn.conflicts = FALSE)))
+  }
   out <- exec(attrib$test, !!!tidyArgs)
 
   # determine encoding ----
@@ -174,7 +184,7 @@ bf_test <- function(operator, data, ..., name = NULL, pos = NULL, na.val = NULL,
   }
 
   # make meta-data ----
-  testProv <- paste0("useTest: ", paste0(operator, "_", attrib$version))
+  testProv <- paste0("useTest: ", paste0(protocol, "_", attrib$version))
   tempArgs <- map(.x = seq_along(args), .f = function(x){
     temp <- get_expr(args[[x]])
     if(is.character(temp)) temp <- paste0("'", temp, "'")
@@ -185,7 +195,7 @@ bf_test <- function(operator, data, ..., name = NULL, pos = NULL, na.val = NULL,
 
   if(attrib$encoding_type %in% c("bool", "int", "float")){
 
-    thisName <- paste0(c(operator, paste0(formalNames$val, collapse = "-")), collapse = "_")
+    thisName <- paste0(c(protocol, paste0(formalNames$val, collapse = "-")), collapse = "_")
     argsProv <- paste0("withArguments: ", paste0(tempArgs$expr, collapse = ", "))
 
     for(i in seq_along(formalNames$name)){
@@ -199,13 +209,13 @@ bf_test <- function(operator, data, ..., name = NULL, pos = NULL, na.val = NULL,
     if(is.null(names(registry@flags))){
       iter <- 1
     } else {
-      if(grepl(pattern = operator, x = names(registry@flags))){
-        iter <- length(grep(pattern = operator, x = names(registry@flags))) + 1
+      if(grepl(pattern = protocol, x = names(registry@flags))){
+        iter <- length(grep(pattern = protocol, x = names(registry@flags))) + 1
       } else {
         iter <- 1
       }
     }
-    thisName <- paste0(operator, iter, "_", paste0(inputNames, collapse = "-"))
+    thisName <- paste0(protocol, iter, "_", paste0(inputNames, collapse = "-"))
     argsProv <- paste0("withArguments: ", paste0(names(tidyArgs), collapse = ", "))
 
     attrib$description <- str_replace(string = attrib$description, pattern = "\\{...\\}", replacement = "\\{cases\\}")
