@@ -387,3 +387,551 @@
   return(accessor)
 
 }
+
+#' Identify packages to custom functions
+#'
+#' @param fun [`function(...)`][function]\cr the custom function in which to
+#'   identify dependencies.
+#' @return vector of packages that are required to run the function.
+#' @importFrom checkmate assertFunction
+#' @importFrom codetools findGlobals
+#' @export
+
+.getDependencies <- function(fun){
+
+  assertFunction(x = fun)
+
+  # Get all function calls from the function
+  funCalls <- findGlobals(fun, merge = FALSE)$functions
+
+  # Base R packages to exclude
+  basePkgs <- c("base", "stats", "graphics", "grDevices", "utils", "datasets", "methods")
+  myPkgs <- setdiff(loadedNamespaces(), basePkgs)
+  unknownFuns <- temp <- NULL
+
+  for(i in seq_along(funCalls)){
+
+    knownFun <- FALSE
+    thisFun <- funCalls[i]
+    if (exists(thisFun, envir = environment(fun), inherits = FALSE)) {
+      next
+    }
+
+    for(j in seq_along(basePkgs)){
+      inBasePkgs <- tryCatch({
+        get(thisFun, envir = asNamespace(basePkgs[j]), mode = "function", inherits = FALSE)
+        TRUE
+      }, error = function(e) FALSE)
+
+      if (inBasePkgs) {
+        knownFun <- TRUE
+        break
+      }
+
+      if(!knownFun){
+        for (k in seq_along(myPkgs)) {
+          inMyPkgs <- tryCatch({
+            get(thisFun, envir = asNamespace(myPkgs[k]), mode = "function", inherits = FALSE)
+            TRUE
+          }, error = function(e) FALSE)
+
+          if (inMyPkgs) {
+            temp <- c(temp, myPkgs[k])
+            knownFun <- TRUE
+            break
+          }
+        }
+      }
+
+      if(!knownFun){
+        unknownFuns <- c(unknownFuns, thisFun)
+      }
+
+    }
+
+  }
+
+  if(!is.null(unknownFuns)){
+    stop(paste0("please load all packages that are required for this bitflag, the following function(s) are not available currently: '", paste0(unique(unknownFuns), collapse = ", "), "'"))
+  } else {
+    out <- unique(temp)
+    return(out)
+  }
+
+}
+
+#' Express a bit-flag protocol as yaml file
+#'
+#' @param pcl description
+#' @param file description
+#' @return called for the side effect of storing a yml file.
+#' @importFrom yaml as.yaml
+#' @export
+
+.toYaml <- function(pcl, file){
+
+  write
+
+  # pcl <- bf_protocol(name = "na",
+  #                    description = "{x} contains NA-values{result}.",
+  #                    test = function(x) is.na(x = x),
+  #                    example = list(x = bf_tbl$commodity))
+  # file = paste0(getwd(), "/example.yml")
+
+  assertClass(x = pcl, classes = "protocol")
+
+  temp <- list()
+  temp$meta <- pcl@meta
+  temp$test <- pcl@test
+  temp$specs <- pcl@specs
+  temp$extends <- pcl@extends
+
+  temp$test <- format(temp$test)
+
+  out <- as.yaml(temp)
+
+  writeLines(out, file)
+}
+
+.fromYaml <- function(file){
+
+  write
+
+  # if (!file.exists(file)) {
+  #   stop("File not found: ", file)
+  # }
+  #
+  # # Read YAML content
+  # yaml_content <- yaml::read_yaml(file)
+  #
+  # # Convert test function from string to function
+  # if (!is.null(yaml_content$test) && is.character(yaml_content$test)) {
+  #   tryCatch({
+  #     yaml_content$test <- eval(parse(text = yaml_content$test))
+  #   }, error = function(e) {
+  #     warning("Could not parse test function: ", e$message)
+  #   })
+  # }
+  #
+  # # Add the class back
+  # class(yaml_content) <- c("bitfield_operator", class(yaml_content))
+  #
+  # return(yaml_content)
+
+}
+
+
+
+.pushGithub <- function(){
+
+
+  # Push a bitfield operator to GitHub
+  #
+  # @param operator The bitfield operator to push
+  # @param repo The GitHub repository in format "username/repo"
+  # @param path Path in the repository where the file should be stored
+  # @param branch Branch to push to (default: "main")
+  # @param message Commit message
+  # @param token GitHub personal access token (or use GITHUB_PAT environment variable)
+  # @return Invisibly returns TRUE if successful
+  # push_operator_to_github <- function(
+  #   operator,
+  #   repo,
+  #   path = "encodings",
+  #   branch = "main",
+  #   message = paste("Add", operator$name, "operator"),
+  #   token = Sys.getenv("GITHUB_PAT")
+  # ) {
+  #   # Check for required packages
+  #   if (!requireNamespace("gh", quietly = TRUE) || !requireNamespace("base64enc", quietly = TRUE)) {
+  #     stop("Packages 'gh' and 'base64enc' are required to push to GitHub. Please install them first.")
+  #   }
+  #
+  #   if (token == "") {
+  #     stop("GitHub token is required. Set the GITHUB_PAT environment variable or provide token parameter.")
+  #   }
+  #
+  #   # Ensure operator has a name for the filename
+  #   if (is.null(operator$name)) {
+  #     stop("Operator must have a name to be pushed to GitHub")
+  #   }
+  #
+  #   # Generate YAML content
+  #   yaml_content <- export_operator_to_yaml(operator)
+  #
+  #   # Create filename from operator name
+  #   filename <- paste0(operator$name, "_", operator$version, ".yml")
+  #   full_path <- file.path(path, filename)
+  #
+  #   # Check if file already exists
+  #   exists <- tryCatch({
+  #     gh::gh(
+  #       "GET /repos/{owner}/{repo}/contents/{path}",
+  #       owner = strsplit(repo, "/")[[1]][1],
+  #       repo = strsplit(repo, "/")[[1]][2],
+  #       path = full_path,
+  #       ref = branch,
+  #       .token = token
+  #     )
+  #     TRUE
+  #   }, error = function(e) {
+  #     if (grepl("404", e$message)) {
+  #       return(FALSE)
+  #     } else {
+  #       stop("GitHub API error: ", e$message)
+  #     }
+  #   })
+  #
+  #   # Encode content
+  #   content_encoded <- base64enc::base64encode(charToRaw(yaml_content))
+  #
+  #   if (exists) {
+  #     # Get the file sha for updating
+  #     file_info <- gh::gh(
+  #       "GET /repos/{owner}/{repo}/contents/{path}",
+  #       owner = strsplit(repo, "/")[[1]][1],
+  #       repo = strsplit(repo, "/")[[1]][2],
+  #       path = full_path,
+  #       ref = branch,
+  #       .token = token
+  #     )
+  #
+  #     # Update file
+  #     result <- gh::gh(
+  #       "PUT /repos/{owner}/{repo}/contents/{path}",
+  #       owner = strsplit(repo, "/")[[1]][1],
+  #       repo = strsplit(repo, "/")[[1]][2],
+  #       path = full_path,
+  #       message = message,
+  #       content = content_encoded,
+  #       sha = file_info$sha,
+  #       branch = branch,
+  #       .token = token
+  #     )
+  #
+  #     message("Updated operator in GitHub repository: ", full_path)
+  #   } else {
+  #     # Create new file
+  #     result <- gh::gh(
+  #       "PUT /repos/{owner}/{repo}/contents/{path}",
+  #       owner = strsplit(repo, "/")[[1]][1],
+  #       repo = strsplit(repo, "/")[[1]][2],
+  #       path = full_path,
+  #       message = message,
+  #       content = content_encoded,
+  #       branch = branch,
+  #       .token = token
+  #     )
+  #
+  #     message("Added new operator to GitHub repository: ", full_path)
+  #   }
+  #
+  #   invisible(TRUE)
+  # }
+
+}
+
+
+.pullGithub <- function(){
+
+
+  # # Download the standard definition file
+  # temp_file <- tempfile(fileext = ".yml")
+  # download.file(url, temp_file, mode = "wb", quiet = TRUE)
+  #
+  # # Parse the file (detect format from extension)
+  # if (grepl("\\.json$", url, ignore.case = TRUE)) {
+  #   if (!requireNamespace("jsonlite", quietly = TRUE)) {
+  #     stop("The 'jsonlite' package is required to load JSON standards. Please install it.")
+  #   }
+  #   standard_def <- jsonlite::fromJSON(temp_file)
+  # } else {
+  #   if (!requireNamespace("yaml", quietly = TRUE)) {
+  #     stop("The 'yaml' package is required to load YAML standards. Please install it.")
+  #   }
+  #   standard_def <- yaml::read_yaml(temp_file)
+  # }
+  #
+  # # Validate the standard format
+  # required_fields <- c("name", "description", "bits_required", "encoding_type", "values", "bit_values")
+  # missing_fields <- required_fields[!required_fields %in% names(standard_def)]
+  # if (length(missing_fields) > 0) {
+  #   stop("The standard definition is missing required fields: ",
+  #        paste(missing_fields, collapse = ", "))
+  # }
+  #
+  # # Register the standard (if requested)
+  # name <- standard_def$name
+  # if (register) {
+  #   bf_encodings[[name]] <- list(
+  #     bits_required = standard_def$bits_required,
+  #     encoding_type = standard_def$encoding_type,
+  #     description = standard_def$description,
+  #     values = standard_def$values,
+  #     bit_values = standard_def$bit_values,
+  #     reference = standard_def$reference
+  #   )
+  #   message("Standard '", name, "' has been loaded and is ready to use with bf_standard().")
+  # }
+  #
+  # # Check if this standard extends another
+  # if (!is.null(standard_def$extends)) {
+  #   parent_name <- standard_def$extends
+  #   parent_version <- standard_def$extends_version
+  #
+  #   # Check if parent is available
+  #   if (!parent_name %in% names(bf_encodings)) {
+  #     warning("This standard extends '", parent_name, "' which is not loaded. ",
+  #             "Loading only the derived standard.")
+  #   } else {
+  #     parent <- bf_encodings[[parent_name]]
+  #
+  #     # Version check if specified
+  #     if (!is.null(parent_version) && !is.null(parent$version)) {
+  #       if (parent$version != parent_version) {
+  #         warning("Parent standard '", parent_name, "' is version ", parent$version,
+  #                 " but this extension was created for version ", parent_version, ".")
+  #       }
+  #     }
+  #
+  #     # Validate structural compatibility
+  #     if (parent$bits_required != standard_def$bits_required) {
+  #       warning("Bit structure mismatch: parent requires ", parent$bits_required,
+  #               " bits but derivative requires ", standard_def$bits_required, " bits.")
+  #     }
+  #
+  #     # Add inheritance information to standard
+  #     standard_def$parent <- parent_name
+  #     standard_def$parent_version <- parent$version
+  #   }
+  # }
+  #
+  # return(name)
+
+
+
+  # Pull a bitfield operator from GitHub
+  #
+  # @param url Direct URL to the raw YAML file on GitHub
+  # @param repo The GitHub repository in format "username/repo"
+  # @param path Path to the operator file in the repository
+  # @param branch Branch to pull from (default: "main")
+  # @param token GitHub personal access token (for private repositories)
+  # @return The imported bitfield operator
+  # pull_operator_from_github <- function(
+  #   url = NULL,
+  #   repo = NULL,
+  #   path = NULL,
+  #   branch = "main",
+  #   token = Sys.getenv("GITHUB_PAT")
+  # ) {
+  #   # Check for required packages
+  #   if (!requireNamespace("httr", quietly = TRUE)) {
+  #     stop("Package 'httr' is required to pull from GitHub. Please install it first.")
+  #   }
+  #
+  #   if (is.null(url) && (is.null(repo) || is.null(path))) {
+  #     stop("Either direct 'url' or both 'repo' and 'path' must be provided")
+  #   }
+  #
+  #   # Construct URL if not provided directly
+  #   if (is.null(url)) {
+  #     # Format: https://raw.githubusercontent.com/username/repo/branch/path
+  #     url <- paste0(
+  #       "https://raw.githubusercontent.com/",
+  #       repo, "/", branch, "/", path
+  #     )
+  #   }
+  #
+  #   # Set headers for authentication if token is provided
+  #   headers <- list()
+  #   if (token != "" && !is.null(token)) {
+  #     headers <- c(headers, Authorization = paste("token", token))
+  #   }
+  #
+  #   # Fetch the YAML content
+  #   response <- httr::GET(url, httr::add_headers(.headers = headers))
+  #
+  #   if (httr::status_code(response) != 200) {
+  #     stop("Failed to fetch operator from GitHub: ", httr::http_status(response)$message)
+  #   }
+  #
+  #   # Get content and write to temporary file
+  #   content <- httr::content(response, "text", encoding = "UTF-8")
+  #   temp_file <- tempfile(fileext = ".yml")
+  #   writeLines(content, temp_file)
+  #
+  #   # Import from the temporary file
+  #   operator <- import_operator_from_yaml(temp_file)
+  #
+  #   # Clean up
+  #   unlink(temp_file)
+  #
+  #   message("Successfully imported operator from ", url)
+  #   return(operator)
+  # }
+
+}
+
+.listGithub <- function(){
+
+  # List available bitfield operators in a GitHub repository
+  #
+  # @param repo The GitHub repository in format "username/repo"
+  # @param path Path in the repository to search (default: "encodings")
+  # @param pattern Pattern to filter filenames (default: "*.yml")
+  # @param branch Branch to search (default: "main")
+  # @param token GitHub personal access token (for private repositories)
+  # @return Data frame of available operators
+  # list_github_operators <- function(
+  #   repo,
+  #   path = "encodings",
+  #   pattern = "\\.yml$",
+  #   branch = "main",
+  #   token = Sys.getenv("GITHUB_PAT")
+  # ) {
+  #   # Check for required packages
+  #   if (!requireNamespace("gh", quietly = TRUE)) {
+  #     stop("Package 'gh' is required to list GitHub operators. Please install it first.")
+  #   }
+  #
+  #   # Set up authentication
+  #   gh_auth <- list()
+  #   if (token != "") {
+  #     gh_auth <- list(.token = token)
+  #   }
+  #
+  #   # Get repository contents at the specified path
+  #   contents <- tryCatch({
+  #     gh::gh(
+  #       "GET /repos/{owner}/{repo}/contents/{path}",
+  #       owner = strsplit(repo, "/")[[1]][1],
+  #       repo = strsplit(repo, "/")[[1]][2],
+  #       path = path,
+  #       ref = branch,
+  #       .token = token
+  #     )
+  #   }, error = function(e) {
+  #     stop("Failed to list repository contents: ", e$message)
+  #   })
+  #
+  #   # Filter for YAML files
+  #   if (length(contents) == 0) {
+  #     message("No files found in ", path)
+  #     return(data.frame())
+  #   }
+  #
+  #   # Process contents
+  #   files <- do.call(rbind, lapply(contents, function(item) {
+  #     if (item$type == "file" && grepl(pattern, item$name)) {
+  #       data.frame(
+  #         name = item$name,
+  #         path = item$path,
+  #         download_url = item$download_url,
+  #         size = item$size,
+  #         stringsAsFactors = FALSE
+  #       )
+  #     } else {
+  #       NULL
+  #     }
+  #   }))
+  #
+  #   if (nrow(files) == 0) {
+  #     message("No matching operator files found in ", path)
+  #     return(data.frame())
+  #   }
+  #
+  #   return(files)
+  # }
+
+
+}
+
+# bf_citation <- function(registry){
+
+  # Creates formatted citations in multiple styles
+  # Supports academic attribution
+  # Includes version information
+
+
+  # format <- match.arg(format)
+  #
+  # if (!standard_name %in% names(bf_encodings)) {
+  #   stop("Standard '", standard_name, "' is not loaded.")
+  # }
+  #
+  # standard <- bf_encodings[[standard_name]]
+  #
+  # if (is.null(standard$citation)) {
+  #   warning("Standard '", standard_name, "' does not have citation information.")
+  #   return(paste0("Bitfield standard: ", standard_name,
+  #                 ", version ", standard$version %||% "unknown"))
+  # }
+  #
+  # cit <- standard$citation
+  #
+  # if (format == "text") {
+  #   # Format authors
+  #   authors <- sapply(cit$authors, function(a) a$name)
+  #   if (length(authors) == 1) {
+  #     author_str <- authors[1]
+  #   } else if (length(authors) == 2) {
+  #     author_str <- paste(authors, collapse = " and ")
+  #   } else {
+  #     author_str <- paste0(
+  #       paste(authors[-length(authors)], collapse = ", "),
+  #       ", and ", authors[length(authors)]
+  #     )
+  #   }
+  #
+  #   # Create text citation
+  #   return(paste0(
+  #     author_str, " (", cit$year, "). ",
+  #     cit$title, ". ",
+  #     if (!is.null(cit$publication)) paste0(cit$publication, ". ") else "",
+  #     if (!is.null(cit$doi)) paste0("doi:", cit$doi, ". ") else "",
+  #     "Bitfield standard: ", standard_name, ", version ", standard$version %||% "unknown", ". ",
+  #     if (!is.null(cit$url)) paste0("Available at: ", cit$url) else ""
+  #   ))
+  # } else if (format == "bibtex") {
+  #   # Create BibTeX citation
+  #   authors <- sapply(cit$authors, function(a) a$name)
+  #   author_str <- paste(authors, collapse = " and ")
+  #
+  #   return(paste0(
+  #     "@misc{", gsub("[^a-zA-Z0-9]", "", standard_name), cit$year, ",\n",
+  #     "  author = {", author_str, "},\n",
+  #     "  title = {", cit$title, "},\n",
+  #     "  year = {", cit$year, "},\n",
+  #     if (!is.null(cit$publication)) paste0("  journal = {", cit$publication, "},\n") else "",
+  #     if (!is.null(cit$doi)) paste0("  doi = {", cit$doi, "},\n") else "",
+  #     "  note = {Bitfield standard: ", standard_name, ", version ", standard$version %||% "unknown", "},\n",
+  #     if (!is.null(cit$url)) paste0("  url = {", cit$url, "},\n") else "",
+  #     "}"
+  #   ))
+  # } else if (format == "ris") {
+  #   # Create RIS citation
+  #   ris <- c(
+  #     "TY  - DATA",
+  #     paste0("T1  - ", cit$title)
+  #   )
+  #
+  #   for (author in cit$authors) {
+  #     ris <- c(ris, paste0("AU  - ", author$name))
+  #   }
+  #
+  #   ris <- c(
+  #     ris,
+  #     paste0("PY  - ", cit$year),
+  #     if (!is.null(cit$publication)) paste0("JO  - ", cit$publication) else NULL,
+  #     if (!is.null(cit$doi)) paste0("DO  - ", cit$doi) else NULL,
+  #     paste0("N1  - Bitfield standard: ", standard_name, ", version ", standard$version %||% "unknown"),
+  #     if (!is.null(cit$url)) paste0("UR  - ", cit$url) else NULL,
+  #     "ER  - "
+  #   )
+  #
+  #   return(paste(ris, collapse = "\n"))
+  # }
+
+
+# }
