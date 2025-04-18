@@ -95,7 +95,7 @@ reg <- bf_registry(name = "yield_QA",
 ```
 
 Then, individual bit flags need to be grown by specifying the respective
-operators. These operators create flags for the most common
+protocols. These protocols create flags for the most common
 applications, such as `na` (to test for missing values), `case` (to test
 what case/class the observations are part of),`nChar` (to count the
 number of characters of a variable), or `numeric` to encode a numeric
@@ -104,26 +104,26 @@ number of characters of a variable), or `numeric` to encode a numeric
 ``` r
 # tests for longitude availability
 reg <- 
-  bf_test(operator = "na",                       # the operator with which to build the test
-          data = bf_tbl,                         # specify where to determine flags
-          x = x,                                 # ... and which variable to test
-          pos = 1,                               # specify at which position to store the flag
-          registry = reg)                        # provide the registry to update
+  bf_map(protocol = "na",                       # the protocol with which to build the bit flag
+         data = bf_tbl,                         # specify where to determine flags
+         x = x,                                 # ... and which variable to test
+         pos = 1,                               # specify at which position to store the flag
+         registry = reg)                        # provide the registry to update
 
 # test which case an observation is part of
 reg <- 
-  bf_test(operator = "case", data = bf_tbl,
-          yield >= 11, yield < 11 & yield > 9, yield < 9 & commodity == "maize",
-          registry = reg)
+  bf_map(protocol = "case", data = bf_tbl,
+         yield >= 11, yield < 11 & yield > 9, yield < 9 & commodity == "maize",
+         registry = reg)
 
 # test the length (number of characters) of values
 reg <- 
-  bf_test(operator = "nChar", data = bf_tbl, x = y, registry = reg)
-  
+  bf_map(protocol = "nChar", data = bf_tbl, x = y, registry = reg)
+
 # store a simplified (e.g. rounded) numeric value
 reg <-
-  bf_test(operator = "numeric", data = bf_tbl, x = yield, format = "half", 
-          registry = reg)
+  bf_map(protocol = "numeric", data = bf_tbl, x = yield, format = "half", 
+         registry = reg)
 ```
 
 These are functions that represent the possible encoding types boolean
@@ -237,7 +237,7 @@ bf_env[["nChar_y"]]
 Beware that numeric values that have been encoded in this way, likely
 have a lower precision than the input values (which may not be a problem
 in the frequent case where only rounded values are of interest). This
-can be adjusted by setting the respective parameters in the operator
+can be adjusted by setting the respective parameters in the protocol
 that encodes numeric values (a vignette explaining this in detail will
 follow).
 
@@ -278,10 +278,10 @@ bf_rst <- rast(nrows = 3, ncols = 3,
 reg <- bf_registry(name = "raster_meta",
                    description = "this example bitfield documents metadata for a raster object.")
 
-reg <- bf_test(operator = "na", 
-               data = .rast(bf_rst), x = lyr.1)
-reg <- bf_test(operator = "range", data = .rast(bf_rst), x = lyr.1, min = 4, 
-               max = 8, name = "range_lyr.1", na.val = FALSE, registry = reg)
+reg <- bf_map(protocol = "na", 
+              data = .rast(bf_rst), x = lyr.1)
+reg <- bf_map(protocol = "range", data = .rast(bf_rst), x = lyr.1, min = 4, 
+              max = 8, name = "range_lyr.1", na.val = FALSE, registry = reg)
 
 # encode as bitfield (and make raster out of it)
 field <- bf_encode(registry = reg)

@@ -1,4 +1,4 @@
-#' Create a new registry
+#' Initiate a new registry
 #'
 #' @param name [`character(1)`][character]\cr the name of the bitfield.
 #' @param description [`character(1)`][character]\cr the description of the
@@ -11,8 +11,8 @@
 #' @examples
 #' reg <- bf_registry(name = "currentWorkflow",
 #'                    description = "this is to document my current workflow so
-#'                                   that I can share it with my colleagues
-#'                                   alongside a publication.")
+#'                                  that I can share it with my colleagues
+#'                                  alongside a publication.")
 #' @importFrom checkmate assertIntegerish assertCharacter
 #' @importFrom utils packageVersion
 #' @importFrom stringr str_replace_all

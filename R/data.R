@@ -9,9 +9,8 @@
 #'   that may occur in data.
 "bf_tbl"
 
-#' Internal operators
+#' Internal bitflag protocols
 #'
-#' @format a list containing encodings for the basic operators. Each operator is
-#'   a list with elements 'description', 'encoding_type', 'bits', 'test',
-#'   'require', 'extends', 'extends_note', 'version', and 'reference'.
-"bf_internal"
+#' @format a list containing bitflag protocols for the internal tests. Each element is
+#'   an item of class \code{\link{protocol}}.
+"bf_pcl"
