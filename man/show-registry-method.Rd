@@ -2,7 +2,7 @@
 % Please edit documentation in R/1registry.R
 \name{show,registry-method}
 \alias{show,registry-method}
-\title{Print registry in the console (not working yet)}
+\title{Print registry in the console}
 \usage{
 \S4method{show}{registry}(object)
 }
@@ -10,7 +10,7 @@
 \item{object}{\code{\link[=registry]{registry(1)}}\cr object to \code{show}.}
 }
 \description{
-Print registry in the console (not working yet)
+Print registry in the console
 }
 \details{
 This method produces an overview of the registry by printing a

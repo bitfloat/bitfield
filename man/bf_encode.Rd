@@ -12,14 +12,14 @@ encoded into a bitfield.}
 }
 \value{
 data.frame of the same length as the input data. Depending on type
-and amount of operators, this can a table with any number of columns, each
+and amount of bit flags, this can a table with any number of columns, each
 of which encodes a sequence of 32 bits into an integer.
 }
 \description{
 Build a bitfield from a bit registry
 }
 \examples{
-reg <- bf_test(operator = "na", data = bf_tbl, x = y)
+reg <- bf_map(protocol = "na", data = bf_tbl, x = y)
 
 field <- bf_encode(registry = reg)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/bf_registry.R
 \name{bf_registry}
 \alias{bf_registry}
-\title{Create a new registry}
+\title{Initiate a new registry}
 \usage{
 bf_registry(name = NULL, description = NULL)
 }
@@ -17,7 +17,7 @@ an empty registry that captures some metadata of the bitfield, but
 doesn't contain any flags yet.
 }
 \description{
-Create a new registry
+Initiate a new registry
 }
 \details{
 Besides creating a registry object, this function also opens the
@@ -27,6 +27,6 @@ flag values.
 \examples{
 reg <- bf_registry(name = "currentWorkflow",
                    description = "this is to document my current workflow so
-                                  that I can share it with my colleagues
-                                  alongside a publication.")
+                                 that I can share it with my colleagues
+                                 alongside a publication.")
 }

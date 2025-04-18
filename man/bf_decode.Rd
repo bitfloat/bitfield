@@ -27,9 +27,9 @@ Decode (unpack) a bitfield
 }
 \examples{
 # build registry
-reg <- bf_test(operator = "na", data = bf_tbl, x = commodity)
-reg <- bf_test(operator = "matches", data = bf_tbl, x = commodity, set = c("soybean", "maize"),
-                registry = reg)
+reg <- bf_map(protocol = "na", data = bf_tbl, x = commodity)
+reg <- bf_map(protocol = "matches", data = bf_tbl, x = commodity, set = c("soybean", "maize"),
+              registry = reg)
 reg
 
 # encode the flags into a bitfield
