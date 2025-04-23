@@ -22,10 +22,3 @@ to bits, or the integer part.}
 \description{
 Make a binary value from an integer
 }
-\details{
-Additional details...
-}
-\examples{
-# example code
-
-}

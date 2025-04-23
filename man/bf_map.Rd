@@ -16,12 +16,12 @@ bf_map(
 )
 }
 \arguments{
-\item{protocol}{\code{\link[=character]{character(1)}}\cr the protocol based on
-which the flag should be determined, see Details.}
+\item{protocol}{\code{\link[=character]{character(1)}}\cr the protocol based on which
+the flag should be determined, see Details.}
 
 \item{data}{the object to build bit flags for.}
 
-\item{...}{the protocol-specific arguments for building a test, see Details.}
+\item{...}{the protocol-specific arguments for building a bit flag, see Details.}
 
 \item{name}{\code{\link[=character]{character(1)}}\cr optional flag-name.}
 
@@ -50,13 +50,13 @@ This function maps values from a dataset into bit flags that can be encoded
 into a bitfield.
 }
 \details{
-\code{protocol} can either be the name of an internal item \code{\link{bf_plc}}, a
-newly built local protocol or one that has been imported from the bitfield
-community standards repo on github. Any \code{protocol} has specific
-arguments, typically at least the name of the column containing the
-variable values (\code{x}). To make this function as general as possible,
-all of these arguments are specified via the \code{...} argument of
-\code{bf_map}. Internal
+\code{protocol} can either be the name of an internal item
+\code{\link{bf_pcl}}, a newly built local protocol or one that has been
+imported from the bitfield community standards repo on github. Any
+\code{protocol} has specific arguments, typically at least the name of the
+column containing the variable values (\code{x}). To make this function as
+general as possible, all of these arguments are specified via the
+\code{...} argument of \code{bf_map}. Internal
 protocols are: \itemize{
 \item \code{na} (x): test whether a variable contains \code{NA}-values
 (\emph{boolean}).
@@ -114,7 +114,7 @@ result in integer values.
 opr <- "identical"
 
 # identify which arguments need to be given to call a test ...
-formalArgs(bf_internal[[opr]]$test)
+formalArgs(bf_pcl[[opr]]$test)
 
 # put the test together
 bf_map(protocol = opr, data = bf_tbl, x = x, y = y, na.val = FALSE)

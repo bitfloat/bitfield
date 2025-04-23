@@ -13,10 +13,3 @@
 \description{
 Make an integer from a binary value
 }
-\details{
-Additional details...
-}
-\examples{
-# example code
-
-}

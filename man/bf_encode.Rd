@@ -2,12 +2,12 @@
 % Please edit documentation in R/bf_encode.R
 \name{bf_encode}
 \alias{bf_encode}
-\title{Build a bitfield from a bit registry}
+\title{Encode bit flags into a bitfield}
 \usage{
 bf_encode(registry)
 }
 \arguments{
-\item{registry}{\code{\link[=registry]{registry(1)}}\cr the bit registry that should be
+\item{registry}{\code{\link[=registry]{registry(1)}}\cr the registry that should be
 encoded into a bitfield.}
 }
 \value{
@@ -16,7 +16,8 @@ and amount of bit flags, this can a table with any number of columns, each
 of which encodes a sequence of 32 bits into an integer.
 }
 \description{
-Build a bitfield from a bit registry
+This function picks up the flags mentioned in a registry and encodes them as
+integer values.
 }
 \examples{
 reg <- bf_map(protocol = "na", data = bf_tbl, x = y)

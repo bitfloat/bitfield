@@ -11,34 +11,53 @@ bf_protocol(
   example,
   type,
   bits = NULL,
+  version = NULL,
   extends = NULL,
   note = NULL,
-  version = NULL,
-  reference = NULL
+  author = NULL
 )
 }
 \arguments{
-\item{name}{description}
+\item{name}{\code{\link[=character]{character(1)}}\cr simple name of this protocol.}
 
-\item{description}{description}
+\item{description}{\code{\link[=character]{character(1)}}\cr formalised description of
+the operation in this protocol. It will be parsed with \code{\link{glue}}
+and used in the bitfield legend, so can include the test arguments as
+enbraced expressions.}
 
-\item{test}{\code{\link[=function]{function(...)}}\cr the function used to build the
-bit flag.}
+\item{test}{\code{\link[=function]{function(...)}}\cr the function used to build the bit
+flag.}
 
 \item{example}{\code{\link[=list]{list(.)}}\cr named list that contains all arguments in
 \code{test} as name with values of the correct type.}
 
-\item{type}{description}
+\item{type}{\code{\link[=character]{character(1)}}\cr the encoding typ according to
+which the bit flag is determined. Possible values are \code{bool} (for
+binary flags), \code{enum} (for cases), \code{int} (for integers)  and
+\code{num} (for floating-point encoding).}
 
-\item{bits}{description}
+\item{bits}{\code{\link[=integer]{integer(1)}}\cr in case the flag requires more bits
+than the data in example indicate, provide this here.}
 
-\item{extends}{description}
+\item{version}{\code{\link[=character]{character(1)}}\cr the version of this protocol
+according to the \emph{semantic versioning
+specification}, i.e., of the form \code{X.Y.Z}, where \code{X} is a major
+version, \code{Y} is a minor version and \code{Z} is a bugfix. For
+additional details on when to increase which number, study
+\href{https://semver.org/}{this} website.}
 
-\item{note}{description}
+\item{extends}{\code{\link[=character]{character(1)}}\cr optional protocol name and
+version that is extended by this protocol.}
 
-\item{version}{description}
+\item{note}{\code{\link[=character]{character(1)}}\cr note on what the extension
+adds/modifies.}
 
-\item{reference}{description}
+\item{author}{\code{\link[=person]{person(.)}}\cr to attach a reference to this
+protocol, please provide here the relevant information about the author(s).
+If this is not provided, the author \code{"unknown"} will be used.}
+}
+\value{
+list containing bit-flag protocol
 }
 \description{
 Define a new bit-flag protocol
@@ -47,5 +66,6 @@ Define a new bit-flag protocol
 newFlag <- bf_protocol(name = "na",
                        description = "{x} contains NA-values{result}.",
                        test = function(x) is.na(x = x),
-                       example = list(x = bf_tbl$commodity))
+                       example = list(x = bf_tbl$commodity),
+                       type = "bool")
 }

@@ -23,7 +23,9 @@ distinct fields shall be separated.}
 registry legend.}
 }
 \description{
-Decode (unpack) a bitfield
+This function takes an integer bitfield and the registry used to build it
+upstream to decode it into bit representation and thereby unpack the data
+stored in the bitfield.
 }
 \examples{
 # build registry
