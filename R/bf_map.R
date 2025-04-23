@@ -2,10 +2,10 @@
 #'
 #' This function maps values from a dataset into bit flags that can be encoded
 #' into a bitfield.
-#' @param protocol [`character(1)`][character]\cr the protocol based on
-#'   which the flag should be determined, see Details.
+#' @param protocol [`character(1)`][character]\cr the protocol based on which
+#'   the flag should be determined, see Details.
 #' @param data the object to build bit flags for.
-#' @param ... the protocol-specific arguments for building a test, see Details.
+#' @param ... the protocol-specific arguments for building a bit flag, see Details.
 #' @param pos [`integerish(.)`][integer]\cr the position(s) in the bitfield that
 #'   should be set.
 #' @param name [`character(1)`][character]\cr optional flag-name.
@@ -19,13 +19,13 @@
 #' @param registry [`registry(1)`][registry]\cr a bitfield registry that has
 #'   been defined with \code{\link{bf_registry}}; if it's undefined, an empty
 #'   registry will be defined on-the-fly.
-#' @details \code{protocol} can either be the name of an internal item \code{\link{bf_plc}}, a
-#'   newly built local protocol or one that has been imported from the bitfield
-#'   community standards repo on github. Any \code{protocol} has specific
-#'   arguments, typically at least the name of the column containing the
-#'   variable values (\code{x}). To make this function as general as possible,
-#'   all of these arguments are specified via the \code{...} argument of
-#'   \code{bf_map}. Internal
+#' @details \code{protocol} can either be the name of an internal item
+#'   \code{\link{bf_pcl}}, a newly built local protocol or one that has been
+#'   imported from the bitfield community standards repo on github. Any
+#'   \code{protocol} has specific arguments, typically at least the name of the
+#'   column containing the variable values (\code{x}). To make this function as
+#'   general as possible, all of these arguments are specified via the
+#'   \code{...} argument of \code{bf_map}. Internal
 #'   protocols are: \itemize{
 #'     \item \code{na} (x): test whether a variable contains \code{NA}-values
 #'           (\emph{boolean}).
@@ -82,7 +82,7 @@
 #' opr <- "identical"
 #'
 #' # identify which arguments need to be given to call a test ...
-#' formalArgs(bf_internal[[opr]]$test)
+#' formalArgs(bf_pcl[[opr]]$test)
 #'
 #' # put the test together
 #' bf_map(protocol = opr, data = bf_tbl, x = x, y = y, na.val = FALSE)
@@ -136,19 +136,19 @@ bf_map <- function(protocol, data, ..., name = NULL, pos = NULL, na.val = NULL,
   }
 
   # determine intermediate flag values ----
-  if(protocol %in% c("na", "nan", "inf", "identical", "range", "type", "matches", "grepl", "case", "nChar", "nInt", "nDec", "integer", "numeric")){
+  if(protocol %in% names(bf_pcl)){
     attrib <- bf_pcl[[protocol]]
   } else {
     attrib <- get(protocol)
-    assertClass(x = attrib, classes = "bitflag")
+    assertClass(x = attrib, classes = "protocol")
   }
 
   # evaluate arguments of the protocol ----
   tidyArgs <- map(args, eval_tidy, data = tempData)
 
   # call protocol ----
-  if(!is.null(attrib$require)){
-    map(attrib$require, safely(~require(.x, character.only = TRUE, quietly = TRUE, warn.conflicts = FALSE)))
+  if(!is.null(attrib$requires)){
+    map(attrib$requires, safely(~require(.x, character.only = TRUE, quietly = TRUE, warn.conflicts = FALSE)))
   }
   out <- exec(attrib$test, !!!tidyArgs)
 
@@ -185,10 +185,10 @@ bf_map <- function(protocol, data, ..., name = NULL, pos = NULL, na.val = NULL,
 
   # make meta-data ----
   testProv <- paste0("useTest: ", paste0(protocol, "_", attrib$version))
-  tempArgs <- map(.x = seq_along(args), .f = function(x){
-    temp <- get_expr(args[[x]])
+  tempArgs <- map(.x = seq_along(args), .f = function(ix){
+    temp <- get_expr(args[[ix]])
     if(is.character(temp)) temp <- paste0("'", temp, "'")
-    data.frame(name = names(args)[x], val = as.character(temp), expr = paste0(names(args)[x], "=", temp))
+    data.frame(name = names(args)[ix], val = as.character(temp), expr = paste0(names(args)[ix], "=", temp))
   }) |> list_rbind()
   formalNames <- tempArgs[tempArgs$name %in% formalArgs(attrib$test),]
   result <- ""
