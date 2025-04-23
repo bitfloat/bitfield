@@ -18,11 +18,15 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Imports: 
+    base64enc,
     checkmate,
     codetools,
     crayon,
     dplyr,
+    gh,
+    gitcreds,
     glue,
+    httr,
     methods,
     purrr,
     rlang,

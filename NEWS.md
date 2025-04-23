@@ -1,8 +1,8 @@
 # bitfield 0.6.0
 
 - rename various things to get a more coherent and intuitive workflow: `bf_test()` -> `bf_map()`, `operator` -> `protocol`, `bf_internal` -> `bf_pcl`
-- new functions to interact with github to pull, push or list community standards.
-- formalise the bitfield operators into the S3 class `protocol` - together with a nice show function - and save the previous internal operators as the new class.
+- new function `bf_standards()` to interact with github to pull, push or list community standards base on the github personal access token.
+- formalise the bitfield operators into a `protocol`, i.e., a standardised list with a dedicated `.validateProtocol()` function.
 
 # bitfield 0.5.0
 

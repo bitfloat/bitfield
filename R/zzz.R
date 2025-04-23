@@ -1,5 +1,2 @@
-globalVariables(c("avail", "coords", "value", "bits", "xAvail", "yAvail",
-                  "xRange", "yRange", "flag", ".", "x", "y", "pos", "bf_env",
-                  "distinct", "temp", "name", "flags", "bf_int",
-                  "bit", "desc", "bin", "grp", "bf_internal", "bf_opr", "fields",
-                  "decimals", "vals"))
+globalVariables(c("pos", "name", "bits", "desc", "grp", "flag", "bin", "bf_env",
+                  "bf_pcl", "fields", "decimals"))
