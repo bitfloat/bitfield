@@ -1,5 +1,8 @@
 #' Decode (unpack) a bitfield
 #'
+#' This function takes an integer bitfield and the registry used to build it
+#' upstream to decode it into bit representation and thereby unpack the data
+#' stored in the bitfield.
 #' @param x [`integerish(1)`][integer]\cr table of the integer representation of
 #'   the bitfield.
 #' @param registry [`registry(1)`][registry]\cr the registry that should be used
@@ -34,6 +37,7 @@
 #' @importFrom dplyr bind_rows arrange group_by ungroup summarise rowwise mutate
 #'   left_join n first row_number if_else
 #' @importFrom tidyr separate unite separate_longer_delim
+#' @importFrom tidyselect everything
 #' @importFrom rlang env_bind `:=`
 #' @importFrom stringr str_sub_all str_replace
 #' @export

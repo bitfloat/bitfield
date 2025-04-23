@@ -1,6 +1,8 @@
-#' Build a bitfield from a bit registry
+#' Encode bit flags into a bitfield
 #'
-#' @param registry [`registry(1)`][registry]\cr the bit registry that should be
+#' This function picks up the flags mentioned in a registry and encodes them as
+#' integer values.
+#' @param registry [`registry(1)`][registry]\cr the registry that should be
 #'   encoded into a bitfield.
 #' @return data.frame of the same length as the input data. Depending on type
 #'   and amount of bit flags, this can a table with any number of columns, each
