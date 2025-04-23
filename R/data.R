@@ -9,8 +9,13 @@
 #'   that may occur in data.
 "bf_tbl"
 
-#' Internal bitflag protocols
+#' Internal bit-flag protocols
 #'
-#' @format a list containing bitflag protocols for the internal tests. Each element is
-#'   an item of class \code{\link{protocol}}.
+#' @format a list containing bit-flag protocols for the internal tests. Each
+#'   protocol is a list itself with the fields \code{"name"}, \code{"version"},
+#'   \code{"extends"}, \code{"extends_note"}, \code{"description"},
+#'   \code{"encoding_type"}, \code{"bits"}, \code{"requires"}, \code{"test"},
+#'   \code{"data"} and \code{"reference"}. For information on how they were set
+#'   up and how you can set up additional protocols, go to
+#'   \code{\link{bf_protocol}}.
 "bf_pcl"
