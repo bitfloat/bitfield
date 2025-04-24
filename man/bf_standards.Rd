@@ -53,6 +53,8 @@ you can authenticate yourself to pull or push community standards, and will
 only be accessible to your personal R session.
 }
 \examples{
+\dontrun{
 # list all currently available standards
 bf_standards()
+}
 }

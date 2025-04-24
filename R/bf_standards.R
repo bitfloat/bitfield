@@ -27,8 +27,10 @@
 #'   only be accessible to your personal R session.
 #' @return description
 #' @examples
+#' \dontrun{
 #' # list all currently available standards
 #' bf_standards()
+#' }
 #' @importFrom checkmate assertCharacter assertChoice assertList
 #' @importFrom methods functionBody
 #' @importFrom httr content

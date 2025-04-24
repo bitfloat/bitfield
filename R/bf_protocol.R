@@ -2,14 +2,14 @@
 #'
 #' @param name [`character(1)`][character]\cr simple name of this protocol.
 #' @param description [`character(1)`][character]\cr formalised description of
-#'   the operation in this protocol. It will be parsed with \code{\link{glue}}
-#'   and used in the bitfield legend, so can include the test arguments as
-#'   enbraced expressions.
+#'   the operation in this protocol. It will be parsed with
+#'   \code{\link[glue]{glue}} and used in the bitfield legend, so can include
+#'   the test arguments as enbraced expressions.
 #' @param test [`function(...)`][function]\cr the function used to build the bit
 #'   flag.
 #' @param example [`list(.)`][list]\cr named list that contains all arguments in
 #'   \code{test} as name with values of the correct type.
-#' @param type [`character(1)`][character]\cr the encoding typ according to
+#' @param type [`character(1)`][character]\cr the encoding type according to
 #'   which the bit flag is determined. Possible values are \code{bool} (for
 #'   binary flags), \code{enum} (for cases), \code{int} (for integers)  and
 #'   \code{num} (for floating-point encoding).
