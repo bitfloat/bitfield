@@ -10,7 +10,7 @@ Authors@R: c(
 Description: Provides tools to record algorithmic and analytic meta data along a 
     workflow to store that in a bitfield, which can be published alongside any 
     (modelled) data products.
-URL: https://github.com/bitfloat/bitfield, http://bitfloat.github.io/bitfield
+URL: https://github.com/bitfloat/bitfield, https://bitfloat.github.io/bitfield
 BugReports: https://github.com/bitfloat/bitfield/issues
 License: GPL (>= 3)
 Encoding: UTF-8
@@ -42,5 +42,5 @@ Suggests:
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Depends: 
-    R (>= 3.5)
+    R (>= 4.1.0)
 Config/testthat/edition: 3
