@@ -23,7 +23,6 @@ library(knitr)
 
 <!-- badges: start -->
 <!-- [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/)](https://cran.r-project.org/package=) -->
-<!-- [![DOI](https://zenodo.org/badge/DOI/)](https://doi.org/) -->
 
 [![R-CMD-check](https://github.com/bitfloat/bitfield/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bitfloat/bitfield/actions/workflows/R-CMD-check.yaml)
 [![codecov](https://codecov.io/gh/bitfloat/bitfield/graph/badge.svg?token=QZB36RION3)](https://codecov.io/gh/bitfloat/bitfield)
