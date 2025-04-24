@@ -462,7 +462,7 @@
 #' @importFrom gitcreds gitcreds_get
 #' @importFrom httr GET add_headers status_code
 
-.validate_token <- function(token) {
+.validateToken <- function(token) {
 
   assertCharacter(x = token, len = 1, any.missing = FALSE, null.ok = TRUE)
 

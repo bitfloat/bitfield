@@ -65,7 +65,7 @@ bf_standards <- function(protocol = NULL, remote = NULL, action = "list",
   if(is.null(remote)) remote <- ""
 
   # user info ----
-  token <- .validate_token(token = token)
+  token <- .validateToken(token = token)
   userInfo <- tryCatch(
     gh("GET /user", .token = token)$login,
     error = function(e) "unknown-user"
