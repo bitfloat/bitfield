@@ -352,6 +352,7 @@
 #' @return the function that extracts values and metadata.
 #' @importFrom checkmate assertClass
 #' @importFrom terra values nrow ncol res ext crs
+#' @export
 
 .rast <- function(x){
 

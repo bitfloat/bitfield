@@ -24,8 +24,6 @@ reference:
     contents:
       - registry-class
       - show,registry-method
-      - protocol-class
-      - show,protocol-method
   - title: helpers
     contents:
       - .getDependencies
