@@ -1,372 +1,367 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="46.310623mm"
-   height="53.474903mm"
-   viewBox="0 0 164.09276 189.478"
-   id="svg2"
+   viewBox="0 0 300 300"
+   width="300"
+   height="300"
    version="1.1"
-   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)"
+   id="svg953"
    sodipodi:docname="logo.svg"
-   inkscape:export-filename="/home/steffen/Documents/science/papers/in preparation/rasterTools_misc/geometr.png"
-   inkscape:export-xdpi="149"
-   inkscape:export-ydpi="149">
-  <defs
-     id="defs4">
-    <marker
-       inkscape:stockid="Arrow1Lstart"
-       orient="auto"
-       refY="0"
-       refX="0"
-       id="Arrow1Lstart"
-       style="overflow:visible"
-       inkscape:isstock="true">
-      <path
-         id="path8999"
-         d="M 0,0 5,-5 -12.5,0 5,5 0,0 Z"
-         style="fill:#bdcdd4;fill-opacity:1;fill-rule:evenodd;stroke:#bdcdd4;stroke-width:1pt;stroke-opacity:1"
-         transform="matrix(0.8,0,0,0.8,10,0)"
-         inkscape:connector-curvature="0" />
-    </marker>
-    <marker
-       inkscape:stockid="Arrow1Lend"
-       orient="auto"
-       refY="0"
-       refX="0"
-       id="Arrow1Lend"
-       style="overflow:visible"
-       inkscape:isstock="true">
-      <path
-         id="path9002"
-         d="M 0,0 5,-5 -12.5,0 5,5 0,0 Z"
-         style="fill:#bdcdd4;fill-opacity:1;fill-rule:evenodd;stroke:#bdcdd4;stroke-width:1pt;stroke-opacity:1"
-         transform="matrix(-0.8,0,0,-0.8,-10,0)"
-         inkscape:connector-curvature="0" />
-    </marker>
-    <marker
-       inkscape:stockid="Arrow1Lstart"
-       orient="auto"
-       refY="0"
-       refX="0"
-       id="Arrow1Lstart-1"
-       style="overflow:visible"
-       inkscape:isstock="true">
-      <path
-         inkscape:connector-curvature="0"
-         id="path8999-3"
-         d="M 0,0 5,-5 -12.5,0 5,5 0,0 Z"
-         style="fill:#bdcdd4;fill-opacity:1;fill-rule:evenodd;stroke:#bdcdd4;stroke-width:1pt;stroke-opacity:1"
-         transform="matrix(0.8,0,0,0.8,10,0)" />
-    </marker>
-    <marker
-       inkscape:stockid="Arrow1Lend"
-       orient="auto"
-       refY="0"
-       refX="0"
-       id="Arrow1Lend-3"
-       style="overflow:visible"
-       inkscape:isstock="true">
-      <path
-         inkscape:connector-curvature="0"
-         id="path9002-3"
-         d="M 0,0 5,-5 -12.5,0 5,5 0,0 Z"
-         style="fill:#bdcdd4;fill-opacity:1;fill-rule:evenodd;stroke:#bdcdd4;stroke-width:1pt;stroke-opacity:1"
-         transform="matrix(-0.8,0,0,-0.8,-10,0)" />
-    </marker>
-    <marker
-       inkscape:stockid="Arrow1Lend"
-       orient="auto"
-       refY="0"
-       refX="0"
-       id="Arrow1Lend-3-9"
-       style="overflow:visible"
-       inkscape:isstock="true">
-      <path
-         inkscape:connector-curvature="0"
-         id="path9002-3-0"
-         d="M 0,0 5,-5 -12.5,0 5,5 0,0 Z"
-         style="fill:#bdcdd4;fill-opacity:1;fill-rule:evenodd;stroke:#bdcdd4;stroke-width:1pt;stroke-opacity:1"
-         transform="matrix(-0.8,0,0,-0.8,-10,0)" />
-    </marker>
-    <marker
-       inkscape:stockid="Arrow1Lend"
-       orient="auto"
-       refY="0"
-       refX="0"
-       id="Arrow1Lend-3-9-0"
-       style="overflow:visible"
-       inkscape:isstock="true">
-      <path
-         inkscape:connector-curvature="0"
-         id="path9002-3-0-1"
-         d="M 0,0 5,-5 -12.5,0 5,5 0,0 Z"
-         style="fill:#bdcdd4;fill-opacity:1;fill-rule:evenodd;stroke:#bdcdd4;stroke-width:1pt;stroke-opacity:1"
-         transform="matrix(-0.8,0,0,-0.8,-10,0)" />
-    </marker>
-    <marker
-       inkscape:stockid="Arrow1Lend"
-       orient="auto"
-       refY="0"
-       refX="0"
-       id="Arrow1Lend-3-9-0-4"
-       style="overflow:visible"
-       inkscape:isstock="true">
-      <path
-         inkscape:connector-curvature="0"
-         id="path9002-3-0-1-6"
-         d="M 0,0 5,-5 -12.5,0 5,5 0,0 Z"
-         style="fill:#bdcdd4;fill-opacity:1;fill-rule:evenodd;stroke:#bdcdd4;stroke-width:1pt;stroke-opacity:1"
-         transform="matrix(-0.8,0,0,-0.8,-10,0)" />
-    </marker>
-    <marker
-       inkscape:stockid="Arrow1Lend"
-       orient="auto"
-       refY="0"
-       refX="0"
-       id="Arrow1Lend-3-9-1"
-       style="overflow:visible"
-       inkscape:isstock="true">
-      <path
-         inkscape:connector-curvature="0"
-         id="path9002-3-0-5"
-         d="M 0,0 5,-5 -12.5,0 5,5 0,0 Z"
-         style="fill:#bdcdd4;fill-opacity:1;fill-rule:evenodd;stroke:#bdcdd4;stroke-width:1pt;stroke-opacity:1"
-         transform="matrix(-0.8,0,0,-0.8,-10,0)" />
-    </marker>
-    <marker
-       inkscape:stockid="Arrow1Lend"
-       orient="auto"
-       refY="0"
-       refX="0"
-       id="Arrow1Lend-3-9-0-0"
-       style="overflow:visible"
-       inkscape:isstock="true">
-      <path
-         inkscape:connector-curvature="0"
-         id="path9002-3-0-1-1"
-         d="M 0,0 5,-5 -12.5,0 5,5 0,0 Z"
-         style="fill:#bdcdd4;fill-opacity:1;fill-rule:evenodd;stroke:#bdcdd4;stroke-width:1pt;stroke-opacity:1"
-         transform="matrix(-0.8,0,0,-0.8,-10,0)" />
-    </marker>
-    <marker
-       inkscape:stockid="Arrow1Lend"
-       orient="auto"
-       refY="0"
-       refX="0"
-       id="Arrow1Lend-3-9-4"
-       style="overflow:visible"
-       inkscape:isstock="true">
-      <path
-         inkscape:connector-curvature="0"
-         id="path9002-3-0-4"
-         d="M 0,0 5,-5 -12.5,0 5,5 0,0 Z"
-         style="fill:#bdcdd4;fill-opacity:1;fill-rule:evenodd;stroke:#bdcdd4;stroke-width:1pt;stroke-opacity:1"
-         transform="matrix(-0.8,0,0,-0.8,-10,0)" />
-    </marker>
-  </defs>
-  <sodipodi:namedview
-     id="base"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="0.0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="2.3379998"
-     inkscape:cx="-50.47631"
-     inkscape:cy="111.64201"
-     inkscape:document-units="px"
-     inkscape:current-layer="layer1"
-     showgrid="false"
-     showguides="true"
-     inkscape:guide-bbox="true"
-     inkscape:window-width="1860"
-     inkscape:window-height="1043"
-     inkscape:window-x="60"
-     inkscape:window-y="0"
-     inkscape:window-maximized="1"
-     objecttolerance="20"
-     guidetolerance="20"
-     inkscape:snap-perpendicular="false"
-     inkscape:snap-tangential="false"
-     fit-margin-top="0"
-     fit-margin-left="0"
-     fit-margin-right="0"
-     fit-margin-bottom="0">
-    <sodipodi:guide
-       position="-1101.3799,74.878857"
-       orientation="1,0"
-       id="guide8476"
-       inkscape:label=""
-       inkscape:color="rgb(0,0,255)"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="-1095.2819,77.925737"
-       orientation="1,0"
-       id="guide8478"
-       inkscape:label=""
-       inkscape:color="rgb(0,0,255)"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="-1093.5965,78.723237"
-       orientation="0,1"
-       id="guide8480"
-       inkscape:label=""
-       inkscape:color="rgb(0,0,255)"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="-849.76783,140.22262"
-       orientation="1,0"
-       id="guide8484"
-       inkscape:label=""
-       inkscape:color="rgb(0,0,255)"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="-998.92845,2.8632431"
-       orientation="1,0"
-       id="guide8289"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="-611.32268,17.634023"
-       orientation="1,0"
-       id="guide8439"
-       inkscape:label=""
-       inkscape:color="rgb(0,0,255)"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="-695.26246,35.830602"
-       orientation="-0.5,-0.8660254"
-       id="guide8455"
-       inkscape:label=""
-       inkscape:color="rgb(0,0,255)"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="-654.02808,92.811073"
-       orientation="1,0"
-       id="guide8493"
-       inkscape:label=""
-       inkscape:color="rgb(0,0,255)"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="-705.63068,-34.568369"
-       orientation="1,0"
-       id="guide8876"
-       inkscape:label=""
-       inkscape:color="rgb(0,0,255)"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="-682.85943,144.08003"
-       orientation="1,0"
-       id="guide8880"
-       inkscape:label=""
-       inkscape:color="rgb(0,0,255)"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="-634.89369,22.707274"
-       orientation="1,0"
-       id="guide8882"
-       inkscape:label=""
-       inkscape:color="rgb(0,0,255)"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="-623.10868,25.612854"
-       orientation="1,0"
-       id="guide8884"
-       inkscape:label=""
-       inkscape:color="rgb(0,0,255)"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="-647.83152,15.101109"
-       orientation="1,0"
-       id="guide8886"
-       inkscape:label=""
-       inkscape:color="rgb(0,0,255)"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="-670.25469,61.863316"
-       orientation="1,0"
-       id="guide8888"
-       inkscape:label=""
-       inkscape:color="rgb(0,0,255)"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="-695.05542,32.41654"
-       orientation="1,0"
-       id="guide8890"
-       inkscape:label=""
-       inkscape:color="rgb(0,0,255)"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="-722.79159,157.82418"
-       orientation="1,0"
-       id="guide8252"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="-577.47339,48.799353"
-       orientation="-0.5,-0.8660254"
-       id="guide8256"
-       inkscape:label=""
-       inkscape:color="rgb(0,0,255)"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="-577.07495,48.932166"
-       orientation="0,1"
-       id="guide8258"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="-577.70386,48.533728"
-       orientation="1,0"
-       id="guide8260"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="-688.96167,32.029821"
-       orientation="1,0"
-       id="guide8262"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="-100.63752,111.97179"
-       orientation="1,0"
-       id="guide8176"
-       inkscape:locked="false" />
-  </sodipodi:namedview>
+   inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)">
+  <polygon
+     points="150,50 236.6,100 236.6,200 150,250 63.4,200 63.4,100"
+     fill="white"
+     stroke="#440154"
+     stroke-width="3"
+     id="polygon897"
+     style="fill:#ffffff;stroke:#000000;stroke-opacity:1;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none" />
+  <rect
+     x="164.38431"
+     y="203.27832"
+     width="22.950422"
+     height="17.212818"
+     rx="2.8688028"
+     ry="2.8688028"
+     fill="#414487"
+     id="rect943-4-2"
+     style="fill:none;stroke:url(#linearGradient2105);stroke-width:0.573761;stroke-opacity:1" />
   <metadata
-     id="metadata7">
+     id="metadata959">
     <rdf:RDF>
       <cc:Work
          rdf:about="">
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
+  <defs
+     id="defs957">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient2074">
+      <stop
+         style="stop-color:#414487;stop-opacity:1;"
+         offset="0"
+         id="stop2070" />
+      <stop
+         style="stop-color:#414487;stop-opacity:0;"
+         offset="1"
+         id="stop2072" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient2074"
+       id="linearGradient2076"
+       x1="-135.83842"
+       y1="211.88473"
+       x2="-118.98344"
+       y2="211.88474"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient2074"
+       id="linearGradient2105"
+       gradientUnits="userSpaceOnUse"
+       x1="-135.83842"
+       y1="211.88473"
+       x2="-118.98344"
+       y2="211.88474"
+       gradientTransform="translate(299.93585)" />
+  </defs>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     id="namedview955"
+     showgrid="false"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:zoom="2.7566667"
+     inkscape:cx="103.16024"
+     inkscape:cy="151.77637"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg953" />
+  <!-- Truly regular hexagon (all sides equal length, all angles 120°) -->
+  <!-- For a regular hexagon centered at (150,150) with radius 100 -->
+  <!-- Input elements (data sources) - using viridis palette, moved inward -->
+  <!-- Registry square containing bit dashes (centered and smaller) -->
+  <!-- Connection points at the square (small circles where lines enter) -->
+  <!-- Binary representation inside square (simplified dash patterns) -->
+  <!-- Connection lines from input to bit sequences -->
+  <!-- Output integer -->
+  <!-- Connection point at bottom of square -->
+  <!-- Connection arrow from registry to output -->
+  <rect
+     x="109.96793"
+     y="107"
+     width="80"
+     height="80"
+     rx="5"
+     ry="5"
+     fill="none"
+     stroke="#414487"
+     stroke-width="2"
+     id="rect905" />
   <g
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer"
-     id="layer1"
-     transform="translate(-2051.8308,-460.87245)">
-    <path
-       sodipodi:type="star"
-       style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.2;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
-       id="path8178"
-       sodipodi:sides="6"
-       sodipodi:cx="2133.8772"
-       sodipodi:cy="555.61145"
-       sodipodi:r1="94.738998"
-       sodipodi:r2="82.046371"
-       sodipodi:arg1="1.5707963"
-       sodipodi:arg2="2.0943951"
-       inkscape:flatsided="true"
-       inkscape:rounded="0"
-       inkscape:randomized="0"
-       d="m 2133.8772,650.35045 -82.0464,-47.3695 0,-94.739 82.0464,-47.3695 82.0464,47.3695 0,94.739 z" />
+     id="g1027"
+     transform="rotate(90,128.65566,125.23972)"
+     style="opacity:0.5">
+    <line
+       x1="116"
+       y1="104"
+       x2="136"
+       y2="104"
+       stroke="#440154"
+       stroke-width="4"
+       stroke-linecap="round"
+       id="line913" />
+    <line
+       x1="147.5"
+       y1="104"
+       x2="152.5"
+       y2="104"
+       stroke="#440154"
+       stroke-width="4"
+       stroke-linecap="round"
+       id="line915" />
+    <line
+       x1="164"
+       y1="104"
+       x2="184"
+       y2="104"
+       stroke="#440154"
+       stroke-width="4"
+       stroke-linecap="round"
+       id="line917" />
   </g>
+  <g
+     id="g1076"
+     transform="rotate(90,131.60125,128.36668)">
+    <circle
+       cx="94"
+       cy="110"
+       r="8"
+       fill="#440154"
+       id="circle899" />
+    <circle
+       cx="110"
+       cy="110"
+       r="3"
+       fill="#440154"
+       id="circle907" />
+    <line
+       x1="100"
+       y1="110"
+       x2="109"
+       y2="110"
+       stroke="#440154"
+       stroke-width="2"
+       id="line937" />
+  </g>
+  <g
+     id="g1033"
+     transform="matrix(0,1,1,0,45.90184,-2.1442047)"
+     style="opacity:0.5">
+    <line
+       x1="177.99998"
+       y1="130"
+       x2="182.99998"
+       y2="130"
+       stroke="#21918c"
+       stroke-width="4"
+       stroke-linecap="round"
+       id="line925" />
+    <line
+       x1="116"
+       y1="130"
+       x2="126"
+       y2="130"
+       stroke="#21918c"
+       stroke-width="4"
+       stroke-linecap="round"
+       id="line919" />
+    <line
+       x1="135.33333"
+       y1="130"
+       x2="155.33333"
+       y2="130"
+       stroke="#21918c"
+       stroke-width="4"
+       stroke-linecap="round"
+       id="line921" />
+    <line
+       x1="164.66666"
+       y1="130"
+       x2="169.66666"
+       y2="130"
+       stroke="#21918c"
+       stroke-width="4"
+       stroke-linecap="round"
+       id="line923" />
+  </g>
+  <g
+     id="g991"
+     transform="rotate(-90,166.32559,130.46607)">
+    <circle
+       cx="206"
+       cy="140"
+       r="8"
+       fill="#21918c"
+       id="circle901" />
+    <circle
+       cx="190"
+       cy="140"
+       r="3"
+       fill="#21918c"
+       id="circle909" />
+    <line
+       x1="200"
+       y1="140"
+       x2="191"
+       y2="140"
+       stroke="#21918c"
+       stroke-width="2"
+       id="line939" />
+  </g>
+  <g
+     id="g1039"
+     transform="rotate(90,140.80229,137.26196)"
+     style="opacity:0.5">
+    <line
+       x1="116"
+       y1="154"
+       x2="121"
+       y2="154"
+       stroke="#fde725"
+       stroke-width="4"
+       stroke-linecap="round"
+       id="line927" />
+    <line
+       x1="130.33333"
+       y1="154"
+       x2="135.33333"
+       y2="154"
+       stroke="#fde725"
+       stroke-width="4"
+       stroke-linecap="round"
+       id="line929" />
+    <line
+       x1="144.66666"
+       y1="154"
+       x2="164.66666"
+       y2="154"
+       stroke="#fde725"
+       stroke-width="4"
+       stroke-linecap="round"
+       id="line931" />
+    <line
+       x1="173.99998"
+       y1="154"
+       x2="183.99998"
+       y2="154"
+       stroke="#fde725"
+       stroke-width="4"
+       stroke-linecap="round"
+       id="line933" />
+  </g>
+  <g
+     id="g998"
+     transform="rotate(90,148.80834,145.268)">
+    <circle
+       cx="94"
+       cy="170"
+       r="8"
+       fill="#fde725"
+       id="circle903" />
+    <circle
+       cx="110"
+       cy="170"
+       r="3"
+       fill="#fde725"
+       id="circle911" />
+    <line
+       x1="100"
+       y1="170"
+       x2="109"
+       y2="170"
+       stroke="#fde725"
+       stroke-width="2"
+       id="line941" />
+  </g>
+  <rect
+     x="138.49272"
+     y="203"
+     width="22.950422"
+     height="17.212818"
+     rx="2.8688028"
+     ry="2.8688028"
+     fill="#414487"
+     id="rect943"
+     style="stroke-width:0.574002;stroke-miterlimit:4;stroke-dasharray:none" />
+  <text
+     x="149.96794"
+     y="214.4752"
+     font-family="Arial, sans-serif"
+     font-size="9.18017px"
+     text-anchor="middle"
+     fill="#ffffff"
+     id="text945"
+     style="stroke-width:0.574002;stroke-miterlimit:4;stroke-dasharray:none">42</text>
+  <g
+     id="g1154"
+     transform="translate(-0.03206349,17)">
+    <circle
+       cx="150"
+       cy="170"
+       r="3"
+       fill="#414487"
+       id="circle947" />
+    <g
+       id="g963"
+       transform="translate(-0.1813785,-2)">
+      <line
+         x1="150.18138"
+         y1="173"
+         x2="150.18138"
+         y2="185"
+         stroke="#414487"
+         stroke-width="2"
+         id="line949" />
+      <polygon
+         points="145,180 150,190 155,180 "
+         fill="#414487"
+         id="polygon951"
+         transform="matrix(0.63724305,0,0,0.63724305,54.594921,67.472794)" />
+    </g>
+  </g>
+  <rect
+     x="-135.55154"
+     y="203.27832"
+     width="22.950422"
+     height="17.212818"
+     rx="2.8688028"
+     ry="2.8688028"
+     fill="#414487"
+     id="rect943-4"
+     style="fill:none;stroke:url(#linearGradient2076);stroke-width:0.573761;stroke-opacity:1"
+     transform="scale(-1,1)" />
 </svg>
