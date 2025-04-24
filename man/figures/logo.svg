@@ -23,15 +23,52 @@
      id="polygon897"
      style="fill:#ffffff;stroke:#000000;stroke-opacity:1;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none" />
   <rect
+     x="138.49272"
+     y="106.82534"
+     width="22.826088"
+     height="80"
+     rx="5"
+     ry="5"
+     fill="none"
+     stroke="#414487"
+     stroke-width="2"
+     id="rect905-3"
+     style="stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none" />
+  <rect
+     x="-135.55157"
+     y="106.82534"
+     width="22.963524"
+     height="80"
+     rx="5"
+     ry="5"
+     fill="none"
+     stroke="#414487"
+     stroke-width="2"
+     id="rect905-8-8"
+     style="stroke:url(#linearGradient997);stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none"
+     transform="scale(-1,1)" />
+  <rect
      x="164.38431"
-     y="203.27832"
+     y="106.82534"
+     width="22.963524"
+     height="80"
+     rx="5"
+     ry="5"
+     fill="none"
+     stroke="#414487"
+     stroke-width="2"
+     id="rect905-1"
+     style="stroke:url(#linearGradient989);stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none" />
+  <rect
+     x="164.38431"
+     y="203"
      width="22.950422"
      height="17.212818"
      rx="2.8688028"
      ry="2.8688028"
      fill="#414487"
      id="rect943-4-2"
-     style="fill:none;stroke:url(#linearGradient2105);stroke-width:0.573761;stroke-opacity:1" />
+     style="fill:none;stroke:url(#linearGradient2105);stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
   <metadata
      id="metadata959">
     <rdf:RDF>
@@ -46,6 +83,30 @@
   </metadata>
   <defs
      id="defs957">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient995">
+      <stop
+         style="stop-color:#414487;stop-opacity:1;"
+         offset="0"
+         id="stop991" />
+      <stop
+         style="stop-color:#414487;stop-opacity:0;"
+         offset="1"
+         id="stop993" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient987">
+      <stop
+         style="stop-color:#414487;stop-opacity:1;"
+         offset="0"
+         id="stop983" />
+      <stop
+         style="stop-color:#414487;stop-opacity:0;"
+         offset="1"
+         id="stop985" />
+    </linearGradient>
     <linearGradient
        inkscape:collect="always"
        id="linearGradient2074">
@@ -66,7 +127,8 @@
        y1="211.88473"
        x2="-118.98344"
        y2="211.88474"
-       gradientUnits="userSpaceOnUse" />
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(0,-0.27832031)" />
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient2074"
@@ -76,7 +138,27 @@
        y1="211.88473"
        x2="-118.98344"
        y2="211.88474"
-       gradientTransform="translate(299.93585)" />
+       gradientTransform="translate(299.93585,-0.27832031)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient987"
+       id="linearGradient989"
+       x1="164.13431"
+       y1="147.17466"
+       x2="187.59783"
+       y2="147.17466"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(0,-0.34931946)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient995"
+       id="linearGradient997"
+       x1="112.33804"
+       y1="147.17466"
+       x2="135.80157"
+       y2="147.17466"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-248.13961,-0.34931946)" />
   </defs>
   <sodipodi:namedview
      pagecolor="#ffffff"
@@ -93,9 +175,9 @@
      showgrid="false"
      showguides="true"
      inkscape:guide-bbox="true"
-     inkscape:zoom="2.6837893"
-     inkscape:cx="103.16024"
-     inkscape:cy="151.77637"
+     inkscape:zoom="2.6128385"
+     inkscape:cx="37.161131"
+     inkscape:cy="138.71829"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
@@ -111,17 +193,6 @@
   <!-- Output integer -->
   <!-- Connection point at bottom of square -->
   <!-- Connection arrow from registry to output -->
-  <rect
-     x="109.96793"
-     y="107"
-     width="80"
-     height="80"
-     rx="5"
-     ry="5"
-     fill="none"
-     stroke="#414487"
-     stroke-width="2"
-     id="rect905" />
   <g
      id="g1027"
      transform="rotate(90,128.65566,125.23972)"
@@ -317,7 +388,7 @@
      ry="2.8688028"
      fill="#414487"
      id="rect943"
-     style="stroke-width:0.574002;stroke-miterlimit:4;stroke-dasharray:none" />
+     style="stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke:#414487;stroke-opacity:1" />
   <text
      x="149.96794"
      y="214.4752"
@@ -356,13 +427,13 @@
   </g>
   <rect
      x="-135.55154"
-     y="203.27832"
+     y="203"
      width="22.950422"
      height="17.212818"
      rx="2.8688028"
      ry="2.8688028"
      fill="#414487"
      id="rect943-4"
-     style="fill:none;stroke:url(#linearGradient2076);stroke-width:0.573761;stroke-opacity:1"
+     style="fill:none;stroke:url(#linearGradient2076);stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      transform="scale(-1,1)" />
 </svg>
