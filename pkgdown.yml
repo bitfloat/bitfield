@@ -1,9 +1,8 @@
 pandoc: 3.1.11
 pkgdown: 2.1.1
 pkgdown_sha: ~
-articles:
-  bitfield: bitfield.html
-last_built: 2025-04-24T08:21Z
+articles: {}
+last_built: 2025-04-24T08:31Z
 urls:
   reference: http://bitfloat.github.io/bitfield/reference
   article: http://bitfloat.github.io/bitfield/articles
