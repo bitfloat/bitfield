@@ -41,8 +41,6 @@ reference:
 
 navbar:
   left:
-    - text: "Get Started"
-      href: articles/bitfield.html
     - text: "Reference"
       href: reference/index.html
     - text: "Changelog"
