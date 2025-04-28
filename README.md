@@ -92,7 +92,7 @@ bitfield
 
 ``` r
 reg <- bf_registry(name = "yield_QA",
-                   description = "this example bitfield documents quality assessment in a table of yield data.")
+                   description = "this example bitfield documents quality assessment of yield data.")
 ```
 
 Then, individual bit flags need to be grown by specifying the respective
@@ -104,27 +104,23 @@ number of characters of a variable), or `numeric` to encode a numeric
 
 ``` r
 # tests for longitude availability
-reg <- 
-  bf_map(protocol = "na",                       # the protocol with which to build the bit flag
-         data = bf_tbl,                         # specify where to determine flags
-         x = x,                                 # ... and which variable to test
-         pos = 1,                               # specify at which position to store the flag
-         registry = reg)                        # provide the registry to update
+reg <- bf_map(protocol = "na",                       # the protocol with which to build the bit flag
+              data = bf_tbl,                         # specify where to determine flags
+              x = x,                                 # ... and which variable to test
+              pos = 1,                               # specify at which position to store the flag
+              registry = reg)                        # provide the registry to update
 
 # test which case an observation is part of
-reg <- 
-  bf_map(protocol = "case", data = bf_tbl,
-         yield >= 11, yield < 11 & yield > 9, yield < 9 & commodity == "maize",
-         registry = reg)
+reg <- bf_map(protocol = "case", data = bf_tbl,
+              yield >= 11, yield < 11 & yield > 9, yield < 9 & commodity == "maize",
+              registry = reg)
 
 # test the length (number of characters) of values
-reg <- 
-  bf_map(protocol = "nChar", data = bf_tbl, x = y, registry = reg)
+reg <- bf_map(protocol = "nChar", data = bf_tbl, x = y, registry = reg)
 
 # store a simplified (e.g. rounded) numeric value
-reg <-
-  bf_map(protocol = "numeric", data = bf_tbl, x = yield, format = "half", 
-         registry = reg)
+reg <- bf_map(protocol = "numeric", data = bf_tbl, x = yield, format = "half", 
+              registry = reg)
 ```
 
 These are functions that represent the possible encoding types boolean
