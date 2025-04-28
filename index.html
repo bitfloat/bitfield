@@ -130,31 +130,27 @@
 <p>The first step is in creating what is called <code>registry</code> in <code>bitfield</code>. This registry captures all the information required to build the bitfield</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/bf_registry.html">bf_registry</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"yield_QA"</span>,</span>
-<span>                   description <span class="op">=</span> <span class="st">"this example bitfield documents quality assessment in a table of yield data."</span><span class="op">)</span></span></code></pre></div>
+<span>                   description <span class="op">=</span> <span class="st">"this example bitfield documents quality assessment of yield data."</span><span class="op">)</span></span></code></pre></div>
 <p>Then, individual bit flags need to be grown by specifying the respective protocols. These protocols create flags for the most common applications, such as <code>na</code> (to test for missing values), <code>case</code> (to test what case/class the observations are part of),<code>nChar</code> (to count the number of characters of a variable), or <code>numeric</code> to encode a numeric (floating point) variable as bit sequence.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># tests for longitude availability</span></span>
-<span><span class="va">reg</span> <span class="op">&lt;-</span> </span>
-<span>  <span class="fu"><a href="reference/bf_map.html">bf_map</a></span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"na"</span>,                       <span class="co"># the protocol with which to build the bit flag</span></span>
-<span>         data <span class="op">=</span> <span class="va">bf_tbl</span>,                         <span class="co"># specify where to determine flags</span></span>
-<span>         x <span class="op">=</span> <span class="va">x</span>,                                 <span class="co"># ... and which variable to test</span></span>
-<span>         pos <span class="op">=</span> <span class="fl">1</span>,                               <span class="co"># specify at which position to store the flag</span></span>
-<span>         registry <span class="op">=</span> <span class="va">reg</span><span class="op">)</span>                        <span class="co"># provide the registry to update</span></span>
+<span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/bf_map.html">bf_map</a></span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"na"</span>,                       <span class="co"># the protocol with which to build the bit flag</span></span>
+<span>              data <span class="op">=</span> <span class="va">bf_tbl</span>,                         <span class="co"># specify where to determine flags</span></span>
+<span>              x <span class="op">=</span> <span class="va">x</span>,                                 <span class="co"># ... and which variable to test</span></span>
+<span>              pos <span class="op">=</span> <span class="fl">1</span>,                               <span class="co"># specify at which position to store the flag</span></span>
+<span>              registry <span class="op">=</span> <span class="va">reg</span><span class="op">)</span>                        <span class="co"># provide the registry to update</span></span>
 <span></span>
 <span><span class="co"># test which case an observation is part of</span></span>
-<span><span class="va">reg</span> <span class="op">&lt;-</span> </span>
-<span>  <span class="fu"><a href="reference/bf_map.html">bf_map</a></span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"case"</span>, data <span class="op">=</span> <span class="va">bf_tbl</span>,</span>
-<span>         <span class="va">yield</span> <span class="op">&gt;=</span> <span class="fl">11</span>, <span class="va">yield</span> <span class="op">&lt;</span> <span class="fl">11</span> <span class="op">&amp;</span> <span class="va">yield</span> <span class="op">&gt;</span> <span class="fl">9</span>, <span class="va">yield</span> <span class="op">&lt;</span> <span class="fl">9</span> <span class="op">&amp;</span> <span class="va">commodity</span> <span class="op">==</span> <span class="st">"maize"</span>,</span>
-<span>         registry <span class="op">=</span> <span class="va">reg</span><span class="op">)</span></span>
+<span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/bf_map.html">bf_map</a></span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"case"</span>, data <span class="op">=</span> <span class="va">bf_tbl</span>,</span>
+<span>              <span class="va">yield</span> <span class="op">&gt;=</span> <span class="fl">11</span>, <span class="va">yield</span> <span class="op">&lt;</span> <span class="fl">11</span> <span class="op">&amp;</span> <span class="va">yield</span> <span class="op">&gt;</span> <span class="fl">9</span>, <span class="va">yield</span> <span class="op">&lt;</span> <span class="fl">9</span> <span class="op">&amp;</span> <span class="va">commodity</span> <span class="op">==</span> <span class="st">"maize"</span>,</span>
+<span>              registry <span class="op">=</span> <span class="va">reg</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># test the length (number of characters) of values</span></span>
-<span><span class="va">reg</span> <span class="op">&lt;-</span> </span>
-<span>  <span class="fu"><a href="reference/bf_map.html">bf_map</a></span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"nChar"</span>, data <span class="op">=</span> <span class="va">bf_tbl</span>, x <span class="op">=</span> <span class="va">y</span>, registry <span class="op">=</span> <span class="va">reg</span><span class="op">)</span></span>
+<span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/bf_map.html">bf_map</a></span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"nChar"</span>, data <span class="op">=</span> <span class="va">bf_tbl</span>, x <span class="op">=</span> <span class="va">y</span>, registry <span class="op">=</span> <span class="va">reg</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># store a simplified (e.g. rounded) numeric value</span></span>
-<span><span class="va">reg</span> <span class="op">&lt;-</span></span>
-<span>  <span class="fu"><a href="reference/bf_map.html">bf_map</a></span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"numeric"</span>, data <span class="op">=</span> <span class="va">bf_tbl</span>, x <span class="op">=</span> <span class="va">yield</span>, format <span class="op">=</span> <span class="st">"half"</span>, </span>
-<span>         registry <span class="op">=</span> <span class="va">reg</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/bf_map.html">bf_map</a></span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"numeric"</span>, data <span class="op">=</span> <span class="va">bf_tbl</span>, x <span class="op">=</span> <span class="va">yield</span>, format <span class="op">=</span> <span class="st">"half"</span>, </span>
+<span>              registry <span class="op">=</span> <span class="va">reg</span><span class="op">)</span></span></code></pre></div>
 <p>These are functions that represent the possible encoding types boolean (<code>bool</code>), enumerated cases (<code>enum</code>), (signed) integers (<code>int</code>), and numeric floating-point (<code>num</code>). The encoding type determines various storage parameters of the resulting flags. This is, however, not yet the bitfield. The registry is merely the instruction manual, so to speak, to create the bitfield and encode it as integer, with the function <code><a href="reference/bf_encode.html">bf_encode()</a></code>.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">reg</span></span>
