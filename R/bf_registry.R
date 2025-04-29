@@ -3,9 +3,6 @@
 #' @param name [`character(1)`][character]\cr the name of the bitfield.
 #' @param description [`character(1)`][character]\cr the description of the
 #'   bitfield.
-#' @details Besides creating a registry object, this function also opens the
-#' environment \code{bf_env}, which is used to store the temporary non-encoded
-#' flag values.
 #' @return an empty registry that captures some metadata of the bitfield, but
 #'   doesn't contain any flags yet.
 #' @examples
@@ -35,10 +32,7 @@ bf_registry <- function(name = NULL, description = NULL){
 
   version <- list(bitfield = as.character(packageVersion("bitfield")), r = paste0(version$major, ".", version$minor), date = format(Sys.Date(), "%Y-%m-%d"))
 
-  # open a new environment
-  .GlobalEnv[["bf_env"]] <- new_environment()
-
-  # put together the intial bitfield
+  # put together the initial bitfield
   out <- new(Class = "registry",
              width = 0L,
              length = 0L,
