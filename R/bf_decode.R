@@ -13,6 +13,7 @@
 #'   distinct fields shall be separated.
 #' @param verbose [`logical(1)`][logical]\cr whether or not to return the
 #'   registry legend.
+#' @return data.frame with the binary values of flags in the registry in columns.
 #' @examples
 #' # build registry
 #' reg <- bf_map(protocol = "na", data = bf_tbl, x = commodity)

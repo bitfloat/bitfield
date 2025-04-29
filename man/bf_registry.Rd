@@ -19,11 +19,6 @@ doesn't contain any flags yet.
 \description{
 Initiate a new registry
 }
-\details{
-Besides creating a registry object, this function also opens the
-environment \code{bf_env}, which is used to store the temporary non-encoded
-flag values.
-}
 \examples{
 reg <- bf_registry(name = "currentWorkflow",
                    description = "this is to document my current workflow so

@@ -22,6 +22,9 @@ distinct fields shall be separated.}
 \item{verbose}{\code{\link[=logical]{logical(1)}}\cr whether or not to return the
 registry legend.}
 }
+\value{
+data.frame with the binary values of flags in the registry in columns.
+}
 \description{
 This function takes an integer bitfield and the registry used to build it
 upstream to decode it into bit representation and thereby unpack the data
