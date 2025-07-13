@@ -1,3 +1,8 @@
+# bitfield 0.7.0
+
+- inclusion of the `project()` helper function that specifies, similarly to `person()`, the project metadata.
+- remove automatic creation of a registry when calling `bf_map()` for the sake of more care when users set up a new registry. This should contain author and project metadata.
+
 # bitfield 0.6.0
 
 - rename various things to get a more coherent and intuitive workflow: `bf_test()` -> `bf_map()`, `operator` -> `protocol`, `bf_internal` -> `bf_pcl`
