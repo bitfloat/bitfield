@@ -22,7 +22,8 @@ registry <- setClass(Class = "registry",
                                version = "list",
                                md5 = "character",
                                description = "character",
-                               flags = "list"
+                               flags = "list",
+                               metadata = "list"
                      )
 )
 
@@ -89,6 +90,15 @@ setValidity("registry", function(object){
   } else {
     if(!is.list(object@flags)){
       errors = c(errors, "the slot 'flags' is not a list")
+    }
+
+  }
+
+  if(!.hasSlot(object = object, name = "metadata")){
+    errors = c(errors, "the registry does not have a 'metadata' slot.")
+  } else {
+    if(!is.list(object@metadata)){
+      errors = c(errors, "the slot 'metadata' is not a list")
     }
 
   }
