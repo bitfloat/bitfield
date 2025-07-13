@@ -1,29 +1,29 @@
 #' Build a bit flag
 #'
-#' This function maps values from a dataset into bit flags that can be encoded
+#' This function maps values from a dataset to bit flags that can be encoded
 #' into a bitfield.
 #' @param protocol [`character(1)`][character]\cr the protocol based on which
 #'   the flag should be determined, see Details.
 #' @param data the object to build bit flags for.
-#' @param ... the protocol-specific arguments for building a bit flag, see Details.
-#' @param pos [`integerish(.)`][integer]\cr the position(s) in the bitfield that
-#'   should be set.
+#' @param ... the protocol-specific arguments for building a bit flag, see
+#'   Details.
+#' @param pos [`integerish(.)`][integer]\cr optional position(s) in the bitfield
+#'   that should be set.
 #' @param name [`character(1)`][character]\cr optional flag-name.
 #' @param na.val value, of the same encoding type as the flag, that needs to be
 #'   given, if the test for this flag results in \code{NA}s.
 #' @param description [`character(.)`][character]\cr optional description that
 #'   should be used instead of the default protocol-specific description. This
-#'   description is used in the registry legend, so it should have as many
-#'   entries as there will be flags (two for a binary flag, as many as there are
-#'   cases for a enumeration flag and one for integer or numeric flags).
-#' @param registry [`registry(1)`][registry]\cr a bitfield registry that has
-#'   been defined with \code{\link{bf_registry}}; if it's undefined, an empty
-#'   registry will be defined on-the-fly.
-#' @details \code{protocol} can either be the name of an internal item
-#'   \code{\link{bf_pcl}}, a newly built local protocol or one that has been
+#'   description is used in the registry legend, so it must have as many entries
+#'   as there will be flags (two for a binary flag, as many as there are cases
+#'   for a enumeration flag and one for integer or numeric flags).
+#' @param registry [`registry(1)`][registry]\cr an already defined bitfield
+#'   registry.
+#' @details \code{protocol} can either be the name of an internal item (see
+#'   \code{\link{bf_pcl}}), a newly built local protocol or one that has been
 #'   imported from the bitfield community standards repo on github. Any
 #'   \code{protocol} has specific arguments, typically at least the name of the
-#'   column containing the variable values (\code{x}). To make this function as
+#'   column containing the values to test (\code{x}). To make this function as
 #'   general as possible, all of these arguments are specified via the
 #'   \code{...} argument of \code{bf_map}. Internal
 #'   protocols are: \itemize{
@@ -62,45 +62,42 @@
 #'   the mantissa), which corresponds to a decimal precision of ~16 digits
 #'   (\code{log10(2^52)}). Hence, if a bit flag doesn't seem to coincide with
 #'   the values you see in the console, double check the values with
-#'   \code{sprintf("%16f", values)}. If you use a larger decimal precision,
-#'   you'll see more digits, but those are not meaningful, as they result merely
-#'   from the binary-to-decimal conversion (check out
-#'   \code{\link{.makeEncoding}} for additional information.
-#'
-#'   When testing for cases, they are evaluate in the order they have been
-#'   defined in. If an observation is part of two cases, it will thus have the
-#'   value of the last case it matches. The encoding type of cases is given as
-#'   \emph{enumeration}, which means that the values can be either
-#'   \code{integer} or \code{factor}. Both are handled as if they were integers
-#'   internally, so even though an enumeration data type could in principle also
-#'   be a \code{character}, this is possible within the scope of this package.
-#'   Bitflag protocols that extend the \emph{case} protocol must thus always
-#'   result in integer values.
+#'   \code{sprintf("%16f", values)}. If you use a larger value than 16 for
+#'   precision, you'll see more digits, but those are not meaningful, as they
+#'   result merely from the binary-to-decimal conversion (check out
+#'   \code{\link{.makeEncoding}} for an additional details.
 #' @return an (updated) object of class 'registry' with the additional flag
 #'   defined here.
 #' @examples
+#' reg <- bf_registry(name = "testBF", description = "test bitfield")
 #' opr <- "identical"
+#'
 #'
 #' # identify which arguments need to be given to call a test ...
 #' formalArgs(bf_pcl[[opr]]$test)
 #'
 #' # put the test together
-#' bf_map(protocol = opr, data = bf_tbl, x = x, y = y, na.val = FALSE)
+#' bf_map(protocol = opr, data = bf_tbl, registry = reg,
+#'        x = x, y = y, na.val = FALSE)
 #'
 #' # some other examples of ...
 #' # boolean encoding
-#' bf_map(protocol = "matches", data = bf_tbl, x = commodity, set = c("soybean", "honey"))
-#' bf_map(protocol = "range", data = bf_tbl, x = yield, min = 10.4, max = 11)
+#' bf_map(protocol = "matches", data = bf_tbl, registry = reg,
+#'        x = commodity, set = c("soybean", "honey"))
+#' bf_map(protocol = "range", data = bf_tbl, registry = reg,
+#'        x = yield, min = 10.4, max = 11)
 #'
 #' # enumeration encoding
-#' bf_map(protocol = "case", data = bf_tbl,
-#'         yield >= 11, yield < 11 & yield > 9, yield < 9 & commodity == "maize")
+#' bf_map(protocol = "case", data = bf_tbl, registry = reg,
+#'        yield >= 11, yield < 11 & yield > 9, yield < 9 & commodity == "maize")
 #'
 #' # integer encoding
-#' bf_map(protocol = "integer", data = bf_tbl, x = as.integer(year), na.val = 0L)
+#' bf_map(protocol = "integer", data = bf_tbl, registry = reg,
+#'        x = as.integer(year), na.val = 0L)
 #'
 #' # floating-point encoding
-#' bf_map(protocol = "numeric", data = bf_tbl, x = yield, decimals = 2)
+#' bf_map(protocol = "numeric", data = bf_tbl, registry = reg,
+#'        x = yield, decimals = 2)
 #'
 #' @importFrom rlang enquos eval_tidy exec env_bind get_expr `:=`
 #' @importFrom purrr map safely list_rbind
@@ -112,21 +109,16 @@
 #' @importFrom methods formalArgs
 #' @export
 
-bf_map <- function(protocol, data, ..., name = NULL, pos = NULL, na.val = NULL,
-                   description = NULL, registry = NULL){
+bf_map <- function(protocol, data, registry, ..., name = NULL, pos = NULL, na.val = NULL,
+                   description = NULL){
 
   assertCharacter(x = protocol, len = 1, any.missing = FALSE)
+  assertClass(x = registry, classes = "registry")
   assertCharacter(x = name, len = 1, any.missing = FALSE, null.ok = TRUE)
   assertIntegerish(x = pos, lower = 1, min.len = 1, unique = TRUE, null.ok = TRUE)
-  assertClass(x = registry, classes = "registry", null.ok = TRUE)
 
   args <- enquos(..., .named = TRUE)
   # return(args)
-
-  # load registry ----
-  if(is.null(registry)){
-    registry <- bf_registry(name = "new_registry")
-  }
 
   # extract values in data ----
   if(inherits(data, "bf_rast")){
