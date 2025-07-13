@@ -557,3 +557,98 @@
   return(protocol)
 
 }
+#' Create a Project Metadata Object
+#'
+#' @param title [`character(1)`][character]\cr project title.
+#' @param author [`person(.)`][person]\cr person or organization objects created
+#'   with `person()`.
+#' @param year [`character(1)`][character]\cr publication year, defaults to
+#'   current year.
+#' @param publisher [`character(1)`][character]\cr name of the publishing
+#'   entity.
+#' @param type [`character(1)`][character]\cr resource type, one of "Dataset",
+#'   "Software", "Image", "Model", "Text", "Collection", "Other".
+#' @param identifier [`character(1)`][character]\cr project identifier (e.g.,
+#'   DOI).
+#' @param description [`character(1)`][character]\cr abstract or description.
+#' @param subject [`character(.)`][character]\cr keywords or classification
+#'   codes.
+#' @param contributor [`person(.)`][person]\cr additional contributors as person
+#'   objects.
+#' @param license [`character(1)`][character]\cr license or rights statement.
+#' @param funding [`character(.)`][character]\cr funding information.
+#' @param language [`character(1)`][character]\cr primary language, defaults to
+#'   "en".
+#' @param version [`character(1)`][character]\cr version of the resource.
+#' @param ... additional metadata elements as name-value pairs.
+#' @return An object of class "project" with standardized metadata fields.
+#' @examples
+#' myProj <- project(title = "example project",
+#'                   author = c(person("Jane", "Smith", email = "jane@example.com",
+#'                                     role = "aut",
+#'                                     comment = c(ORCID = "0000-0001-2345-6789",
+#'                                                 affiliation = "University of Example",
+#'                                                 ROR = "https://ror.org/05gq02987")),
+#'                              person("Robert", "Jones", role = c("aut", "cre")),
+#'                   publisher = "example consortium",
+#'                   type = "Dataset",
+#'                   identifier = "10.5281/zenodo.1234567",
+#'                   description = "A comprehensive explanation",
+#'                   subject = c("keyword", "subject"),
+#'                   license = "CC-BY-4.0")
+#' @importFrom checkmate assertCharacter assertChoice assertList
+#' @export
+
+project <- function(title, year = format(Sys.Date(), "%Y"), language = "en",
+                    type, author = NULL, publisher = NULL, identifier = NULL,
+                    description = NULL, subject = NULL, contributor = NULL,
+                    rights = NULL, funding = NULL, version = NULL, ...) {
+
+  # Input validation using checkmate
+  assertCharacter(title, len = 1, any.missing = FALSE)
+  assertCharacter(year, len = 1, pattern = "^[0-9]{4}$")
+  assertChoice(x = type, choices = c("Dataset", "Software", "Image", "Model", "Text", "Collection", "Other"))
+  assertCharacter(language, len = 1)
+  if (!is.null(author)) {
+    assertClass(author, classes = "person")
+  }
+  if (!is.null(publisher)) assertCharacter(publisher, len = 1, any.missing = FALSE)
+  if (!is.null(identifier)) assertCharacter(identifier, len = 1, any.missing = FALSE)
+  if (!is.null(description)) assertCharacter(description, len = 1, any.missing = FALSE)
+  if (!is.null(subject)) assertCharacter(subject, min.len = 1, any.missing = FALSE)
+  if (!is.null(contributor)) assertClass(author, classes = "person")
+  if (!is.null(rights)) assertCharacter(rights, len = 1, any.missing = FALSE)
+  if (!is.null(funding)) assertCharacter(funding, any.missing = FALSE)
+  if (!is.null(version)) assertCharacter(version, len = 1, any.missing = FALSE)
+
+  # Create the project object
+  proj <- list(
+    title = title,
+    author = author,
+    year = year,
+    publisher = publisher,
+    type = type,
+    identifier = identifier,
+    description = description,
+    subject = subject,
+    contributor = contributor,
+    license = license,
+    funding = funding,
+    language = language,
+    version = version
+  )
+
+  # Add any additional metadata elements
+  if (length(list(...)) > 0) {
+    extra <- list(...)
+    proj <- c(proj, extra)
+  }
+
+  # Remove NULL elements
+  proj <- proj[!sapply(proj, is.null)]
+
+  # Set class
+  class(proj) <- c("project", "list")
+
+  return(proj)
+}
