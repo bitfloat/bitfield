@@ -5,10 +5,11 @@
 #' @param registry [`registry(1)`][registry]\cr the registry that should be
 #'   encoded into a bitfield.
 #' @return data.frame of the same length as the input data. Depending on type
-#'   and amount of bit flags, this can a table with any number of columns, each
+#'   and amount of bit flags, this can be a table with any number of columns, each
 #'   of which encodes a sequence of 32 bits into an integer.
 #' @examples
-#' reg <- bf_map(protocol = "na", data = bf_tbl, x = y)
+#' reg <- bf_registry(name = "testBF", description = "test bitfield")
+#' reg <- bf_map(protocol = "na", data = bf_tbl, registry = reg, x = y)
 #'
 #' field <- bf_encode(registry = reg)
 #' @importFrom checkmate assertClass assertCharacter assertLogical

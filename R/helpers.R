@@ -557,6 +557,7 @@
   return(protocol)
 
 }
+
 #' Create a Project Metadata Object
 #'
 #' @param title [`character(1)`][character]\cr project title.

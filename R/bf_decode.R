@@ -16,9 +16,10 @@
 #' @return data.frame with the binary values of flags in the registry in columns.
 #' @examples
 #' # build registry
-#' reg <- bf_map(protocol = "na", data = bf_tbl, x = commodity)
-#' reg <- bf_map(protocol = "matches", data = bf_tbl, x = commodity, set = c("soybean", "maize"),
-#'               registry = reg)
+#' reg <- bf_registry(name = "testBF", description = "test bitfield")
+#' reg <- bf_map(protocol = "na", data = bf_tbl, registry = reg, x = commodity)
+#' reg <- bf_map(protocol = "matches", data = bf_tbl, registry = reg,
+#'               x = commodity, set = c("soybean", "maize"))
 #' reg
 #'
 #' # encode the flags into a bitfield

@@ -20,8 +20,9 @@
 #' @param registry [`registry(1)`][registry]\cr an already defined bitfield
 #'   registry.
 #' @details \code{protocol} can either be the name of an internal item (see
-#'   \code{\link{bf_pcl}}), a newly built local protocol or one that has been
-#'   imported from the bitfield community standards repo on github. Any
+#'   \code{\link{bf_pcl}}), a newly built local protocol
+#'   (\code{\link{bf_protocol}}) or one that has been imported from the bitfield
+#'   community standards repo on github (\code{\link{bf_standards}}). Any
 #'   \code{protocol} has specific arguments, typically at least the name of the
 #'   column containing the values to test (\code{x}). To make this function as
 #'   general as possible, all of these arguments are specified via the
