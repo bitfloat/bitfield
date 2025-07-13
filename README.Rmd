@@ -11,11 +11,8 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   out.width = "100%"
 )
-library(dplyr)
 library(bitfield)
-library(CoordinateCleaner)
-library(stringr)
-library(magrittr)
+library(dplyr)
 library(knitr)
 ```
 
