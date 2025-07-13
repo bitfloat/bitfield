@@ -7,12 +7,12 @@
 bf_map(
   protocol,
   data,
+  registry,
   ...,
   name = NULL,
   pos = NULL,
   na.val = NULL,
-  description = NULL,
-  registry = NULL
+  description = NULL
 )
 }
 \arguments{
@@ -21,40 +21,41 @@ the flag should be determined, see Details.}
 
 \item{data}{the object to build bit flags for.}
 
-\item{...}{the protocol-specific arguments for building a bit flag, see Details.}
+\item{registry}{\code{\link[=registry]{registry(1)}}\cr an already defined bitfield
+registry.}
+
+\item{...}{the protocol-specific arguments for building a bit flag, see
+Details.}
 
 \item{name}{\code{\link[=character]{character(1)}}\cr optional flag-name.}
 
-\item{pos}{\code{\link[=integer]{integerish(.)}}\cr the position(s) in the bitfield that
-should be set.}
+\item{pos}{\code{\link[=integer]{integerish(.)}}\cr optional position(s) in the bitfield
+that should be set.}
 
 \item{na.val}{value, of the same encoding type as the flag, that needs to be
 given, if the test for this flag results in \code{NA}s.}
 
 \item{description}{\code{\link[=character]{character(.)}}\cr optional description that
 should be used instead of the default protocol-specific description. This
-description is used in the registry legend, so it should have as many
-entries as there will be flags (two for a binary flag, as many as there are
-cases for a enumeration flag and one for integer or numeric flags).}
-
-\item{registry}{\code{\link[=registry]{registry(1)}}\cr a bitfield registry that has
-been defined with \code{\link{bf_registry}}; if it's undefined, an empty
-registry will be defined on-the-fly.}
+description is used in the registry legend, so it must have as many entries
+as there will be flags (two for a binary flag, as many as there are cases
+for a enumeration flag and one for integer or numeric flags).}
 }
 \value{
 an (updated) object of class 'registry' with the additional flag
 defined here.
 }
 \description{
-This function maps values from a dataset into bit flags that can be encoded
+This function maps values from a dataset to bit flags that can be encoded
 into a bitfield.
 }
 \details{
-\code{protocol} can either be the name of an internal item
-\code{\link{bf_pcl}}, a newly built local protocol or one that has been
-imported from the bitfield community standards repo on github. Any
+\code{protocol} can either be the name of an internal item (see
+\code{\link{bf_pcl}}), a newly built local protocol
+(\code{\link{bf_protocol}}) or one that has been imported from the bitfield
+community standards repo on github (\code{\link{bf_standards}}). Any
 \code{protocol} has specific arguments, typically at least the name of the
-column containing the variable values (\code{x}). To make this function as
+column containing the values to test (\code{x}). To make this function as
 general as possible, all of these arguments are specified via the
 \code{...} argument of \code{bf_map}. Internal
 protocols are: \itemize{
@@ -94,44 +95,41 @@ double-precision floating-point values (with 64 bits, where 52 bits encode
 the mantissa), which corresponds to a decimal precision of ~16 digits
 (\code{log10(2^52)}). Hence, if a bit flag doesn't seem to coincide with
 the values you see in the console, double check the values with
-\code{sprintf("\%16f", values)}. If you use a larger decimal precision,
-you'll see more digits, but those are not meaningful, as they result merely
-from the binary-to-decimal conversion (check out
-\code{\link{.makeEncoding}} for additional information.
-
-When testing for cases, they are evaluate in the order they have been
-defined in. If an observation is part of two cases, it will thus have the
-value of the last case it matches. The encoding type of cases is given as
-\emph{enumeration}, which means that the values can be either
-\code{integer} or \code{factor}. Both are handled as if they were integers
-internally, so even though an enumeration data type could in principle also
-be a \code{character}, this is possible within the scope of this package.
-Bitflag protocols that extend the \emph{case} protocol must thus always
-result in integer values.
+\code{sprintf("\%16f", values)}. If you use a larger value than 16 for
+precision, you'll see more digits, but those are not meaningful, as they
+result merely from the binary-to-decimal conversion (check out
+\code{\link{.makeEncoding}} for an additional details.
 }
 
 \examples{
+reg <- bf_registry(name = "testBF", description = "test bitfield")
 opr <- "identical"
+
 
 # identify which arguments need to be given to call a test ...
 formalArgs(bf_pcl[[opr]]$test)
 
 # put the test together
-bf_map(protocol = opr, data = bf_tbl, x = x, y = y, na.val = FALSE)
+bf_map(protocol = opr, data = bf_tbl, registry = reg,
+       x = x, y = y, na.val = FALSE)
 
 # some other examples of ...
 # boolean encoding
-bf_map(protocol = "matches", data = bf_tbl, x = commodity, set = c("soybean", "honey"))
-bf_map(protocol = "range", data = bf_tbl, x = yield, min = 10.4, max = 11)
+bf_map(protocol = "matches", data = bf_tbl, registry = reg,
+       x = commodity, set = c("soybean", "honey"))
+bf_map(protocol = "range", data = bf_tbl, registry = reg,
+       x = yield, min = 10.4, max = 11)
 
 # enumeration encoding
-bf_map(protocol = "case", data = bf_tbl,
-        yield >= 11, yield < 11 & yield > 9, yield < 9 & commodity == "maize")
+bf_map(protocol = "case", data = bf_tbl, registry = reg,
+       yield >= 11, yield < 11 & yield > 9, yield < 9 & commodity == "maize")
 
 # integer encoding
-bf_map(protocol = "integer", data = bf_tbl, x = as.integer(year), na.val = 0L)
+bf_map(protocol = "integer", data = bf_tbl, registry = reg,
+       x = as.integer(year), na.val = 0L)
 
 # floating-point encoding
-bf_map(protocol = "numeric", data = bf_tbl, x = yield, decimals = 2)
+bf_map(protocol = "numeric", data = bf_tbl, registry = reg,
+       x = yield, decimals = 2)
 
 }

@@ -4,13 +4,21 @@
 \alias{bf_registry}
 \title{Initiate a new registry}
 \usage{
-bf_registry(name = NULL, description = NULL)
+bf_registry(name, description, author = NULL, project = NULL, license = "MIT")
 }
 \arguments{
 \item{name}{\code{\link[=character]{character(1)}}\cr the name of the bitfield.}
 
 \item{description}{\code{\link[=character]{character(1)}}\cr the description of the
 bitfield.}
+
+\item{author}{\code{\link[=person]{person(.)}}\cr the author(s) involved in the creation
+of this registry.}
+
+\item{project}{\code{\link[=list]{list(1)}}\cr object created with the function
+\code{\link{project}} that documents the project metadata.}
+
+\item{license}{\code{\link[=character]{character(1)}}\cr license or rights statement.}
 }
 \value{
 an empty registry that captures some metadata of the bitfield, but
@@ -20,8 +28,22 @@ doesn't contain any flags yet.
 Initiate a new registry
 }
 \examples{
+me <- person(given = "Jane", family = "Smith",
+             email = "jane@example.com", role = c("cre", "aut"))
+
+myProj <- project(title = "example project",
+                  people = c(person("Jane", "Smith", email = "jane@example.com",
+                                    role = "aut"),
+                             person("Robert", "Jones", role = c("aut", "cre")),
+                  publisher = "example publisher",
+                  type = "Dataset",
+                  identifier = "10.5281/zenodo.1234567",
+                  description = "A comprehensive explanation",
+                  subject = c("keyword", "subject"),
+                  license = "CC-BY-4.0")
+
 reg <- bf_registry(name = "currentWorkflow",
-                   description = "this is to document my current workflow so
-                                 that I can share it with my colleagues
-                                 alongside a publication.")
+                   description = "the registry to my modelling pipeline",
+                   author = me,
+                   project = myProj)
 }
