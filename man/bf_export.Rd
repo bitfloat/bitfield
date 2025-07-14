@@ -4,23 +4,44 @@
 \alias{bf_export}
 \title{Export bitfield registries}
 \usage{
-bf_export(registry, format = NULL, file = NULL)
+bf_export(registry, format, file = NULL)
 }
 \arguments{
-\item{registry}{description}
+\item{registry}{\code{\link[=registry]{registry(1)}}\cr Registry object to export.}
 
-\item{format}{description}
+\item{format}{\code{\link[=character]{character(1)}}\cr Export format. One of "json",
+"xml", "yaml", or "rds".}
 
-\item{file}{description}
+\item{file}{\code{\link[=character]{character(1)}}\cr Optional file path to write the
+output. If NULL, returns the formatted data.}
 }
 \value{
-description
+Exported data as character string for formatted outputs, or the
+registry object for "rds" format. If \code{file} is specified, returns
+invisibly and writes to file.
 }
 \description{
-Export bitfield registries
+Export bitfield registries in DataCite-compliant formats for archiving,
+sharing, and integration with metadata repositories.
+}
+\details{
+Creates DataCite Metadata Schema v4.5 compliant output with
+automatic provenance capture from registry metadata. Includes creators,
+affiliations, ORCID identifiers, project information, and W3C PROV-aligned
+provenance relationships.
 }
 \examples{
-bf_export(reg, format = "json", file = "yield_QA.json")
-bf_export(reg, format = "xml", file = "yield_QA.xml")
-bf_export(reg, format = "yaml", file = "yield_QA.yaml")
+\dontrun{
+# Create registry with metadata
+auth <- person("Jane", "Smith", email = "jane@example.com",
+               comment = c(ORCID = "0000-0000-0000-0000"))
+reg <- bf_registry(name = "analysis",
+                   description = "Data quality assessment",
+                   author = auth)
+
+# Export to different formats
+bf_export(registry = reg, format = "json", file = "metadata.json")
+bf_export(registry = reg, format = "xml", file = "metadata.xml")
+yaml_output <- bf_export(registry = reg, format = "yaml")
+}
 }

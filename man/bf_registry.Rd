@@ -28,22 +28,22 @@ doesn't contain any flags yet.
 Initiate a new registry
 }
 \examples{
-me <- person(given = "Jane", family = "Smith",
-             email = "jane@example.com", role = c("cre", "aut"))
+auth <- person(given = "Jane", family = "Smith",
+               email = "jane@example.com", role = c("cre", "aut"))
 
-myProj <- project(title = "example project",
-                  people = c(person("Jane", "Smith", email = "jane@example.com",
-                                    role = "aut"),
-                             person("Robert", "Jones", role = c("aut", "cre")),
-                  publisher = "example publisher",
-                  type = "Dataset",
-                  identifier = "10.5281/zenodo.1234567",
-                  description = "A comprehensive explanation",
-                  subject = c("keyword", "subject"),
-                  license = "CC-BY-4.0")
+proj <- project(title = "example project",
+                people = c(person("Jane", "Smith", email = "jane@example.com",
+                                  role = "aut"),
+                           person("Robert", "Jones", role = c("aut", "cre"))),
+                publisher = "example publisher",
+                type = "Dataset",
+                identifier = "10.5281/zenodo.1234567",
+                description = "A comprehensive explanation",
+                subject = c("keyword", "subject"),
+                license = "CC-BY-4.0")
 
 reg <- bf_registry(name = "currentWorkflow",
                    description = "the registry to my modelling pipeline",
-                   author = me,
-                   project = myProj)
+                   author = auth,
+                   project = proj)
 }

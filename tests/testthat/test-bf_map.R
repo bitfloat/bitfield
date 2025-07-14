@@ -1,13 +1,15 @@
 test_that("bf_map writes correct registry", {
 
+  reg <- bf_registry(name = "testBF", description = "test bitfield")
+
   # run protocol
-  reg <- bf_map(protocol = "na", data = bf_tbl, x = y)
+  reg <- bf_map(protocol = "na", data = bf_tbl, registry = reg, x = y)
 
   # check registry
   expect_s4_class(reg, "registry")
   expect_equal(reg@width, 1L)
   expect_equal(reg@length, 10L)
-  expect_equal(reg@name, "new_registry")
+  expect_equal(reg@name, "testBF")
 
   # check flags
   expect_true("na_y" %in% names(reg@flags))
@@ -34,8 +36,10 @@ test_that("bf_map writes correct registry", {
 
 test_that("bf_map write the correct object into bf_env", {
 
+  reg <- bf_registry(name = "testBF", description = "test bitfield")
+
   # run protocol
-  reg <- bf_map(protocol = "na", data = bf_tbl, x = x)
+  reg <- bf_map(protocol = "na", data = bf_tbl, registry = reg, x = x)
 
   # test that the intermediate output is correct
   expect_equal(bf_env$na_x, c(F, F, F, F, F, F, F, F, F, F))
@@ -44,16 +48,18 @@ test_that("bf_map write the correct object into bf_env", {
 
 test_that("bf_map handles rast objects correctly", {
 
+  reg <- bf_registry(name = "testBF", description = "test bitfield")
+
   bf_rst <- rast(nrows = 3, ncols = 3, vals = as.integer(c(1, 2, 3, NA, 5, 6, 7, 8, 9)))
 
   # run protocol
-  reg <- bf_map(protocol = "na", data = .rast(bf_rst), x = lyr.1)
+  reg <- bf_map(protocol = "na", data = .rast(bf_rst), registry = reg, x = lyr.1)
 
   # check registry
   expect_s4_class(reg, "registry")
   expect_equal(reg@width, 1L)
   expect_equal(reg@length, 9L)
-  expect_equal(reg@name, "new_registry")
+  expect_equal(reg@name, "testBF")
 
   # test that the intermediate output is correct
   expect_equal(bf_env$na_lyr.1, c(F, F, F, T, F, F, F, F, F))
@@ -62,11 +68,13 @@ test_that("bf_map handles rast objects correctly", {
 
 test_that("errors", {
 
+  reg <- bf_registry(name = "testBF", description = "test bitfield")
+
   # mismatch in flags with previous registry
   dat <- data.frame(col = c(1, NA, 2))
 
   # run protocol
-  reg <- bf_map(protocol = "integer", data = dat, x = col, na.val = 3)
+  reg <- bf_map(protocol = "integer", data = dat, registry = reg, x = col, na.val = 3)
 
   expect_error(bf_map(protocol = "na", data = bf_tbl, x = x, registry = reg),
                regexp = "this flag doesn't have as many items, as there are observations in the bitfield")

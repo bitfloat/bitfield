@@ -15,7 +15,7 @@ project(
   description = NULL,
   subject = NULL,
   contributor = NULL,
-  rights = NULL,
+  license = NULL,
   funding = NULL,
   version = NULL,
   ...
@@ -50,13 +50,13 @@ codes.}
 \item{contributor}{\code{\link[=person]{person(.)}}\cr additional contributors as person
 objects.}
 
+\item{license}{\code{\link[=character]{character(1)}}\cr license or rights statement.}
+
 \item{funding}{\code{\link[=character]{character(.)}}\cr funding information.}
 
 \item{version}{\code{\link[=character]{character(1)}}\cr version of the resource.}
 
 \item{...}{additional metadata elements as name-value pairs.}
-
-\item{license}{\code{\link[=character]{character(1)}}\cr license or rights statement.}
 }
 \value{
 An object of class "project" with standardized metadata fields.
@@ -71,7 +71,7 @@ myProj <- project(title = "example project",
                                     comment = c(ORCID = "0000-0001-2345-6789",
                                                 affiliation = "University of Example",
                                                 ROR = "https://ror.org/05gq02987")),
-                             person("Robert", "Jones", role = c("aut", "cre")),
+                             person("Robert", "Jones", role = c("aut", "cre"))),
                   publisher = "example consortium",
                   type = "Dataset",
                   identifier = "10.5281/zenodo.1234567",
