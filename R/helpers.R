@@ -653,3 +653,216 @@ project <- function(title, year = format(Sys.Date(), "%Y"), language = "en",
 
   return(proj)
 }
+
+#' Create DataCite-compliant metadata structure
+#'
+#' @param registry Registry object
+#' @return List with DataCite-compliant structure
+#' @importFrom stringr str_detect str_replace_all
+#' @importFrom purrr map map_chr
+
+.makeDatacite <- function(registry) {
+
+  # Known license URLs
+  known_licenses <- list(
+    "GPL-3" = "https://www.gnu.org/licenses/gpl-3.0.en.html",
+    "GPL-2" = "https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html",
+    "MIT" = "https://opensource.org/licenses/MIT",
+    "CC-BY-4.0" = "https://creativecommons.org/licenses/by/4.0/",
+    "CC0-1.0" = "https://creativecommons.org/publicdomain/zero/1.0/"
+  )
+
+  # Required DataCite elements
+  output <- list(
+    schemaVersion = "4.5",
+    identifiers = list(list(
+      identifierType = "DOI",
+      identifier = NA_character_  # Placeholder for future DOI
+    )),
+    titles = list(list(title = registry@name)),
+    descriptions = list(list(
+      description = registry@description,
+      descriptionType = "Abstract"
+    )),
+    resourceType = list(
+      resourceTypeGeneral = "Software",
+      resourceType = "Bitfield Registry"
+    ),
+    publicationYear = format(Sys.Date(), "%Y"),
+    language = "en"
+  )
+
+
+
+  # Add creators from registry metadata
+  if (!is.null(registry@metadata$author)) {
+    authors <- if (inherits(registry@metadata$author, "person")) {
+      list(registry@metadata$author)
+    } else {
+      registry@metadata$author
+    }
+
+    output$creators <- map(authors, function(p) {
+      creator <- list(
+        givenName = paste(p$given, collapse = " "),
+        familyName = paste(p$family, collapse = " "),
+        nameType = "Personal"
+      )
+
+      # Add ORCID if available
+      if (!is.null(p$comment) && "ORCID" %in% names(p$comment)) {
+        creator$nameIdentifiers <- list(list(
+          nameIdentifier = p$comment[["ORCID"]],
+          nameIdentifierScheme = "ORCID",
+          schemeURI = "https://orcid.org/"
+        ))
+      }
+
+      # Add affiliation if available
+      if (!is.null(p$comment) && "affiliation" %in% names(p$comment)) {
+        affiliation <- list(name = p$comment[["affiliation"]])
+
+        # Add ROR ID if available
+        if ("ROR" %in% names(p$comment)) {
+          affiliation$affiliationIdentifier <- p$comment[["ROR"]]
+          affiliation$affiliationIdentifierScheme <- "ROR"
+          affiliation$schemeURI <- "https://ror.org/"
+        }
+
+        creator$affiliations <- list(affiliation)
+      }
+
+      return(creator)
+    })
+  }
+
+  if (!is.null(registry@version)) {
+    alt_ids <- list()
+
+    # MD5 as separate identifier
+    if (!is.na(registry@md5)) {
+      alt_ids <- append(alt_ids, list(list(
+        alternateIdentifier = registry@md5,
+        alternateIdentifierType = "MD5"
+      )))
+    }
+
+    output$alternateIdentifiers <- alt_ids
+  }
+
+  # Determine publisher
+  if (!is.null(registry@metadata$project$publisher)) {
+    output$publisher <- registry@metadata$project$publisher
+  } else if (!is.null(registry@metadata$author) &&
+             !is.null(registry@metadata$author$comment) &&
+             "affiliation" %in% names(registry@metadata$author$comment)) {
+    output$publisher <- registry@metadata$author$comment[["affiliation"]]
+  } else {
+    output$publisher <- "Individual Researcher"
+  }
+
+  # Add project metadata if available
+  if (!is.null(registry@metadata$project)) {
+    proj <- registry@metadata$project
+
+    # Add subjects/keywords
+    if (!is.null(proj$subject)) {
+      output$subjects <- map(proj$subject, ~list(subject = .x))
+    }
+
+    # Add funding information
+    if (!is.null(proj$funding)) {
+      output$fundingReferences <- list(list(funderName = proj$funding))
+    }
+
+    # Add related identifiers
+    if (!is.null(proj$identifier)) {
+      output$relatedIdentifiers <- list(list(
+        relatedIdentifier = proj$identifier,
+        relatedIdentifierType = if (str_detect(proj$identifier, "^10\\.")) "DOI" else "URL",
+        relationType = "IsSupplementTo"
+      ))
+    }
+  }
+
+  # Add version information
+  if (!is.null(registry@version)) {
+    version_id <- sprintf("%s_%s_%s",
+                          registry@version$bitfield,
+                          registry@version$r,
+                          registry@version$date)
+    version_id <- str_replace_all(version_id, "[.]", "")
+    version_id <- str_replace_all(version_id, "-", "")
+    version_id <- str_replace_all(version_id, "_", ".")
+    output$version <- version_id
+
+    output$dates <- list(list(
+      date = registry@version$date,
+      dateType = "Created"
+    ))
+  }
+
+  # Add rights/license information
+  if (!is.null(registry@metadata$license)) {
+    rights <- list(rights = registry@metadata$license)
+    if (registry@metadata$license %in% names(known_licenses)) {
+      rights$rightsURI <- known_licenses[[registry@metadata$license]]
+    }
+    output$rightsList <- list(rights)
+  }
+
+  # Add provenance information as related identifiers
+  if (length(registry@flags) > 0) {
+    sources <- unique(map_chr(registry@flags, ~.x$provenance$wasDerivedFrom))
+    provenance_relations <- map(sources, function(source) {
+      list(
+        relatedIdentifier = source,
+        relatedIdentifierType = "URL",
+        relationType = "IsDerivedFrom",
+        resourceTypeGeneral = "Dataset"
+      )
+    })
+
+    # Combine with existing related identifiers
+    if (!is.null(output$relatedIdentifiers)) {
+      output$relatedIdentifiers <- c(output$relatedIdentifiers, provenance_relations)
+    } else {
+      output$relatedIdentifiers <- provenance_relations
+    }
+  }
+
+  # Add technical details as additional description
+  if (registry@width > 0) {
+    # Create flag summary
+    flag_summary <- map_chr(registry@flags, function(f) {
+      pcl <- str_split(str_split(f$provenance$wasGeneratedBy[1], ": ", simplify = TRUE)[2], "_", simplify = TRUE)[1]
+
+      base_info <- sprintf("Bit %s (%s encoding)",
+                           paste(c(min(f$position), max(f$position)), collapse="-"),
+                           bf_pcl[[pcl]]$encoding_type)
+
+      # Handle multiple cases for enumeration
+      if (length(f$description) > 1) {
+        case_descriptions <- map_chr(seq_along(f$description), function(i) {
+          sprintf("  %d: %s", i-1, f$description[i])
+        })
+        return(sprintf("%s:\n%s", base_info, paste(case_descriptions, collapse="\n")))
+      } else {
+        return(sprintf("%s: %s", base_info, f$description))
+      }
+    })
+
+    tech_description <- list(
+      description = sprintf(
+        "Bitfield registry with %d bits across %d observations, containing %d flags\nFlag legend:\n%s",
+        registry@width, registry@length, length(registry@flags),
+        paste(flag_summary, collapse = "\n")
+      ),
+      descriptionType = "TechnicalInfo"
+    )
+
+    output$descriptions <- c(output$descriptions, list(tech_description))
+  }
+
+  return(output)
+}
