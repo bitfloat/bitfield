@@ -590,7 +590,7 @@
 #'                                     comment = c(ORCID = "0000-0001-2345-6789",
 #'                                                 affiliation = "University of Example",
 #'                                                 ROR = "https://ror.org/05gq02987")),
-#'                              person("Robert", "Jones", role = c("aut", "cre")),
+#'                              person("Robert", "Jones", role = c("aut", "cre"))),
 #'                   publisher = "example consortium",
 #'                   type = "Dataset",
 #'                   identifier = "10.5281/zenodo.1234567",
@@ -603,7 +603,7 @@
 project <- function(title, year = format(Sys.Date(), "%Y"), language = "en",
                     type, author = NULL, publisher = NULL, identifier = NULL,
                     description = NULL, subject = NULL, contributor = NULL,
-                    rights = NULL, funding = NULL, version = NULL, ...) {
+                    license = NULL, funding = NULL, version = NULL, ...) {
 
   # Input validation using checkmate
   assertCharacter(title, len = 1, any.missing = FALSE)
@@ -618,7 +618,7 @@ project <- function(title, year = format(Sys.Date(), "%Y"), language = "en",
   if (!is.null(description)) assertCharacter(description, len = 1, any.missing = FALSE)
   if (!is.null(subject)) assertCharacter(subject, min.len = 1, any.missing = FALSE)
   if (!is.null(contributor)) assertClass(author, classes = "person")
-  if (!is.null(rights)) assertCharacter(rights, len = 1, any.missing = FALSE)
+  if (!is.null(license)) assertCharacter(license, len = 1, any.missing = FALSE)
   if (!is.null(funding)) assertCharacter(funding, any.missing = FALSE)
   if (!is.null(version)) assertCharacter(version, len = 1, any.missing = FALSE)
 
