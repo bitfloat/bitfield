@@ -19,12 +19,12 @@ Imports:
     base64enc,
     checkmate,
     codetools,
-    crayon,
     dplyr,
     gh,
     gitcreds,
     glue,
     httr,
+    jsonlite,
     methods,
     purrr,
     rlang,
@@ -32,7 +32,6 @@ Imports:
     terra,
     tibble,
     tidyr,
-    tidyselect,
     yaml
 Suggests: 
     knitr,

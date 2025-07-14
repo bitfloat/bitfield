@@ -79,7 +79,7 @@ bf_tbl$year                                    # flags (*r)
 validComm <- c("soybean", "maize")
 ```
 
-The first step is in creating what is called `registry` in `bitfield`. This registry captures all the information required to build the bitfield
+The first step is in creating what is called `registry` in `bitfield`. This registry captures all the information required to build the bitfield (note, this is merely a minimal tech demo, for additional information, check the respective function documentations).
 
 ```{r}
 reg <- bf_registry(name = "yield_QA",
