@@ -17,7 +17,6 @@
 #' @importFrom purrr map map_int
 #' @importFrom dplyr bind_rows arrange bind_cols select across
 #' @importFrom stringr str_split str_split_i str_sub str_pad str_remove
-#' @importFrom tidyselect everything
 #' @importFrom tidyr separate_wider_position
 #' @importFrom rlang  `:=`
 #' @export
@@ -86,7 +85,7 @@ bf_encode <- function(registry){
     theBitfield <- bind_cols(theBitfield, tibble(!!paste0("flag", i) := theBits), .name_repair = "minimal")
   }
 
-  tempBits <- unite(theBitfield, col = "bf_int", everything(), sep = "")
+  tempBits <- unite(theBitfield, col = "bf_int", 1:ncol(theBitfield), sep = "")
   bitLen <- nchar(tempBits[[1]][1])
   intLen <- ceiling(bitLen / 32)
   widths <- NULL
@@ -103,7 +102,7 @@ bf_encode <- function(registry){
   tempBits <- separate_wider_position(data = tempBits, cols = "bf_int", widths = widths)
 
   out <- tempBits |>
-    mutate(across(everything(), .toDec))
+    mutate(across(1:ncol(tempBits), .toDec))
 
   return(out)
 

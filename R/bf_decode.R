@@ -39,7 +39,6 @@
 #' @importFrom dplyr bind_rows arrange group_by ungroup summarise rowwise mutate
 #'   left_join n first row_number if_else
 #' @importFrom tidyr separate unite separate_longer_delim
-#' @importFrom tidyselect everything
 #' @importFrom rlang env_bind `:=`
 #' @importFrom stringr str_sub_all str_replace
 #' @export
@@ -89,7 +88,7 @@ bf_decode <- function(x, registry, flags = NULL, sep = NULL, verbose = TRUE){
       bind_cols(tempBits)
   }
   tempOut <- tempBits |>
-    unite(col = "bin", everything(), sep = "") |>
+    unite(col = "bin", 1:ncol(tempBits), sep = "") |>
     separate(col = bin, into = paste0("flag", theBits$split), sep = theBits$split)
 
   # decode also the bit values

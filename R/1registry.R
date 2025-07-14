@@ -120,7 +120,6 @@ setValidity("registry", function(object){
 #'   of each flag, the encoding type (see \code{\link{.makeEncoding}}), the
 #'   bitfield operator type and the columns that are tested by the flag.
 #' @importFrom utils head
-#' @importFrom crayon yellow red cyan
 #' @importFrom purrr map
 #' @importFrom stringr str_split
 #' @importFrom dplyr last
@@ -161,9 +160,9 @@ setMethod(f = "show",
               barcode[bars[-1]-1] <- "|"
               barcode <- paste0(barcode, collapse = "")
 
-              cat(yellow("  width"), " ", object@width, "\n", sep = "")
-              cat(yellow("  flags"), " ", length(object@flags), "  ", barcode, "\n\n", sep = "")
-              cat(yellow(theHeader))
+              cat("  width", " ", object@width, "\n", sep = "")
+              cat("  flags", " ", length(object@flags), "  ", barcode, "\n\n", sep = "")
+              cat(theHeader)
               for(i in seq_along(object@flags)){
                 theFlag <- paste0("  ",
                                   minPos[[i]], paste0(rep(" ", colWidth[1] - nchar(minPos[[i]])), collapse = ""),
@@ -174,7 +173,7 @@ setMethod(f = "show",
               }
 
             } else {
-              cat(yellow("  empty registry"))
+              cat("  empty registry")
             }
 
           }
