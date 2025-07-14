@@ -100,11 +100,11 @@
 #' bf_map(protocol = "numeric", data = bf_tbl, registry = reg,
 #'        x = yield, decimals = 2)
 #'
+#' @importFrom checkmate assertCharacter assertIntegerish assertClass
+#'   assertNames assertDisjunct
 #' @importFrom rlang enquos eval_tidy exec env_bind get_expr `:=`
 #' @importFrom purrr map safely list_rbind
 #' @importFrom stringr str_split str_replace
-#' @importFrom checkmate assertCharacter assertIntegerish assertClass
-#'   assertNames assertDisjunct
 #' @importFrom glue glue
 #' @importFrom terra rast
 #' @importFrom methods formalArgs
