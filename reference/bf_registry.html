@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">bitfield</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.0</span>
       </span>
     </div>
 
@@ -53,7 +53,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">bf_registry</span><span class="op">(</span>name <span class="op">=</span> <span class="cn">NULL</span>, description <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">bf_registry</span><span class="op">(</span><span class="va">name</span>, <span class="va">description</span>, author <span class="op">=</span> <span class="cn">NULL</span>, project <span class="op">=</span> <span class="cn">NULL</span>, license <span class="op">=</span> <span class="st">"MIT"</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -68,6 +68,20 @@
 <dd><p><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character(1)</a></code><br> the description of the
 bitfield.</p></dd>
 
+
+<dt id="arg-author">author<a class="anchor" aria-label="anchor" href="#arg-author"></a></dt>
+<dd><p><code><a href="https://rdrr.io/r/utils/person.html" class="external-link">person(.)</a></code><br> the author(s) involved in the creation
+of this registry.</p></dd>
+
+
+<dt id="arg-project">project<a class="anchor" aria-label="anchor" href="#arg-project"></a></dt>
+<dd><p><code><a href="https://rdrr.io/r/base/list.html" class="external-link">list(1)</a></code><br> object created with the function
+<code><a href="project.html">project</a></code> that documents the project metadata.</p></dd>
+
+
+<dt id="arg-license">license<a class="anchor" aria-label="anchor" href="#arg-license"></a></dt>
+<dd><p><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character(1)</a></code><br> license or rights statement.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
@@ -77,10 +91,24 @@ doesn't contain any flags yet.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu">bf_registry</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"currentWorkflow"</span>,</span></span>
-<span class="r-in"><span>                   description <span class="op">=</span> <span class="st">"this is to document my current workflow so</span></span></span>
-<span class="r-in"><span><span class="st">                                 that I can share it with my colleagues</span></span></span>
-<span class="r-in"><span><span class="st">                                 alongside a publication."</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">auth</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/person.html" class="external-link">person</a></span><span class="op">(</span>given <span class="op">=</span> <span class="st">"Jane"</span>, family <span class="op">=</span> <span class="st">"Smith"</span>,</span></span>
+<span class="r-in"><span>               email <span class="op">=</span> <span class="st">"jane@example.com"</span>, role <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cre"</span>, <span class="st">"aut"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">proj</span> <span class="op">&lt;-</span> <span class="fu"><a href="project.html">project</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"example project"</span>,</span></span>
+<span class="r-in"><span>                people <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/person.html" class="external-link">person</a></span><span class="op">(</span><span class="st">"Jane"</span>, <span class="st">"Smith"</span>, email <span class="op">=</span> <span class="st">"jane@example.com"</span>,</span></span>
+<span class="r-in"><span>                                  role <span class="op">=</span> <span class="st">"aut"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                           <span class="fu"><a href="https://rdrr.io/r/utils/person.html" class="external-link">person</a></span><span class="op">(</span><span class="st">"Robert"</span>, <span class="st">"Jones"</span>, role <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"aut"</span>, <span class="st">"cre"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                publisher <span class="op">=</span> <span class="st">"example publisher"</span>,</span></span>
+<span class="r-in"><span>                type <span class="op">=</span> <span class="st">"Dataset"</span>,</span></span>
+<span class="r-in"><span>                identifier <span class="op">=</span> <span class="st">"10.5281/zenodo.1234567"</span>,</span></span>
+<span class="r-in"><span>                description <span class="op">=</span> <span class="st">"A comprehensive explanation"</span>,</span></span>
+<span class="r-in"><span>                subject <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"keyword"</span>, <span class="st">"subject"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                license <span class="op">=</span> <span class="st">"CC-BY-4.0"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu">bf_registry</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"currentWorkflow"</span>,</span></span>
+<span class="r-in"><span>                   description <span class="op">=</span> <span class="st">"the registry to my modelling pipeline"</span>,</span></span>
+<span class="r-in"><span>                   author <span class="op">=</span> <span class="va">auth</span>,</span></span>
+<span class="r-in"><span>                   project <span class="op">=</span> <span class="va">proj</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -95,7 +123,7 @@ doesn't contain any flags yet.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
       </footer></div>

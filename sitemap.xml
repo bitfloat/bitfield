@@ -6,6 +6,7 @@
 <url><loc>http://bitfloat.github.io/bitfield/news/index.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/bf_decode.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/bf_encode.html</loc></url>
+<url><loc>http://bitfloat.github.io/bitfield/reference/bf_export.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/bf_map.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/bf_pcl.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/bf_protocol.html</loc></url>
@@ -14,6 +15,7 @@
 <url><loc>http://bitfloat.github.io/bitfield/reference/bf_tbl.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/bitfield-package.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/dot-getDependencies.html</loc></url>
+<url><loc>http://bitfloat.github.io/bitfield/reference/dot-makeDatacite.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/dot-makeEncoding.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/dot-rast.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/dot-toBin.html</loc></url>
@@ -22,6 +24,7 @@
 <url><loc>http://bitfloat.github.io/bitfield/reference/dot-validateProtocol.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/dot-validateToken.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/index.html</loc></url>
+<url><loc>http://bitfloat.github.io/bitfield/reference/project.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/registry-class.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/show-registry-method.html</loc></url>
 </urlset>
