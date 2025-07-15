@@ -2,6 +2,7 @@
 
 - inclusion of the `project()` helper function that specifies, similarly to `person()`, the project metadata.
 - remove automatic creation of a registry when calling `bf_map()` for the sake of more care when users set up a new registry. This should contain author and project metadata.
+- instead of storing objects in the environment `bf_env`, they are now made available in the `.GlobalEnv` for easy use.
 
 # bitfield 0.6.0
 
