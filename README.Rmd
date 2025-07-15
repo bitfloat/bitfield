@@ -19,8 +19,8 @@ library(knitr)
 # bitfield <a href='https://github.com/bitfloat/bitfield/'><img src='man/figures/logo.svg' align="right" height="200" /></a>
 
 <!-- badges: start -->
-<!-- [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/bitfield)](https://cran.r-project.org/package=bitfield) -->
-<!-- [![](http://cranlogs.r-pkg.org/badges/grand-total/bitfield)](https://cran.r-project.org/package=bitfield) -->
+[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/bitfield)](https://cran.r-project.org/package=bitfield)
+[![](http://cranlogs.r-pkg.org/badges/grand-total/bitfield)](https://cran.r-project.org/package=bitfield)
 
 [![R-CMD-check](https://github.com/bitfloat/bitfield/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bitfloat/bitfield/actions/workflows/R-CMD-check.yaml)
 [![codecov](https://codecov.io/gh/bitfloat/bitfield/graph/badge.svg?token=QZB36RION3)](https://app.codecov.io/gh/bitfloat/bitfield)
@@ -44,7 +44,7 @@ Think of a bit as a switch representing off and on states. A combination of a pa
 Install the official version from CRAN:
 
 ```{r, eval=FALSE}
-# install.packages("bitfield")
+install.packages("bitfield")
 ```
 
 Install the latest development version from github:
@@ -97,16 +97,16 @@ reg <- bf_map(protocol = "na",                       # the protocol with which t
               registry = reg)                        # provide the registry to update
 
 # test which case an observation is part of
-reg <- bf_map(protocol = "case", data = bf_tbl,
-              yield >= 11, yield < 11 & yield > 9, yield < 9 & commodity == "maize",
-              registry = reg)
+reg <- bf_map(protocol = "case", data = bf_tbl, registry = reg,
+              yield >= 11, yield < 11 & yield > 9, yield < 9 & commodity == "maize")
 
 # test the length (number of characters) of values
-reg <- bf_map(protocol = "nChar", data = bf_tbl, x = y, registry = reg)
+reg <- bf_map(protocol = "nChar", data = bf_tbl, registry = reg, 
+              x = y)
 
 # store a simplified (e.g. rounded) numeric value
-reg <- bf_map(protocol = "numeric", data = bf_tbl, x = yield, format = "half", 
-              registry = reg)
+reg <- bf_map(protocol = "numeric", data = bf_tbl, registry = reg, 
+              x = yield, format = "half")
 ```
 
 These are functions that represent the possible encoding types boolean (`bool`), enumerated cases (`enum`), (signed) integers (`int`), and numeric floating-point (`num`). The encoding type determines various storage parameters of the resulting flags. This is, however, not yet the bitfield. The registry is merely the instruction manual, so to speak, to create the bitfield and encode it as integer, with the function `bf_encode()`.
@@ -121,7 +121,7 @@ The bitfield can be decoded based on the registry with the function `bf_decode()
 ```{r}
 flags <- bf_decode(x = field, registry = reg, sep = "-")
 
-# -> prints legend by default, which is also available in bf_env$legend
+# -> prints legend by default, which is also available in bf_legend
 
 bf_tbl |>
   bind_cols(flags) |>
@@ -136,9 +136,9 @@ Moreover, more computation friendly, we can also separate the bitfield into dist
 bf_decode(x = field, registry = reg, verbose = FALSE)
 
 # access values manually
-ls(bf_env)
+ls(.GlobalEnv)
 
-bf_env[["nChar_y"]]
+.GlobalEnv[["nChar_y"]]
 ```
 
 Beware that numeric values that have been encoded in this way, likely have a lower precision than the input values (which may not be a problem in the frequent case where only rounded values are of interest). This can be adjusted by setting the respective parameters in the protocol that encodes numeric values (a vignette explaining this in detail will follow).
@@ -146,7 +146,7 @@ Beware that numeric values that have been encoded in this way, likely have a low
 ```{r}
 old <- options(pillar.sigfig = 7)
 tibble::tibble(original = bf_tbl$yield, 
-               bitfield = bf_env$numeric_yield)
+               bitfield = .GlobalEnv$numeric_yield)
 options(old)
 ```
 
@@ -155,6 +155,8 @@ options(old)
 An interesting use case is in encoding metadata for modelled gridded data. This is possible simply by calling the `.rast()` function to wrap the gridded object, applying the functions of this package, and overwriting the integer values of the bitfield into a copy of the original gridded object.
 
 ```{r}
+reg <- bf_registry(name = "reg_raster",
+                   description = "bitfield for rasters.")
 # example data
 bf_rst <- rast(nrows = 3, ncols = 3, 
                vals = as.integer(c(1, 2, 3, NA, 5, 6, 7, 8, 9)))
@@ -163,10 +165,10 @@ bf_rst <- rast(nrows = 3, ncols = 3,
 reg <- bf_registry(name = "raster_meta",
                    description = "this example bitfield documents metadata for a raster object.")
 
-reg <- bf_map(protocol = "na", 
-              data = .rast(bf_rst), x = lyr.1)
-reg <- bf_map(protocol = "range", data = .rast(bf_rst), x = lyr.1, min = 4, 
-              max = 8, name = "range_lyr.1", na.val = FALSE, registry = reg)
+reg <- bf_map(protocol = "na", data = .rast(bf_rst), registry = reg, 
+              x = lyr.1)
+reg <- bf_map(protocol = "range", data = .rast(bf_rst), registry = reg, 
+              x = lyr.1, min = 4, max = 8, name = "range_lyr.1", na.val = FALSE)
 
 # encode as bitfield (and make raster out of it)
 field <- bf_encode(registry = reg)

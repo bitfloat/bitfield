@@ -4,8 +4,9 @@
 # bitfield <a href='https://github.com/bitfloat/bitfield/'><img src='man/figures/logo.svg' align="right" height="200" /></a>
 
 <!-- badges: start -->
-<!-- [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/bitfield)](https://cran.r-project.org/package=bitfield) -->
-<!-- [![](http://cranlogs.r-pkg.org/badges/grand-total/bitfield)](https://cran.r-project.org/package=bitfield) -->
+
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/bitfield)](https://cran.r-project.org/package=bitfield)
+[![](http://cranlogs.r-pkg.org/badges/grand-total/bitfield)](https://cran.r-project.org/package=bitfield)
 
 [![R-CMD-check](https://github.com/bitfloat/bitfield/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bitfloat/bitfield/actions/workflows/R-CMD-check.yaml)
 [![codecov](https://codecov.io/gh/bitfloat/bitfield/graph/badge.svg?token=QZB36RION3)](https://app.codecov.io/gh/bitfloat/bitfield)
@@ -43,7 +44,7 @@ by downstream applications.
 Install the official version from CRAN:
 
 ``` r
-# install.packages("bitfield")
+install.packages("bitfield")
 ```
 
 Install the latest development version from github:
@@ -58,7 +59,7 @@ devtools::install_github("bitfloat/bitfield")
 library(bitfield)
 library(dplyr, warn.conflicts = FALSE)
 library(terra, warn.conflicts = FALSE)
-#> terra 1.7.78
+#> terra 1.8.54
 ```
 
 Let’s first load an example dataset
@@ -88,7 +89,8 @@ validComm <- c("soybean", "maize")
 
 The first step is in creating what is called `registry` in `bitfield`.
 This registry captures all the information required to build the
-bitfield
+bitfield (note, this is merely a minimal tech demo, for additional
+information, check the respective function documentations).
 
 ``` r
 reg <- bf_registry(name = "yield_QA",
@@ -111,16 +113,16 @@ reg <- bf_map(protocol = "na",                       # the protocol with which t
               registry = reg)                        # provide the registry to update
 
 # test which case an observation is part of
-reg <- bf_map(protocol = "case", data = bf_tbl,
-              yield >= 11, yield < 11 & yield > 9, yield < 9 & commodity == "maize",
-              registry = reg)
+reg <- bf_map(protocol = "case", data = bf_tbl, registry = reg,
+              yield >= 11, yield < 11 & yield > 9, yield < 9 & commodity == "maize")
 
 # test the length (number of characters) of values
-reg <- bf_map(protocol = "nChar", data = bf_tbl, x = y, registry = reg)
+reg <- bf_map(protocol = "nChar", data = bf_tbl, registry = reg, 
+              x = y)
 
 # store a simplified (e.g. rounded) numeric value
-reg <- bf_map(protocol = "numeric", data = bf_tbl, x = yield, format = "half", 
-              registry = reg)
+reg <- bf_map(protocol = "numeric", data = bf_tbl, registry = reg, 
+              x = yield, format = "half")
 ```
 
 These are functions that represent the possible encoding types boolean
@@ -176,7 +178,7 @@ flags <- bf_decode(x = field, registry = reg, sep = "-")
 #> 6 4:6   nChar_y               xxx              "'y' is that many characters lon…
 #> 7 7:22  numeric_yield         xxxxxxxxxxxxxxxx "'yield' is encoded as floating-…
 
-# -> prints legend by default, which is also available in bf_env$legend
+# -> prints legend by default, which is also available in bf_legend
 
 bf_tbl |>
   bind_cols(flags) |>
@@ -223,11 +225,12 @@ bf_decode(x = field, registry = reg, verbose = FALSE)
 #> 10 0     01                      011     0100101010010101
 
 # access values manually
-ls(bf_env)
-#> [1] "case1_yield-commodity" "legend"                "na_x"                 
-#> [4] "nChar_y"               "numeric_yield"
+ls(.GlobalEnv)
+#> [1] "bf_legend"             "case1_yield-commodity" "field"                
+#> [4] "flags"                 "na_x"                  "nChar_y"              
+#> [7] "numeric_yield"         "reg"                   "validComm"
 
-bf_env[["nChar_y"]]
+.GlobalEnv[["nChar_y"]]
 #>  [1] 4 4 4 4 3 4 4 2 1 3
 ```
 
@@ -241,7 +244,7 @@ follow).
 ``` r
 old <- options(pillar.sigfig = 7)
 tibble::tibble(original = bf_tbl$yield, 
-               bitfield = bf_env$numeric_yield)
+               bitfield = .GlobalEnv$numeric_yield)
 #> # A tibble: 10 × 2
 #>     original  bitfield
 #>        <dbl>     <dbl>
@@ -267,6 +270,8 @@ overwriting the integer values of the bitfield into a copy of the
 original gridded object.
 
 ``` r
+reg <- bf_registry(name = "reg_raster",
+                   description = "bitfield for rasters.")
 # example data
 bf_rst <- rast(nrows = 3, ncols = 3, 
                vals = as.integer(c(1, 2, 3, NA, 5, 6, 7, 8, 9)))
@@ -275,10 +280,10 @@ bf_rst <- rast(nrows = 3, ncols = 3,
 reg <- bf_registry(name = "raster_meta",
                    description = "this example bitfield documents metadata for a raster object.")
 
-reg <- bf_map(protocol = "na", 
-              data = .rast(bf_rst), x = lyr.1)
-reg <- bf_map(protocol = "range", data = .rast(bf_rst), x = lyr.1, min = 4, 
-              max = 8, name = "range_lyr.1", na.val = FALSE, registry = reg)
+reg <- bf_map(protocol = "na", data = .rast(bf_rst), registry = reg, 
+              x = lyr.1)
+reg <- bf_map(protocol = "range", data = .rast(bf_rst), registry = reg, 
+              x = lyr.1, min = 4, max = 8, name = "range_lyr.1", na.val = FALSE)
 
 # encode as bitfield (and make raster out of it)
 field <- bf_encode(registry = reg)
