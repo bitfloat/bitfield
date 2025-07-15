@@ -13,12 +13,14 @@ reference:
   - title: Main workflow
     desc: These functions make up the core of this package
     contents:
-      - bf_registry
-      - bf_protocol
-      - bf_map
-      - bf_encode
       - bf_decode
+      - bf_encode
+      - bf_export
+      - bf_map
+      - bf_protocol
+      - bf_registry
       - bf_standards
+      - project
   - title: classes
     desc: new classes that come with this package
     contents:
@@ -28,6 +30,7 @@ reference:
     contents:
       - .getDependencies
       - .makeEncoding
+      - .makeDatacite
       - .rast
       - .toBin
       - .toDec
