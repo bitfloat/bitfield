@@ -125,7 +125,7 @@ bf_decode <- function(x, registry, flags = NULL, sep = NULL, verbose = TRUE){
       temp <- .toDec(x = str_replace(mantissa, pattern = paste0("^(.{", exponent + 1, "})(.*)$"), replacement = "\\1.\\2"))
     }
 
-    env_bind(.env = bf_env, !!flagName := temp)
+    env_bind(.env = .GlobalEnv, !!flagName := temp)
   }
 
   if(!is.null(sep)){
@@ -136,7 +136,7 @@ bf_decode <- function(x, registry, flags = NULL, sep = NULL, verbose = TRUE){
   }
 
   # assign look-up table to the environment as well
-  env_bind(.env = bf_env, legend = lut)
+  env_bind(.env = .GlobalEnv, bf_legend = lut)
 
   if(verbose) print(lut)
 
