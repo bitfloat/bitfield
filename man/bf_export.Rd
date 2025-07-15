@@ -24,12 +24,6 @@ invisibly and writes to file.
 Export bitfield registries in DataCite-compliant formats for archiving,
 sharing, and integration with metadata repositories.
 }
-\details{
-Creates DataCite Metadata Schema v4.5 compliant output with
-automatic provenance capture from registry metadata. Includes creators,
-affiliations, ORCID identifiers, project information, and W3C PROV-aligned
-provenance relationships.
-}
 \examples{
 \dontrun{
 # Create registry with metadata

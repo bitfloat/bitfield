@@ -811,26 +811,6 @@ project <- function(title, year = format(Sys.Date(), "%Y"), language = "en",
     output$rightsList <- list(rights)
   }
 
-  # Add provenance information as related identifiers
-  if (length(registry@flags) > 0) {
-    sources <- unique(map_chr(registry@flags, ~.x$provenance$wasDerivedFrom))
-    provenance_relations <- map(sources, function(source) {
-      list(
-        relatedIdentifier = source,
-        relatedIdentifierType = "URL",
-        relationType = "IsDerivedFrom",
-        resourceTypeGeneral = "Dataset"
-      )
-    })
-
-    # Combine with existing related identifiers
-    if (!is.null(output$relatedIdentifiers)) {
-      output$relatedIdentifiers <- c(output$relatedIdentifiers, provenance_relations)
-    } else {
-      output$relatedIdentifiers <- provenance_relations
-    }
-  }
-
   # Add technical details as additional description
   if (registry@width > 0) {
     # Create flag summary

@@ -11,10 +11,6 @@
 #' @return Exported data as character string for formatted outputs, or the
 #'   registry object for "rds" format. If `file` is specified, returns
 #'   invisibly and writes to file.
-#' @details Creates DataCite Metadata Schema v4.5 compliant output with
-#'   automatic provenance capture from registry metadata. Includes creators,
-#'   affiliations, ORCID identifiers, project information, and W3C PROV-aligned
-#'   provenance relationships.
 #' @examples
 #' \dontrun{
 #' # Create registry with metadata
