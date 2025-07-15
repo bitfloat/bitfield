@@ -180,6 +180,7 @@ bf_map <- function(protocol, data, registry, ..., name = NULL, pos = NULL, na.va
   testProv <- paste0("useTest: ", paste0(protocol, "_", attrib$version))
   tempArgs <- map(.x = seq_along(args), .f = function(ix){
     temp <- get_expr(args[[ix]])
+    if(length(temp) != 1 & exists(as.character(temp)[1], mode = "function")) temp <- temp[-1]
     if(is.character(temp)) temp <- paste0("'", temp, "'")
     data.frame(name = names(args)[ix], val = as.character(temp), expr = paste0(names(args)[ix], "=", temp))
   }) |> list_rbind()
