@@ -53,6 +53,7 @@ bf_standards <- function(protocol = NULL, remote = NULL, action = "list",
   if(is.null(protocol) & action != "list") stop("when no protocol is given, I can only list the 'remote' contents.")
 
   # get protocol ----
+  pcl <- NULL
   if(!is.null(protocol)){
     if(protocol %in% names(bf_pcl)){
       pcl <- bf_pcl[[protocol]] # load from internal list of protocols
@@ -60,8 +61,9 @@ bf_standards <- function(protocol = NULL, remote = NULL, action = "list",
       pcl <- get(protocol)
       assertList(x = pcl)
     }
-  } else {
-    pcl <- NULL
+    if(!is.null(pcl)){
+      return(pcl)
+    }
   }
 
   if(is.null(remote)) remote <- ""
@@ -182,80 +184,99 @@ bf_standards <- function(protocol = NULL, remote = NULL, action = "list",
 
     itemEncoded <- base64encode(charToRaw(pcl_yaml))
 
-    # create directory for latest versions with README.md
-    if (!any(dirExists)) {
+    # # create directory for latest versions with README.md
+    # if (!any(dirExists)) {
+    #
+    #   readmeContent <- base64encode(charToRaw(
+    #     "# Bit-flag protocols\n\nThis directory contains the latest versions of bit-flag protocols and a optionally a folder 'archive' with all previous versions of the protocols listed here."
+    #   ))
+    #   readmePath <- paste0(remote, "/README.md")
+    #
+    #   tryCatch(
+    #     gh(paste0("PUT /repos/bitfloat/standards/contents/", readmePath),
+    #        .token = token,
+    #        message = paste0("New directory '", remote, "'"),
+    #        content = readmeContent),
+    #     error = function(e) {
+    #       stop(paste0("Failed to create protocol directory: ", e$message))
+    #     }
+    #   )
+    # }
 
-      readmeContent <- base64encode(charToRaw(
-        "# Bit-flag protocols\n\nThis directory contains the latest versions of bit-flag protocols and a optionally a folder 'archive' with all previous versions of the protocols listed here."
-      ))
-      readmePath <- paste0(remote, "/README.md")
+    # # create directory for archived versions with README.md
+    # if(!any(withArchive)){
+    #   readmeContent <- base64encode(charToRaw(
+    #     "# Bit-flag protocols\n\nThis directory contains the archived previous versions of bit-flag protocols."
+    #   ))
+    #   readmePath <- paste0(remote, "/archive/README.md")
+    #
+    #   tryCatch(
+    #     gh(paste0("PUT /repos/bitfloat/standards/contents/", readmePath),
+    #        .token = token,
+    #        message = paste0("New directory '", remote, "/archive'"),
+    #        content = readmeContent),
+    #     error = function(e) {
+    #       stop(paste0("Failed to create protocol directory: ", e$message))
+    #     }
+    #   )
+    # }
 
-      tryCatch(
-        gh(paste0("PUT /repos/bitfloat/standards/contents/", readmePath),
-           .token = token,
-           message = paste0("New directory '", remote, "'"),
-           content = readmeContent),
-        error = function(e) {
-          stop(paste0("Failed to create protocol directory: ", e$message))
-        }
-      )
-    }
+    # # push the archived version ----
+    # if(!is.null(protocolContent)){
+    #
+    #   archiveMessage <- sprintf("[%s] Archive bif-flag protocol %s, version %s",
+    #                             userInfo,
+    #                             paste0("'", protocol, "'"),
+    #                             remotePcl$version)
+    #   tryCatch(
+    #     gh(paste0("PUT /repos/bitfloat/standards/contents/", remote, "/archive/", protocol, "_", remotePcl$version, ".yml"),
+    #        .token = token,
+    #        message = archiveMessage,
+    #        content = protocolContent$content),
+    #     error = function(e) {
+    #       stop(paste0("Failed to push protocol: ", e$message))
+    #     }
+    #   )
+    #
+    # }
 
-    # create directory for archived versions with README.md
-    if(!any(withArchive)){
-      readmeContent <- base64encode(charToRaw(
-        "# Bit-flag protocols\n\nThis directory contains the archived previous versions of bit-flag protocols."
-      ))
-      readmePath <- paste0(remote, "/archive/README.md")
+    # # push the new version ----
+    # commitMessage <- sprintf("[%s] %s bit-flag protocol %s, version %s",
+    #                         userInfo,
+    #                         if(!is.null(protocolContent)) "Update" else "Add",
+    #                         paste0("'", protocol, "'"),
+    #                         pcl$version)
+    # tryCatch(
+    #   gh(paste0("PUT /repos/bitfloat/standards/contents/", remote, "/", protocol, ".yml"),
+    #      .token = token,
+    #      message = commitMessage,
+    #      content = itemEncoded,
+    #      sha = protocolContent$sha),
+    #   error = function(e) {
+    #     stop(paste0("Failed to push protocol: ", e$message))
+    #   }
+    # )
+    #
+    # message(paste0("Successfully pushed protocol '", protocol, "' version '", version, "' to the repository"))
 
-      tryCatch(
-        gh(paste0("PUT /repos/bitfloat/standards/contents/", readmePath),
-           .token = token,
-           message = paste0("New directory '", remote, "/archive'"),
-           content = readmeContent),
-        error = function(e) {
-          stop(paste0("Failed to create protocol directory: ", e$message))
-        }
-      )
-    }
+    staging_path <- paste0("staging/", remote, "/", protocol, ".yml")
 
-    # push the archived version ----
-    if(!is.null(protocolContent)){
+    commitMessage <- sprintf("[%s] Submit %s v%s for review: %s",
+                             userInfo, protocol, version, change)
 
-      archiveMessage <- sprintf("[%s] Archive bif-flag protocol %s, version %s",
-                                userInfo,
-                                paste0("'", protocol, "'"),
-                                remotePcl$version)
-      tryCatch(
-        gh(paste0("PUT /repos/bitfloat/standards/contents/", remote, "/archive/", protocol, "_", remotePcl$version, ".yml"),
-           .token = token,
-           message = archiveMessage,
-           content = protocolContent$content),
-        error = function(e) {
-          stop(paste0("Failed to push protocol: ", e$message))
-        }
-      )
-
-    }
-
-    # push the new version ----
-    commitMessage <- sprintf("[%s] %s bit-flag protocol %s, version %s",
-                            userInfo,
-                            if(!is.null(protocolContent)) "Update" else "Add",
-                            paste0("'", protocol, "'"),
-                            pcl$version)
     tryCatch(
-      gh(paste0("PUT /repos/bitfloat/standards/contents/", remote, "/", protocol, ".yml"),
+      gh(paste0("PUT /repos/bitfloat/standards/contents/", staging_path),
          .token = token,
          message = commitMessage,
          content = itemEncoded,
-         sha = protocolContent$sha),
+         branch = "auto-submissions"),
       error = function(e) {
-        stop(paste0("Failed to push protocol: ", e$message))
+        stop(paste0("Failed to submit protocol: ", e$message))
       }
     )
 
-    message(paste0("Successfully pushed protocol '", protocol, "' version '", version, "' to the repository"))
+    message(paste0("Protocol '", protocol, "' v", version, " submitted for review"))
+    message("A pull request will be created automatically.")
     invisible(TRUE)
 
   }
