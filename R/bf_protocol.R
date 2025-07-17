@@ -5,7 +5,7 @@
 #'   the operation in this protocol. It will be parsed with
 #'   \code{\link[glue]{glue}} and used in the bitfield legend, so can include
 #'   the test arguments as enbraced expressions.
-#' @param test [`function(...)`][function]\cr the function used to build the bit
+#' @param test [`function(...)`][function]\cr the function used to compute the bit
 #'   flag.
 #' @param example [`list(.)`][list]\cr named list that contains all arguments in
 #'   \code{test} as name with values of the correct type.
