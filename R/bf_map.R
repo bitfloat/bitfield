@@ -130,23 +130,23 @@ bf_map <- function(protocol, data, registry, ..., name = NULL, pos = NULL, na.va
 
   # determine intermediate flag values ----
   if(protocol %in% names(bf_pcl)){
-    attrib <- bf_pcl[[protocol]]
+    pcl <- bf_pcl[[protocol]]
   } else {
-    attrib <- get(protocol)
-    assertClass(x = attrib, classes = "protocol")
+    pcl <- get(protocol)
   }
+  pcl <- .validateProtocol(pcl)
 
   # evaluate arguments of the protocol ----
   tidyArgs <- map(args, eval_tidy, data = tempData)
 
   # call protocol ----
-  if(!is.null(attrib$requires)){
-    map(attrib$requires, safely(~require(.x, character.only = TRUE, quietly = TRUE, warn.conflicts = FALSE)))
+  if(!is.null(pcl$requires)){
+    map(pcl$requires, safely(~require(.x, character.only = TRUE, quietly = TRUE, warn.conflicts = FALSE)))
   }
-  out <- exec(attrib$test, !!!tidyArgs)
+  out <- exec(pcl$test, !!!tidyArgs)
 
   # determine encoding ----
-  enc <- .makeEncoding(var = out, type = attrib$encoding_type, tidyArgs)
+  enc <- .makeEncoding(var = out, type = pcl$encoding_type, tidyArgs)
   encProv <- paste0("encodeAsBinary: ", enc$sign, ".", enc$exp, ".", enc$mant, "/", enc$bias)
 
   # replace NA values ----
@@ -177,17 +177,17 @@ bf_map <- function(protocol, data, registry, ..., name = NULL, pos = NULL, na.va
   }
 
   # make meta-data ----
-  testProv <- paste0("useTest: ", paste0(protocol, "_", attrib$version))
+  testProv <- paste0("useTest: ", paste0(protocol, "_", pcl$version))
   tempArgs <- map(.x = seq_along(args), .f = function(ix){
     temp <- get_expr(args[[ix]])
     if(length(temp) != 1 & exists(as.character(temp)[1], mode = "function")) temp <- temp[-1]
     if(is.character(temp)) temp <- paste0("'", temp, "'")
     data.frame(name = names(args)[ix], val = as.character(temp), expr = paste0(names(args)[ix], "=", temp))
   }) |> list_rbind()
-  formalNames <- tempArgs[tempArgs$name %in% formalArgs(attrib$test),]
+  formalNames <- tempArgs[tempArgs$name %in% formalArgs(pcl$test),]
   result <- ""
 
-  if(attrib$encoding_type %in% c("bool", "int", "float")){
+  if(pcl$encoding_type %in% c("bool", "int", "float")){
 
     thisName <- paste0(c(protocol, paste0(formalNames$val, collapse = "-")), collapse = "_")
     argsProv <- paste0("withArguments: ", paste0(tempArgs$expr, collapse = ", "))
@@ -196,7 +196,7 @@ bf_map <- function(protocol, data, registry, ..., name = NULL, pos = NULL, na.va
       assign(formalNames$name[i], paste0(c("'", formalNames$val[i], "'"), collapse = ""), envir = environment())
     }
 
-  } else if(attrib$encoding_type == "enum"){
+  } else if(pcl$encoding_type == "enum"){
 
     inputNames <- unlist(str_split(tempArgs$name, " "))
     inputNames <- unique(inputNames[inputNames %in% colnames(tempData)])
@@ -212,10 +212,10 @@ bf_map <- function(protocol, data, registry, ..., name = NULL, pos = NULL, na.va
     thisName <- paste0(protocol, iter, "_", paste0(inputNames, collapse = "-"))
     argsProv <- paste0("withArguments: ", paste0(names(tidyArgs), collapse = ", "))
 
-    attrib$description <- str_replace(string = attrib$description, pattern = "\\{...\\}", replacement = "\\{cases\\}")
+    pcl$description <- str_replace(string = pcl$description, pattern = "\\{...\\}", replacement = "\\{cases\\}")
     cases <- c("NULL", paste0("'", names(tidyArgs), "'"))
   }
-  desc <- glue(attrib$description)
+  desc <- glue(pcl$description)
 
   # customise name ----
   if(is.null(name)){
