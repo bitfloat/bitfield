@@ -25,7 +25,7 @@ the operation in this protocol. It will be parsed with
 \code{\link[glue]{glue}} and used in the bitfield legend, so can include
 the test arguments as enbraced expressions.}
 
-\item{test}{\code{\link[=function]{function(...)}}\cr the function used to build the bit
+\item{test}{\code{\link[=function]{function(...)}}\cr the function used to compute the bit
 flag.}
 
 \item{example}{\code{\link[=list]{list(.)}}\cr named list that contains all arguments in
