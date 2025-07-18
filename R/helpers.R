@@ -536,6 +536,13 @@
     if(!testCharacter(x = protocol$extends_note, any.missing = FALSE, min.len = 1)) stop("please provide a short note about what this extension changes.")
   }
 
+  # ensure packages are installed
+  if(!is.null(protocol$requires)){
+    for(pkg in protocol$requires){
+      require(pkg, character.only = TRUE)
+    }
+  }
+
   # does the test run with the provided data
   testResult <- tryCatch({
     exec(protocol$test, !!!protocol$data)
