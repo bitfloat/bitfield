@@ -56,14 +56,14 @@ bf_standards <- function(protocol = NULL, remote = NULL, action = "list",
   pcl <- NULL
   if(!is.null(protocol)){
     if(protocol %in% names(bf_pcl)){
-      pcl <- bf_pcl[[protocol]] # load from internal list of protocols
-    } else if(exists(protocol)){
+      pcl <- bf_pcl[[protocol]]
+    } else {
       pcl <- get(protocol)
-      assertList(x = pcl)
     }
-    if(!is.null(pcl)){
-      return(pcl)
+    if (is.character(pcl$test)) {
+      pcl$test <- eval(parse(text = pcl$test))
     }
+    pcl <- .validateProtocol(pcl)
   }
 
   if(is.null(remote)) remote <- ""
@@ -122,7 +122,7 @@ bf_standards <- function(protocol = NULL, remote = NULL, action = "list",
 
   # if we want to pull that protocol ----
   if(action == "pull"){
-    return(pcl)
+    return(remotePcl)
   }
 
   # if we want to push a (new or updated) file ----
