@@ -115,6 +115,7 @@ reg <- bf_map(protocol = "na",                       # the protocol with which t
 # test which case an observation is part of
 reg <- bf_map(protocol = "case", data = bf_tbl, registry = reg,
               yield >= 11, yield < 11 & yield > 9, yield < 9 & commodity == "maize")
+#> Lade nötiges Paket: purrr
 
 # test the length (number of characters) of values
 reg <- bf_map(protocol = "nChar", data = bf_tbl, registry = reg, 
@@ -206,7 +207,7 @@ that observations 4 and 6 have a `yield` smaller than 9 and a
 
 Moreover, more computation friendly, we can also separate the bitfield
 into distinct columns per flag and we can load the decoded values from
-the package environment `bf_env`.
+the package environment `.GlobalEnv`.
 
 ``` r
 bf_decode(x = field, registry = reg, verbose = FALSE)
@@ -270,8 +271,6 @@ overwriting the integer values of the bitfield into a copy of the
 original gridded object.
 
 ``` r
-reg <- bf_registry(name = "reg_raster",
-                   description = "bitfield for rasters.")
 # example data
 bf_rst <- rast(nrows = 3, ncols = 3, 
                vals = as.integer(c(1, 2, 3, NA, 5, 6, 7, 8, 9)))

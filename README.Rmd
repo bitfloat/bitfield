@@ -130,7 +130,7 @@ bf_tbl |>
 
 The column `bf_bin`, in combination with the legend, can be read one step at a time. For example, considering the first bit, we see that no observation has an `NA` value and considering the second bit, we see that observations 4 and 6 have a `yield` smaller than 9 and a `commodity` value "maize" (case 3 with binary value `11`).
 
-Moreover, more computation friendly, we can also separate the bitfield into distinct columns per flag and we can load the decoded values from the package environment `bf_env`. 
+Moreover, more computation friendly, we can also separate the bitfield into distinct columns per flag and we can load the decoded values from the package environment `.GlobalEnv`.
 
 ```{r}
 bf_decode(x = field, registry = reg, verbose = FALSE)
@@ -155,8 +155,6 @@ options(old)
 An interesting use case is in encoding metadata for modelled gridded data. This is possible simply by calling the `.rast()` function to wrap the gridded object, applying the functions of this package, and overwriting the integer values of the bitfield into a copy of the original gridded object.
 
 ```{r}
-reg <- bf_registry(name = "reg_raster",
-                   description = "bitfield for rasters.")
 # example data
 bf_rst <- rast(nrows = 3, ncols = 3, 
                vals = as.integer(c(1, 2, 3, NA, 5, 6, 7, 8, 9)))
