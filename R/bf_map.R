@@ -75,7 +75,7 @@
 #'
 #'
 #' # identify which arguments need to be given to call a test ...
-#' formalArgs(bf_pcl[[opr]]$test)
+#' formalArgs(eval(parse(text = bf_pcl[[opr]]$test)))
 #'
 #' # put the test together
 #' bf_map(protocol = opr, data = bf_tbl, registry = reg,
