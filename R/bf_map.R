@@ -134,6 +134,9 @@ bf_map <- function(protocol, data, registry, ..., name = NULL, pos = NULL, na.va
   } else {
     pcl <- get(protocol)
   }
+  if (is.character(pcl$test)) {
+    pcl$test <- eval(parse(text = pcl$test))
+  }
   pcl <- .validateProtocol(pcl)
 
   # evaluate arguments of the protocol ----
