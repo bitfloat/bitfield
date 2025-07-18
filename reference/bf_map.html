@@ -176,7 +176,7 @@ result merely from the binary-to-decimal conversion (check out
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># identify which arguments need to be given to call a test ...</span></span></span>
-<span class="r-in"><span><span class="fu">formalArgs</span><span class="op">(</span><span class="va">bf_pcl</span><span class="op">[[</span><span class="va">opr</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">test</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">formalArgs</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/eval.html" class="external-link">eval</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/parse.html" class="external-link">parse</a></span><span class="op">(</span>text <span class="op">=</span> <span class="va">bf_pcl</span><span class="op">[[</span><span class="va">opr</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">test</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "x" "y"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># put the test together</span></span></span>
@@ -208,6 +208,16 @@ result merely from the binary-to-decimal conversion (check out
 <span class="r-in"><span><span class="co"># enumeration encoding</span></span></span>
 <span class="r-in"><span><span class="fu">bf_map</span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"case"</span>, data <span class="op">=</span> <span class="va">bf_tbl</span>, registry <span class="op">=</span> <span class="va">reg</span>,</span></span>
 <span class="r-in"><span>       <span class="va">yield</span> <span class="op">&gt;=</span> <span class="fl">11</span>, <span class="va">yield</span> <span class="op">&lt;</span> <span class="fl">11</span> <span class="op">&amp;</span> <span class="va">yield</span> <span class="op">&gt;</span> <span class="fl">9</span>, <span class="va">yield</span> <span class="op">&lt;</span> <span class="fl">9</span> <span class="op">&amp;</span> <span class="va">commodity</span> <span class="op">==</span> <span class="st">"maize"</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: dplyr</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Attaching package: ‘dplyr’</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The following objects are masked from ‘package:stats’:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>     filter, lag</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The following objects are masked from ‘package:base’:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>     intersect, setdiff, setequal, union</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: purrr</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   width 2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   flags 1  --</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
