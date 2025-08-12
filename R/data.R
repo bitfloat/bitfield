@@ -1,6 +1,6 @@
 #' Example table
 #'
-#' A 10 × 5 tibble with a range of example data to showcase functionality of
+#' A 9 × 5 tibble with a range of example data to showcase functionality of
 #' this package.
 #' @format object of class \code{tibble} has two columns that indicate
 #'   coordinates, one column that indicates a crop that is grown there, one
