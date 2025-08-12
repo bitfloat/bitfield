@@ -58,10 +58,10 @@ bf_registry <- function(name, description, author = NULL, project = NULL,
              version = version,
              md5 = NA_character_,
              description = description,
-             flags = list(),
-             metadata = list(author = author,
-                             project = project,
-                             license = license))
+             attribution = list(author = author,
+                                project = project,
+                                license = license),
+             flags = list())
 
   return(out)
 
