@@ -52,11 +52,11 @@ bf_decode <- function(x, registry, flags = NULL, sep = NULL, verbose = TRUE){
 
   # get the bits ...
   theBits <- map(.x = seq_along(registry@flags), .f = function(ix){
-    tibble(pos = registry@flags[[ix]]$position,
+    tibble(pos = registry@flags[[ix]]$wasGeneratedBy$assignPosition,
            name = names(registry@flags)[ix],
-           flags = length(registry@flags[[ix]]$values),
-           bits = length(registry@flags[[ix]]$position),
-           desc = paste0(registry@flags[[ix]]$description, collapse = " | "))
+           flags = length(registry@flags[[ix]]$wasGeneratedBy$extractLevels$id),
+           bits = length(registry@flags[[ix]]$wasGeneratedBy$assignPosition),
+           desc = paste0(registry@flags[[ix]]$comment, collapse = " | "))
   }) |>
     bind_rows() |>
     arrange(pos)
@@ -66,22 +66,13 @@ bf_decode <- function(x, registry, flags = NULL, sep = NULL, verbose = TRUE){
     group_by(name) |>
     summarise(split = max(pos),
               pos = if_else(n() == 1, as.character(split), paste0(min(pos), ":", max(pos))),
-              flags = max(flags),
-              bits = max(bits),
               desc = first(desc)) |>
     arrange(split)
 
   # create look-up table for what the bits stand for
   lut <- separate_longer_delim(data = theBits, cols = desc, delim = " | ") |>
-    group_by(name) |>
-    mutate(flags = row_number()-1,
-           grp = n()) |>
-    ungroup() |>
-    rowwise() |>
-    mutate(flag = if_else(grp == 1, paste0(rep("x", bits), collapse = ""), .toBin(x = flags, len = bits))) |>
-    select(pos, name, flag, desc)
+    select(pos, name, desc)
 
-  # process bits
   tempBits <- NULL
   for(i in seq_along(x)){
     tempBits <- tibble(!!paste0("bin", i) := .toBin(x[[i]], len = registry@width)) |>
@@ -91,7 +82,6 @@ bf_decode <- function(x, registry, flags = NULL, sep = NULL, verbose = TRUE){
     unite(col = "bin", 1:ncol(tempBits), sep = "") |>
     separate(col = bin, into = paste0("flag", theBits$split), sep = theBits$split)
 
-  # decode also the bit values
   if(!is.null(flags)){
     assertSubset(x = flags, choices = names(registry@flags))
     theFlags <- flags
@@ -103,7 +93,7 @@ bf_decode <- function(x, registry, flags = NULL, sep = NULL, verbose = TRUE){
 
     flagName <- theFlags[i]
     theFlag <- registry@flags[[flagName]]
-    flagEnc <- theFlag$encoding
+    flagEnc <- theFlag$wasGeneratedBy$encodeAsBinary
 
     if(flagName == "cases"){
       temp <- .toDec(x = tempOut[[i]]) + 1
@@ -118,11 +108,11 @@ bf_decode <- function(x, registry, flags = NULL, sep = NULL, verbose = TRUE){
       exponent <- map_int(flagSplit, function(ix){
         .toDec(x = ix[2]) - flagEnc$bias
       })
-      mantissa <- map_chr(seq_along(flagSplit), function(ix){
+      significand <- map_chr(seq_along(flagSplit), function(ix){
         paste0("1", flagSplit[[ix]][3])
       })
 
-      temp <- .toDec(x = str_replace(mantissa, pattern = paste0("^(.{", exponent + 1, "})(.*)$"), replacement = "\\1.\\2"))
+      temp <- .toDec(x = str_replace(significand, pattern = paste0("^(.{", exponent + 1, "})(.*)$"), replacement = "\\1.\\2"))
     }
 
     env_bind(.env = .GlobalEnv, !!flagName := temp)
