@@ -94,12 +94,11 @@ bf_protocol <- function(name, description, test, example, type, bits = NULL,
               encoding_type = type,
               bits = bits, # when the test is general and could result in any number of bits, use NA here
               requires = requiredPkgs,
-              test = test,
+              test = paste0(deparse(test), collapse = ""),
               data = example,
               reference = reference)
 
   out <- .validateProtocol(out)
-  out$test <- paste0(c('"', deparse(test), '"'), collapse = "")
 
   return(out)
 
