@@ -30,7 +30,7 @@ bf_encode <- function(registry){
 
   # arrange them by position of the bit ...
   theFlags <- bind_rows(map(seq_along(registry@flags), function(ix){
-    tibble(pos = min(registry@flags[[ix]]$position),
+    tibble(pos = min(registry@flags[[ix]]$wasGeneratedBy$assignPosition),
            name = names(registry@flags)[ix])
   }))
   theFlags <- arrange(theFlags, pos)
@@ -40,8 +40,8 @@ bf_encode <- function(registry){
 
     theName <- theFlags$name[i]
     theFlag <- registry@flags[[theName]]
-    thisLen <- theFlag$encoding$sign + theFlag$encoding$exponent + theFlag$encoding$mantissa
-    theVals <- bf_env[[theName]]
+    thisLen <- theFlag$wasGeneratedBy$encodeAsBinary$sign + theFlag$wasGeneratedBy$encodeAsBinary$exponent + theFlag$wasGeneratedBy$encodeAsBinary$significand
+    theVals <- bf_flag(registry = registry, flag = theName)
 
     if(!is.logical(theVals)){
 
@@ -61,15 +61,15 @@ bf_encode <- function(registry){
         sign <- as.integer(0 > theVals)
 
         # 3. bias exponent and encode as binary
-        exponent <- .toBin(x = nchar(str_remove(intBits, "^0+"))-1 + theFlag$encoding$bias)
+        exponent <- .toBin(x = nchar(str_remove(intBits, "^0+"))-1 + theFlag$wasGeneratedBy$encodeAsBinary$bias)
 
-        # 4. extract mantissa
-        mantissa <- map(.x = temp,
-                        .f = \(x) str_sub(str_split(string = x, pattern = "[.]", simplify = TRUE)[2], end = theFlag$encoding$mantissa))  |>
+        # 4. extract significand
+        significand  <- map(.x = temp,
+                        .f = \(x) str_sub(str_split(string = x, pattern = "[.]", simplify = TRUE)[2], end = theFlag$wasGeneratedBy$encodeAsBinary$significand ))  |>
           unlist()
 
         # 5. store as bit sequence
-        theBits <- paste0(sign, exponent, mantissa)
+        theBits <- paste0(sign, exponent, significand )
 
       } else {
         theBits <- intBits
