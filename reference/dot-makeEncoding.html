@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">bitfield</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.0</span>
       </span>
     </div>
 
@@ -75,8 +75,8 @@ see Details.</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>list of the encoding values for sign, exponent and mantissa, and an
-additional provenance term.</p>
+    <p>list of the encoding values for sign, exponent and significand, and
+an additional provenance term.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -89,24 +89,23 @@ is replaced by a 2 (because we go from decimal to binary), for example the
 binary value 101011.101 can be represented as 1.01011101 * 2^5. This
 scientific notation can now be broken down into the three previously
 mentioned fields, one for the sign (positive or negative), one for the
-exponent and one for the remaining part, the mantissa (or significand). For
-background information on how these fields are processed, study for
-instance
+exponent and one for the remaining part, the significand. For background
+information on how these fields are processed, study for instance
 <a href="https://www.cs.cornell.edu/~tomf/notes/cps104/floating" class="external-link">'Floating
 Point' by Thomas Finley</a> and check out
 <a href="https://float.exposed/" class="external-link">https://float.exposed/</a> to play around with
 floating point encoding. Depending on the encoding needs, these three
 values can be adapted, for example increase the exponent to provide a wider
 range (i.e., smaller small and larger large values) or increase the
-mantissa to provide more precision (i.e., more decimal digits). In the
+significand to provide more precision (i.e., more decimal digits). In the
 scope of this package, these three values are documented with a tag of the
 form [x.y.z], with x = number of sign bits (either 0 or 1), y = number of
-exponent bits, and z number of mantissa bits.</p>
+exponent bits, and z number of significand bits.</p>
 <p>When handling values that are not numeric, this package makes use of the
-same system, only that sign and exponent are set to 0, while the mantissa
-bits are set to either 1 (for binary responses [0.0.1]), or to whatever
-number of cases are required (i.e., for 8 cases with 3 required bits,
-resulting in the tag [0.0.3]).</p>
+same system, only that sign and exponent are set to 0, while the
+significand bits are set to either 1 (for binary responses [0.0.1]), or
+to whatever number of cases are required (i.e., for 8 cases with 3 required
+bits, resulting in the tag [0.0.3]).</p>
 <p>Possible options (<code>...</code>) of this function are</p><ul><li><p><code>precision</code>: switch that determines the configuration of the
 <a href="https://en.wikipedia.org/wiki/Bfloat16_floating-point_format" class="external-link">floating point encoding</a>.
 Possible values are <code>"half"</code> [1.5.10], <code>"bfloat16"</code>
@@ -114,13 +113,15 @@ Possible values are <code>"half"</code> [1.5.10], <code>"bfloat16"</code>
 <code>"pxr24"</code> [1.8.15], <code>"single"</code> [1.8.23] and
 <code>"double"</code> [1.11.52],</p></li>
 <li><p><code>fields</code>: list of custom values that control how many bits are
-allocated to <code>sign</code>, <code>exponent</code> and <code>mantissa</code> for
+allocated to <code>sign</code>, <code>exponent</code> and <code>significand</code> for
 encoding the numeric values,</p></li>
 <li><p><code>range</code>: the ratio between the smallest and largest possible
 value to be reliably represented (modifies the exponent),</p></li>
 <li><p><code>decimals</code>: the number of decimal digits that should be
-represented reliably (modifies the mantissa).</p></li>
-</ul></div>
+represented reliably (modifies the significand).</p></li>
+</ul><p>In a future version, it should also be possible to modify the bias to focus
+number coverage to where it's most useful for the data.</p>
+    </div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

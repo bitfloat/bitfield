@@ -7,6 +7,7 @@
 <url><loc>http://bitfloat.github.io/bitfield/reference/bf_decode.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/bf_encode.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/bf_export.html</loc></url>
+<url><loc>http://bitfloat.github.io/bitfield/reference/bf_flag.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/bf_map.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/bf_pcl.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/bf_protocol.html</loc></url>
@@ -17,7 +18,6 @@
 <url><loc>http://bitfloat.github.io/bitfield/reference/dot-getDependencies.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/dot-makeDatacite.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/dot-makeEncoding.html</loc></url>
-<url><loc>http://bitfloat.github.io/bitfield/reference/dot-rast.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/dot-toBin.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/dot-toDec.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/dot-updateMD5.html</loc></url>

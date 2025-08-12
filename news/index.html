@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">bitfield</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.0</span>
       </span>
     </div>
 
@@ -48,6 +48,13 @@
     </div>
 
     <div class="section level2">
+<h2 class="page-header" data-toc-text="0.8.0" id="bitfield-080">bitfield 0.8.0<a class="anchor" aria-label="anchor" href="#bitfield-080"></a></h2>
+<ul><li>introduction of <code><a href="../reference/bf_flag.html">bf_flag()</a></code> function, where building the flag can be found, which is moved out from <code><a href="../reference/bf_map.html">bf_map()</a></code>.</li>
+<li>complete overhaul of how information is stored in the registry, now it is vastly more W3C PROV compliant than before.</li>
+<li>new protocol <code>category</code> for encoding categories, which are different from cases because they can be set explicitly.</li>
+<li>the registry now contains also the levels or quantiles of the encoded data.</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="page-header" data-toc-text="0.7.0" id="bitfield-070">bitfield 0.7.0<a class="anchor" aria-label="anchor" href="#bitfield-070"></a></h2>
 <ul><li>inclusion of the <code><a href="../reference/project.html">project()</a></code> helper function that specifies, similarly to <code><a href="https://rdrr.io/r/utils/person.html" class="external-link">person()</a></code>, the project metadata.</li>
 <li>remove automatic creation of a registry when calling <code><a href="../reference/bf_map.html">bf_map()</a></code> for the sake of more care when users set up a new registry. This should contain author and project metadata.</li>
@@ -69,7 +76,7 @@
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.4.0" id="bitfield-040">bitfield 0.4.0<a class="anchor" aria-label="anchor" href="#bitfield-040"></a></h2>
-<ul><li>include the <code><a href="../reference/dot-rast.html">.rast()</a></code> function for simple handling of gridded objects.</li>
+<ul><li>include the <code>.rast()</code> function for simple handling of gridded objects.</li>
 <li>unit tests for all functions.</li>
 <li>introduction of a small set of standard encodings in <code>bf_stds</code> and the function <code>bf_standard()</code> to create flags from those.</li>
 </ul></div>
