@@ -22,8 +22,8 @@ registry <- setClass(Class = "registry",
                                version = "list",
                                md5 = "character",
                                description = "character",
-                               flags = "list",
-                               metadata = "list"
+                               attribution = "list",
+                               flags = "list"
                      )
 )
 
@@ -94,11 +94,11 @@ setValidity("registry", function(object){
 
   }
 
-  if(!.hasSlot(object = object, name = "metadata")){
-    errors = c(errors, "the registry does not have a 'metadata' slot.")
+  if(!.hasSlot(object = object, name = "attribution")){
+    errors = c(errors, "the registry does not have a 'attribution' slot.")
   } else {
-    if(!is.list(object@metadata)){
-      errors = c(errors, "the slot 'metadata' is not a list")
+    if(!is.list(object@attribution)){
+      errors = c(errors, "the slot 'attribution' is not a list")
     }
 
   }
@@ -138,13 +138,15 @@ setMethod(f = "show",
 
             if(length(object@flags) != 0){
 
-              thePos <- map(object@flags, "position")
+              # need to adapt position from 'assignPosition'
+              gen <- map(object@flags, "wasGeneratedBy")
+
+              thePos <- map(gen, "assignPosition")
               minPos <- map(thePos, min) |>
                 unlist()
-              theProv <- map(object@flags, "provenance")
-              theEnc <- map(map(theProv, "wasGeneratedBy"), last)
+              theEnc <- map(gen, "encodeAsBinary")
               theEnc <- map(theEnc, function(ix){
-                str_split(ix[[1]], ": ")[[1]][2]
+                paste0(paste0(ix[1:3], collapse = "."), "/", ix[4])
               }) |> unlist()
 
 
