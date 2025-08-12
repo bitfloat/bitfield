@@ -15,7 +15,7 @@ that may occur in data.
 bf_tbl
 }
 \description{
-A 10 × 5 tibble with a range of example data to showcase functionality of
+A 9 × 5 tibble with a range of example data to showcase functionality of
 this package.
 }
 \keyword{datasets}

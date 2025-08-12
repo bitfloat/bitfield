@@ -2,18 +2,9 @@
 % Please edit documentation in R/bf_map.R
 \name{bf_map}
 \alias{bf_map}
-\title{Build a bit flag}
+\title{Map variables to a bitflag}
 \usage{
-bf_map(
-  protocol,
-  data,
-  registry,
-  ...,
-  name = NULL,
-  pos = NULL,
-  na.val = NULL,
-  description = NULL
-)
+bf_map(protocol, data, registry, ..., name = NULL, pos = NULL, na.val = NULL)
 }
 \arguments{
 \item{protocol}{\code{\link[=character]{character(1)}}\cr the protocol based on which
@@ -34,12 +25,6 @@ that should be set.}
 
 \item{na.val}{value, of the same encoding type as the flag, that needs to be
 given, if the test for this flag results in \code{NA}s.}
-
-\item{description}{\code{\link[=character]{character(.)}}\cr optional description that
-should be used instead of the default protocol-specific description. This
-description is used in the registry legend, so it must have as many entries
-as there will be flags (two for a binary flag, as many as there are cases
-for a enumeration flag and one for integer or numeric flags).}
 }
 \value{
 an (updated) object of class 'registry' with the additional flag
@@ -73,6 +58,8 @@ given range (\emph{boolean}).
 (\emph{boolean}).
 \item \code{grepl} (x, pattern): test whether the values match a given
 pattern (\emph{boolean}).
+\item \code{category} (x): test whether the values are part of a set of
+given categories. (\emph{enumeration}).
 \item \code{case} (...): test whether values are part of given cases
 (\emph{enumeration}).
 \item \code{nChar} (x): count the number of characters of the values
@@ -92,7 +79,7 @@ bit-sequence (with an adapted precision) (\emph{floating-point}).
 decimals that are not present or rounds decimals that are present, even for
 ordinary numeric vectors. R stores numeric values internally as
 double-precision floating-point values (with 64 bits, where 52 bits encode
-the mantissa), which corresponds to a decimal precision of ~16 digits
+the significand), which corresponds to a decimal precision of ~16 digits
 (\code{log10(2^52)}). Hence, if a bit flag doesn't seem to coincide with
 the values you see in the console, double check the values with
 \code{sprintf("\%16f", values)}. If you use a larger value than 16 for
@@ -102,34 +89,66 @@ result merely from the binary-to-decimal conversion (check out
 }
 
 \examples{
+# first, set up the registry
 reg <- bf_registry(name = "testBF", description = "test bitfield")
-opr <- "identical"
 
+# then, put the test for NA values together
+reg <- bf_map(protocol = "na", data = bf_tbl, registry = reg,
+              x = year)
 
-# identify which arguments need to be given to call a test ...
-formalArgs(eval(parse(text = bf_pcl[[opr]]$test)))
-
-# put the test together
-bf_map(protocol = opr, data = bf_tbl, registry = reg,
-       x = x, y = y, na.val = FALSE)
-
-# some other examples of ...
+# all the other protocols...
 # boolean encoding
-bf_map(protocol = "matches", data = bf_tbl, registry = reg,
-       x = commodity, set = c("soybean", "honey"))
-bf_map(protocol = "range", data = bf_tbl, registry = reg,
-       x = yield, min = 10.4, max = 11)
+reg <- bf_map(protocol = "nan", data = bf_tbl, registry = reg,
+              x = y)
+reg <- bf_map(protocol = "inf", data = bf_tbl, registry = reg,
+              x = y)
+reg <- bf_map(protocol = "identical", data = bf_tbl, registry = reg,
+              x = x, y = y, na.val = FALSE)
+reg <- bf_map(protocol = "range", data = bf_tbl, registry = reg,
+              x = yield, min = 10.4, max = 11)
+reg <- bf_map(protocol = "matches", data = bf_tbl, registry = reg,
+              x = commodity, set = c("soybean", "honey"))
+reg <- bf_map(protocol = "grepl", data = bf_tbl, registry = reg,
+              x = year, pattern = "*r")
 
 # enumeration encoding
-bf_map(protocol = "case", data = bf_tbl, registry = reg,
-       yield >= 11, yield < 11 & yield > 9, yield < 9 & commodity == "maize")
+reg <- bf_map(protocol = "category", data = bf_tbl, registry = reg,
+              x = commodity, na.val = 0)
+reg <- bf_map(protocol = "case", data = bf_tbl, registry = reg, na.val = 0,
+              yield >= 11, yield < 11 & yield > 9, yield < 9 & commodity == "maize")
 
 # integer encoding
-bf_map(protocol = "integer", data = bf_tbl, registry = reg,
-       x = as.integer(year), na.val = 0L)
+reg <- bf_map(protocol = "nChar", data = bf_tbl, registry = reg,
+              x = commodity, na.val = 0)
+reg <- bf_map(protocol = "nInt", data = bf_tbl, registry = reg,
+              x = yield)
+reg <- bf_map(protocol = "nDec", data = bf_tbl, registry = reg,
+              x = yield)
+reg <- bf_map(protocol = "integer", data = bf_tbl, registry = reg,
+              x = as.integer(year), na.val = 0L)
 
 # floating-point encoding
-bf_map(protocol = "numeric", data = bf_tbl, registry = reg,
-       x = yield, decimals = 2)
+reg <- bf_map(protocol = "numeric", data = bf_tbl, registry = reg,
+              x = yield, decimals = 2)
+
+# finally, take a look at the registry
+reg
+
+# alternatively, a raster
+library(terra)
+bf_rst <- rast(nrows = 3, ncols = 3, vals = bf_tbl$commodity, names = "commodity")
+bf_rst$yield <- rast(nrows = 3, ncols = 3, vals = bf_tbl$yield)
+
+reg <- bf_registry(name = "testBF", description = "raster bitfield")
+
+reg <- bf_map(protocol = "na", data = bf_rst, registry = reg,
+              x = commodity)
+
+reg <- bf_map(protocol = "range", data = bf_rst, registry = reg,
+              x = yield, min = 5, max = 11)
+
+reg <- bf_map(protocol = "category", data = bf_rst, registry = reg,
+              x = commodity, na.val = 0)
+reg
 
 }

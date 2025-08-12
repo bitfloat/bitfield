@@ -15,8 +15,8 @@
 see Details.}
 }
 \value{
-list of the encoding values for sign, exponent and mantissa, and an
-additional provenance term.
+list of the encoding values for sign, exponent and significand, and
+an additional provenance term.
 }
 \description{
 Determine encoding
@@ -31,25 +31,24 @@ is replaced by a 2 (because we go from decimal to binary), for example the
 binary value 101011.101 can be represented as 1.01011101 * 2^5. This
 scientific notation can now be broken down into the three previously
 mentioned fields, one for the sign (positive or negative), one for the
-exponent and one for the remaining part, the mantissa (or significand). For
-background information on how these fields are processed, study for
-instance
+exponent and one for the remaining part, the significand. For background
+information on how these fields are processed, study for instance
 \href{https://www.cs.cornell.edu/~tomf/notes/cps104/floating}{'Floating
 Point' by Thomas Finley} and check out
 \href{https://float.exposed/}{https://float.exposed/} to play around with
 floating point encoding. Depending on the encoding needs, these three
 values can be adapted, for example increase the exponent to provide a wider
 range (i.e., smaller small and larger large values) or increase the
-mantissa to provide more precision (i.e., more decimal digits). In the
+significand to provide more precision (i.e., more decimal digits). In the
 scope of this package, these three values are documented with a tag of the
 form [x.y.z], with x = number of sign bits (either 0 or 1), y = number of
-exponent bits, and z number of mantissa bits.
+exponent bits, and z number of significand bits.
 
 When handling values that are not numeric, this package makes use of the
-same system, only that sign and exponent are set to 0, while the mantissa
-bits are set to either 1 (for binary responses [0.0.1]), or to whatever
-number of cases are required (i.e., for 8 cases with 3 required bits,
-resulting in the tag [0.0.3]).
+same system, only that sign and exponent are set to 0, while the
+significand bits are set to either 1 (for binary responses [0.0.1]), or
+to whatever number of cases are required (i.e., for 8 cases with 3 required
+bits, resulting in the tag [0.0.3]).
 
 Possible options (\code{...}) of this function are \itemize{
 \item \code{precision}: switch that determines the configuration of the
@@ -59,11 +58,13 @@ Possible values are \code{"half"} [1.5.10], \code{"bfloat16"}
 \code{"pxr24"} [1.8.15], \code{"single"} [1.8.23] and
 \code{"double"} [1.11.52],
 \item \code{fields}: list of custom values that control how many bits are
-allocated to \code{sign}, \code{exponent} and \code{mantissa} for
+allocated to \code{sign}, \code{exponent} and \code{significand} for
 encoding the numeric values,
 \item \code{range}: the ratio between the smallest and largest possible
 value to be reliably represented (modifies the exponent),
 \item \code{decimals}: the number of decimal digits that should be
-represented reliably (modifies the mantissa).
+represented reliably (modifies the significand).
 }
+In a future version, it should also be possible to modify the bias to focus
+number coverage to where it's most useful for the data.
 }
