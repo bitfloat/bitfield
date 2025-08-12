@@ -1,3 +1,10 @@
+# bitfield 0.8.0
+
+- introduction of `bf_flag()` function, where building the flag can be found, which is moved out from `bf_map()`.
+- complete overhaul of how information is stored in the registry, now it is vastly more W3C PROV compliant than before.
+- new protocol `category` for encoding categories, which are different from cases because they can be set explicitly.
+- the registry now contains also the levels or quantiles of the encoded data.
+
 # bitfield 0.7.0
 
 - inclusion of the `project()` helper function that specifies, similarly to `person()`, the project metadata.

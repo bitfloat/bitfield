@@ -97,7 +97,7 @@ reg <- bf_map(protocol = "na",                       # the protocol with which t
               registry = reg)                        # provide the registry to update
 
 # test which case an observation is part of
-reg <- bf_map(protocol = "case", data = bf_tbl, registry = reg,
+reg <- bf_map(protocol = "case", data = bf_tbl, registry = reg, na.val = 0,
               yield >= 11, yield < 11 & yield > 9, yield < 9 & commodity == "maize")
 
 # test the length (number of characters) of values
@@ -113,6 +113,7 @@ These are functions that represent the possible encoding types boolean (`bool`),
 
 ```{r}
 reg
+
 (field <- bf_encode(registry = reg))
 ```
 
@@ -152,25 +153,30 @@ options(old)
 
 ## Bitfields for raster data
 
-An interesting use case is in encoding metadata for modelled gridded data. This is possible simply by calling the `.rast()` function to wrap the gridded object, applying the functions of this package, and overwriting the integer values of the bitfield into a copy of the original gridded object.
+An interesting use case is in encoding metadata for modelled gridded data. In the newest version of this package, this is possible simply by providing a raster instead of a table to the functions.
 
 ```{r}
-# example data
-bf_rst <- rast(nrows = 3, ncols = 3, 
-               vals = as.integer(c(1, 2, 3, NA, 5, 6, 7, 8, 9)))
+library(terra)
+
+# define an example dataset
+bf_rst <- rast(nrows = 3, ncols = 3, vals = bf_tbl$commodity, 
+               names = "commodity") # with levels
+bf_rst$yield <- rast(nrows = 3, ncols = 3, vals = bf_tbl$yield) # numeric
 
 # build the registry
-reg <- bf_registry(name = "raster_meta",
-                   description = "this example bitfield documents metadata for a raster object.")
+reg <- bf_registry(name = "reg_raster",
+                   description = "bitfield for rasters.")
 
-reg <- bf_map(protocol = "na", data = .rast(bf_rst), registry = reg, 
-              x = lyr.1)
-reg <- bf_map(protocol = "range", data = .rast(bf_rst), registry = reg, 
-              x = lyr.1, min = 4, max = 8, name = "range_lyr.1", na.val = FALSE)
-
+reg <- bf_map(protocol = "na", data = bf_rst, registry = reg,
+              x = commodity)
+reg <- bf_map(protocol = "range", data = bf_rst, registry = reg, 
+              x = yield, min = 5, max = 11)
+reg <- bf_map(protocol = "category", data = bf_rst, registry = reg,
+              x = commodity, na.val = 0)
+              
 # encode as bitfield (and make raster out of it)
 field <- bf_encode(registry = reg)
-rst_field <- rast(bf_rst, vals = field, names = names(field))
+rst_field <- rast(bf_rst$yield, vals = field, names = names(field))
 
 # decode (gridded) bitfield somewhere downstream
 flags <- bf_decode(x = values(rst_field, dataframe = TRUE), registry = reg)

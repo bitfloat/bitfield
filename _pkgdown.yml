@@ -16,6 +16,7 @@ reference:
       - bf_decode
       - bf_encode
       - bf_export
+      - bf_flag
       - bf_map
       - bf_protocol
       - bf_registry
@@ -31,7 +32,6 @@ reference:
       - .getDependencies
       - .makeEncoding
       - .makeDatacite
-      - .rast
       - .toBin
       - .toDec
       - .updateMD5
