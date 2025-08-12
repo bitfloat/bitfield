@@ -138,25 +138,24 @@
 #'   binary value 101011.101 can be represented as 1.01011101 * 2^5. This
 #'   scientific notation can now be broken down into the three previously
 #'   mentioned fields, one for the sign (positive or negative), one for the
-#'   exponent and one for the remaining part, the mantissa (or significand). For
-#'   background information on how these fields are processed, study for
-#'   instance
+#'   exponent and one for the remaining part, the significand. For background
+#'   information on how these fields are processed, study for instance
 #'   \href{https://www.cs.cornell.edu/~tomf/notes/cps104/floating}{'Floating
 #'   Point' by Thomas Finley} and check out
 #'   \href{https://float.exposed/}{https://float.exposed/} to play around with
 #'   floating point encoding. Depending on the encoding needs, these three
 #'   values can be adapted, for example increase the exponent to provide a wider
 #'   range (i.e., smaller small and larger large values) or increase the
-#'   mantissa to provide more precision (i.e., more decimal digits). In the
+#'   significand to provide more precision (i.e., more decimal digits). In the
 #'   scope of this package, these three values are documented with a tag of the
 #'   form \[x.y.z\], with x = number of sign bits (either 0 or 1), y = number of
-#'   exponent bits, and z number of mantissa bits.
+#'   exponent bits, and z number of significand bits.
 #'
 #'   When handling values that are not numeric, this package makes use of the
-#'   same system, only that sign and exponent are set to 0, while the mantissa
-#'   bits are set to either 1 (for binary responses \[0.0.1\]), or to whatever
-#'   number of cases are required (i.e., for 8 cases with 3 required bits,
-#'   resulting in the tag \[0.0.3\]).
+#'   same system, only that sign and exponent are set to 0, while the
+#'   significand bits are set to either 1 (for binary responses \[0.0.1\]), or
+#'   to whatever number of cases are required (i.e., for 8 cases with 3 required
+#'   bits, resulting in the tag \[0.0.3\]).
 #'
 #'   Possible options (\code{...}) of this function are \itemize{
 #'     \item \code{precision}: switch that determines the configuration of the
@@ -166,15 +165,17 @@
 #'           \code{"pxr24"} \[1.8.15\], \code{"single"} \[1.8.23\] and
 #'           \code{"double"} \[1.11.52\],
 #'     \item \code{fields}: list of custom values that control how many bits are
-#'           allocated to \code{sign}, \code{exponent} and \code{mantissa} for
+#'           allocated to \code{sign}, \code{exponent} and \code{significand} for
 #'           encoding the numeric values,
 #'     \item \code{range}: the ratio between the smallest and largest possible
 #'           value to be reliably represented (modifies the exponent),
 #'     \item \code{decimals}: the number of decimal digits that should be
-#'           represented reliably (modifies the mantissa).
+#'           represented reliably (modifies the significand).
 #'   }
-#' @return list of the encoding values for sign, exponent and mantissa, and an
-#'   additional provenance term.
+#'   In a future version, it should also be possible to modify the bias to focus
+#'   number coverage to where it's most useful for the data.
+#' @return list of the encoding values for sign, exponent and significand, and
+#'   an additional provenance term.
 #' @importFrom purrr map
 #' @importFrom checkmate assertIntegerish assertList testNull testIntegerish
 #'   assertNames assertChoice assertCharacter
@@ -185,7 +186,9 @@
   assertChoice(x = type, choices = c("bool", "enum", "int", "float"))
 
   # set dots to arguments
-  encArgs <- map(unlist(list(...), recursive = FALSE), eval_tidy)
+  dots <- enquos(...)
+  named_dots <- dots[names(dots) != ""]
+  encArgs <- map(named_dots[names(named_dots) %in% c("precision", "fields", "range", "decimals", "format")], eval_tidy)
   # return(encArgs)
 
   for(name in c("format", "decimals", "range", "fields")){
@@ -196,27 +199,28 @@
     }
   }
   assertList(x = fields, null.ok = TRUE)
-  if(!is.null(fields))
-    assertNames(x = names(fields), permutation.of = c("sign", "exponent", "mantissa", "bias"))
-  assertIntegerish(x = decimals, len = 1, any.missing = FALSE, null.ok = TRUE)
-  if(!is.null(decimals))
-    assertIntegerish(x = decimals, len = 1, any.missing = FALSE)
-  assertIntegerish(x = range, len = 1, any.missing = FALSE, null.ok = TRUE)
-  if(!is.null(range))
-    assertIntegerish(x = range, len = 1, any.missing = FALSE)
+  if(!is.null(fields)){
+    assertNames(x = names(fields), subset.of = c("sign", "exponent", "significand", "bias"))
+    if(!is.null(fields$significand))
+      names(fields)[which(names(fields) == "significand")] <- "mant" # needs to be named differently than "significand", otherwise it also matches with "sign" below
+  }
+
   assertCharacter(x = format, len = 1, any.missing = FALSE, null.ok = TRUE)
   if(!is.null(format))
     assertChoice(x = format, choices = c("half", "bfloat16", "tensor19", "fp24", "pxr24", "single", "double"))
 
-  sign <- exp <- mant <- bias <- NULL
+  assertIntegerish(x = decimals, len = 1, any.missing = FALSE, null.ok = TRUE)
+  assertIntegerish(x = range, len = 1, any.missing = FALSE, null.ok = TRUE)
+
+  sign <- exp <- sig <- bias <- NULL
 
   # determine variable sign
   autoSign <- ifelse(any(var < 0, na.rm = TRUE), 1, 0)
 
-  # determine variable mantissa
+  # determine variable significand
   xInt <- var * 10^max(decimals, 0)
   xInt <- as.integer(xInt)
-  autoMant <- ceiling(log2(max(xInt, 2, na.rm = TRUE) + 1))
+  autoSig <- ceiling(log2(max(xInt, 2, na.rm = TRUE) + 1))
 
   # determine variable exponent
   expRange <- floor(log10(abs(var)))
@@ -227,19 +231,19 @@
 
     sign <- 0
     exp <- 0
-    mant <- 1
+    sig <- 1
 
   } else if(type == "enum"){
 
     sign <- 0
     exp <- 0
-    mant <- autoMant
+    sig <- autoSig
 
   } else if(type == "int"){
 
     sign <- autoSign
     exp <- 0
-    mant <- autoMant
+    sig <- autoSig
 
   } else {
 
@@ -254,7 +258,7 @@
                        format == "single" ~ 8,
                        format == "double" ~ 11)
 
-      mant <- case_when(format == "half" ~ 10,
+      sig <- case_when(format == "half" ~ 10,
                         format == "bfloat16" ~ 7,
                         format == "tensor19" ~ 10,
                         format == "fp24" ~ 16,
@@ -266,7 +270,7 @@
 
       sign <- autoSign
       exp <- autoExp
-      mant <- autoMant
+      sig <- autoSig
 
     }
 
@@ -291,18 +295,18 @@
     }
   }
 
-  if(!is.null(fields) & !is.null(fields$mantissa)){
-    assertIntegerish(x = fields$mantissa, lower = 0, len = 1, any.missing = FALSE)
-    if(fields$mantissa < mant){
-      stop("It is not possible to set less than ", mant, " 'mantissa' bits.")
+  if(!is.null(fields) & !is.null(fields$mant)){
+    assertIntegerish(x = fields$mant, lower = 0, len = 1, any.missing = FALSE)
+    if(fields$mant < sig){
+      stop("It is not possible to set less than ", sig, " 'significand' bits.")
     } else {
-      mant <- fields$mantissa
+      sig <- fields$mant
     }
   }
 
   enc <- list(sign = as.integer(sign),
               exponent = as.integer(exp),
-              mantissa = as.integer(mant),
+              significand = as.integer(sig),
               bias = as.integer(2**(exp-1)-1))
 
   return(enc)
@@ -341,44 +345,6 @@
   out@md5 <- tempSum
 
   return(out)
-}
-
-
-#' Extract values and metadata from terra::SpatRaster
-#'
-#' @param x [SpatRaster(1)][terra::SpatRaster]\cr the SpatRaster object.
-#' @details This function simply extracts the values from \code{x} and appends
-#'   the raster metadata as attributes.
-#' @return the function that extracts values and metadata.
-#' @importFrom checkmate assertClass
-#' @importFrom terra values nrow ncol res ext crs
-#' @export
-
-.rast <- function(x){
-
-  assertClass(x = x, classes = "SpatRaster")
-
-  # Create the accessor function that will extract values when called
-  accessor <- function() {
-    values <- terra::values(x)
-
-    # Return values along with metadata about the raster
-    attr(values, "rast_meta") <- list(
-      nrow = nrow(x),
-      ncol = ncol(x),
-      res = res(x),
-      ext = ext(x),
-      crs = crs(x)
-    )
-
-    return(values)
-  }
-
-  # Set class so bitfield operators can recognize this is a raster accessor
-  class(accessor) <- c("bf_rast", "function")
-
-  return(accessor)
-
 }
 
 #' Identify packages to custom functions
@@ -523,7 +489,7 @@
   assertCharacter(x = protocol$description, len = 1, any.missing = FALSE)
   assertCharacter(x = protocol$encoding_type, len = 1, any.missing = FALSE)
   assertIntegerish(x = protocol$bits, len = 1, lower = 1)
-  assertFunction(x = protocol$test)
+  assertCharacter(x = protocol$test, len = 1, any.missing = FALSE)
   assertList(x = protocol$data)
 
   # ensure that glue statements have only names that are also in the data
@@ -534,6 +500,11 @@
     matches <- as.character(str_match(protocol$extends, "^([a-zA-Z]+)_(\\d+)\\.(\\d+)\\.(\\d+)$"))
     assertChoice(x = matches[2], choices = names(bf_pcl))
     if(!testCharacter(x = protocol$extends_note, any.missing = FALSE, min.len = 1)) stop("please provide a short note about what this extension changes.")
+  }
+
+  # turn test string into function
+  if (is.character(protocol$test)) {
+    protocol$test <- eval(parse(text = protocol$test))
   }
 
   # ensure packages are installed
