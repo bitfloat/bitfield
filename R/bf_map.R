@@ -1,4 +1,4 @@
-#' Build a bit flag
+#' Map variables to a bitflag
 #'
 #' This function maps values from a dataset to bit flags that can be encoded
 #' into a bitfield.
@@ -12,11 +12,6 @@
 #' @param name [`character(1)`][character]\cr optional flag-name.
 #' @param na.val value, of the same encoding type as the flag, that needs to be
 #'   given, if the test for this flag results in \code{NA}s.
-#' @param description [`character(.)`][character]\cr optional description that
-#'   should be used instead of the default protocol-specific description. This
-#'   description is used in the registry legend, so it must have as many entries
-#'   as there will be flags (two for a binary flag, as many as there are cases
-#'   for a enumeration flag and one for integer or numeric flags).
 #' @param registry [`registry(1)`][registry]\cr an already defined bitfield
 #'   registry.
 #' @details \code{protocol} can either be the name of an internal item (see
@@ -42,6 +37,8 @@
 #'           (\emph{boolean}).
 #'     \item \code{grepl} (x, pattern): test whether the values match a given
 #'           pattern (\emph{boolean}).
+#'     \item \code{category} (x): test whether the values are part of a set of
+#'           given categories. (\emph{enumeration}).
 #'     \item \code{case} (...): test whether values are part of given cases
 #'           (\emph{enumeration}).
 #'     \item \code{nChar} (x): count the number of characters of the values
@@ -60,7 +57,7 @@
 #'   decimals that are not present or rounds decimals that are present, even for
 #'   ordinary numeric vectors. R stores numeric values internally as
 #'   double-precision floating-point values (with 64 bits, where 52 bits encode
-#'   the mantissa), which corresponds to a decimal precision of ~16 digits
+#'   the significand), which corresponds to a decimal precision of ~16 digits
 #'   (\code{log10(2^52)}). Hence, if a bit flag doesn't seem to coincide with
 #'   the values you see in the console, double check the values with
 #'   \code{sprintf("%16f", values)}. If you use a larger value than 16 for
@@ -70,48 +67,81 @@
 #' @return an (updated) object of class 'registry' with the additional flag
 #'   defined here.
 #' @examples
+#' # first, set up the registry
 #' reg <- bf_registry(name = "testBF", description = "test bitfield")
-#' opr <- "identical"
 #'
+#' # then, put the test for NA values together
+#' reg <- bf_map(protocol = "na", data = bf_tbl, registry = reg,
+#'               x = year)
 #'
-#' # identify which arguments need to be given to call a test ...
-#' formalArgs(eval(parse(text = bf_pcl[[opr]]$test)))
-#'
-#' # put the test together
-#' bf_map(protocol = opr, data = bf_tbl, registry = reg,
-#'        x = x, y = y, na.val = FALSE)
-#'
-#' # some other examples of ...
+#' # all the other protocols...
 #' # boolean encoding
-#' bf_map(protocol = "matches", data = bf_tbl, registry = reg,
-#'        x = commodity, set = c("soybean", "honey"))
-#' bf_map(protocol = "range", data = bf_tbl, registry = reg,
-#'        x = yield, min = 10.4, max = 11)
+#' reg <- bf_map(protocol = "nan", data = bf_tbl, registry = reg,
+#'               x = y)
+#' reg <- bf_map(protocol = "inf", data = bf_tbl, registry = reg,
+#'               x = y)
+#' reg <- bf_map(protocol = "identical", data = bf_tbl, registry = reg,
+#'               x = x, y = y, na.val = FALSE)
+#' reg <- bf_map(protocol = "range", data = bf_tbl, registry = reg,
+#'               x = yield, min = 10.4, max = 11)
+#' reg <- bf_map(protocol = "matches", data = bf_tbl, registry = reg,
+#'               x = commodity, set = c("soybean", "honey"))
+#' reg <- bf_map(protocol = "grepl", data = bf_tbl, registry = reg,
+#'               x = year, pattern = "*r")
 #'
 #' # enumeration encoding
-#' bf_map(protocol = "case", data = bf_tbl, registry = reg,
-#'        yield >= 11, yield < 11 & yield > 9, yield < 9 & commodity == "maize")
+#' reg <- bf_map(protocol = "category", data = bf_tbl, registry = reg,
+#'               x = commodity, na.val = 0)
+#' reg <- bf_map(protocol = "case", data = bf_tbl, registry = reg, na.val = 0,
+#'               yield >= 11, yield < 11 & yield > 9, yield < 9 & commodity == "maize")
 #'
 #' # integer encoding
-#' bf_map(protocol = "integer", data = bf_tbl, registry = reg,
-#'        x = as.integer(year), na.val = 0L)
+#' reg <- bf_map(protocol = "nChar", data = bf_tbl, registry = reg,
+#'               x = commodity, na.val = 0)
+#' reg <- bf_map(protocol = "nInt", data = bf_tbl, registry = reg,
+#'               x = yield)
+#' reg <- bf_map(protocol = "nDec", data = bf_tbl, registry = reg,
+#'               x = yield)
+#' reg <- bf_map(protocol = "integer", data = bf_tbl, registry = reg,
+#'               x = as.integer(year), na.val = 0L)
 #'
 #' # floating-point encoding
-#' bf_map(protocol = "numeric", data = bf_tbl, registry = reg,
-#'        x = yield, decimals = 2)
+#' reg <- bf_map(protocol = "numeric", data = bf_tbl, registry = reg,
+#'               x = yield, decimals = 2)
+#'
+#' # finally, take a look at the registry
+#' reg
+#'
+#' # alternatively, a raster
+#' library(terra)
+#' bf_rst <- rast(nrows = 3, ncols = 3, vals = bf_tbl$commodity, names = "commodity")
+#' bf_rst$yield <- rast(nrows = 3, ncols = 3, vals = bf_tbl$yield)
+#'
+#' reg <- bf_registry(name = "testBF", description = "raster bitfield")
+#'
+#' reg <- bf_map(protocol = "na", data = bf_rst, registry = reg,
+#'               x = commodity)
+#'
+#' reg <- bf_map(protocol = "range", data = bf_rst, registry = reg,
+#'               x = yield, min = 5, max = 11)
+#'
+#' reg <- bf_map(protocol = "category", data = bf_rst, registry = reg,
+#'               x = commodity, na.val = 0)
+#' reg
 #'
 #' @importFrom checkmate assertCharacter assertIntegerish assertClass
 #'   assertNames assertDisjunct
-#' @importFrom rlang enquos eval_tidy exec env_bind get_expr `:=`
-#' @importFrom purrr map safely list_rbind
+#' @importFrom rlang enquos eval_tidy exec env_bind get_expr `:=` expr_text
+#' @importFrom purrr map safely list_rbind imap_chr
 #' @importFrom stringr str_split str_replace
 #' @importFrom glue glue
-#' @importFrom terra rast
+#' @importFrom terra global has.colors ncell levels is.factor
 #' @importFrom methods formalArgs
+#' @importFrom stats quantile
 #' @export
 
-bf_map <- function(protocol, data, registry, ..., name = NULL, pos = NULL, na.val = NULL,
-                   description = NULL){
+bf_map <- function(protocol, data, registry, ..., name = NULL, pos = NULL,
+                   na.val = NULL){
 
   assertCharacter(x = protocol, len = 1, any.missing = FALSE)
   assertClass(x = registry, classes = "registry")
@@ -121,125 +151,175 @@ bf_map <- function(protocol, data, registry, ..., name = NULL, pos = NULL, na.va
   args <- enquos(..., .named = TRUE)
   # return(args)
 
-  # extract values in data ----
-  if(inherits(data, "bf_rast")){
-    tempData <- as.data.frame(data())
-  } else {
-    tempData <- data
-  }
-
-  # determine intermediate flag values ----
+  # load protocol ----
   if(protocol %in% names(bf_pcl)){
     pcl <- bf_pcl[[protocol]]
   } else {
     pcl <- get(protocol)
   }
-  if (is.character(pcl$test)) {
-    pcl$test <- eval(parse(text = pcl$test))
-  }
   pcl <- .validateProtocol(pcl)
 
-  # evaluate arguments of the protocol ----
-  tidyArgs <- map(args, eval_tidy, data = tempData)
-
-  # call protocol ----
+  # load potentially missing packages ----
   if(!is.null(pcl$requires)){
     map(pcl$requires, safely(~require(.x, character.only = TRUE, quietly = TRUE, warn.conflicts = FALSE)))
   }
-  out <- exec(pcl$test, !!!tidyArgs)
 
-  # determine encoding ----
-  enc <- .makeEncoding(var = out, type = pcl$encoding_type, tidyArgs)
-  encProv <- paste0("encodeAsBinary: ", enc$sign, ".", enc$exp, ".", enc$mant, "/", enc$bias)
+  # determine so far anonymous arguments ----
+  tempArgs <- map(.x = seq_along(args), .f = function(ix){
+    temp <- get_expr(args[[ix]])
+    if(length(temp) != 1 & exists(as.character(temp)[1], mode = "function")) temp <- temp[-1]
+    if(is.character(temp)) temp <- paste0("'", temp, "'")
+    data.frame(name = names(args)[ix], val = as.character(temp))
+  }) |> list_rbind()
+  formalNames <- tempArgs[tempArgs$name %in% formalArgs(pcl$test),]
 
-  # replace NA values ----
-  if(any(is.na(out))){
-    if(is.null(na.val)) stop("there are NA values in the bit representation, please define 'na.val'.")
-    assertClass(x = na.val, classes = class(out))
-    out[is.na(out)] <- na.val
-    naProv <- paste0("substituteValue: NA->", na.val)
+  levelsProv <- NULL
+  if(pcl$encoding_type == "bool") {
+
+    sample_vals <- c(FALSE, TRUE)
+    levels_data <- data.frame(
+      id = 0:1,
+      label = sample_vals
+    )
+
+  } else if(pcl$encoding_type == "enum") {
+
+    if(protocol == "case"){
+
+      sample_vals <- 0:length(args) # add 0 as "no match" case
+      levels_data <- data.frame(
+        id = 0:length(args),
+        label = c("no match", names(args)))
+
+    } else {
+
+      if(inherits(data, "SpatRaster")) {
+        if(is.factor(data[formalNames$val])){
+          levels_data <- levels(data)[[1]]
+          names(levels_data)[1] <- "id"
+        } else {
+          stop("to encode the values as enumeration, please provide a raster attribute table.")
+        }
+
+      } else {
+        lvls <- levels(data[[formalNames$val]])
+        levels_data <- data.frame(
+          id = 0:length(lvls),
+          label = c("no category", lvls))
+      }
+      sample_vals <- levels_data$id
+    }
+
   } else {
-    naProv <- NULL
+
+    if(protocol %in% c("integer", "numeric") & "x" %in% names(args)){
+
+      if(inherits(data, "SpatRaster")) {
+        qq <- global(data, quantile, na.rm = TRUE)
+        minmax <- global(abs(data), range, na.rm = TRUE)
+      } else {
+        temp_col <- eval_tidy(args[[1]], data)
+        qq <- quantile(temp_col, na.rm = TRUE)
+        minmax <- range(abs(temp_col), na.rm = TRUE)
+      }
+
+      levels_data <- data.frame(
+        id = 0:4,
+        label = unlist(qq, use.names = FALSE)
+      )
+      sample_vals <- c(qq[[1]], qq[[5]], minmax[[1]], minmax[[2]])
+
+    } else {
+      levels_data <- data.frame(
+        id = 0,
+        label = paste0(protocol, " output (computed)"))
+      sample_vals <- c(0, 2^pcl$bits - 1)
+    }
+
   }
+
+  enc <- .makeEncoding(var = sample_vals, type = pcl$encoding_type, ...)
+  # return(enc)
 
   # update position ----
   if(is.null(pos)){
-    pos <- (registry@width + 1L):(registry@width + enc$sign + enc$exponent + enc$mantissa)
+    pos <- (registry@width + 1L):(registry@width + enc$sign + enc$exponent + enc$significand)
   } else {
     # include test that checks whether sufficient positions are set, and give an error if not
   }
 
   # update registry ----
-  registry@width <- registry@width + enc$sign + enc$exponent + enc$mantissa
-  if(registry@length == 0L){
-    registry@length <- length(out)
+  registry@width <- registry@width + enc$sign + enc$exponent + enc$significand
+  len <- if(inherits(data, "SpatRaster")){
+    as.integer(ncell(data))
   } else {
-    if(registry@length != length(out)){
+    as.integer(nrow(data))
+  }
+  if(registry@length == 0L){
+    registry@length <- len
+  } else {
+    if(registry@length != len){
       stop(paste0("this flag doesn't have as many items, as there are observations in the bitfield."))
     }
   }
 
-  # make meta-data ----
-  testProv <- paste0("useTest: ", paste0(protocol, "_", pcl$version))
-  tempArgs <- map(.x = seq_along(args), .f = function(ix){
-    temp <- get_expr(args[[ix]])
-    if(length(temp) != 1 & exists(as.character(temp)[1], mode = "function")) temp <- temp[-1]
-    if(is.character(temp)) temp <- paste0("'", temp, "'")
-    data.frame(name = names(args)[ix], val = as.character(temp), expr = paste0(names(args)[ix], "=", temp))
-  }) |> list_rbind()
-  formalNames <- tempArgs[tempArgs$name %in% formalArgs(pcl$test),]
-  result <- ""
-
-  if(pcl$encoding_type %in% c("bool", "int", "float")){
-
-    thisName <- paste0(c(protocol, paste0(formalNames$val, collapse = "-")), collapse = "_")
-    argsProv <- paste0("withArguments: ", paste0(tempArgs$expr, collapse = ", "))
-
-    for(i in seq_along(formalNames$name)){
-      assign(formalNames$name[i], paste0(c("'", formalNames$val[i], "'"), collapse = ""), envir = environment())
-    }
-
-  } else if(pcl$encoding_type == "enum"){
-
-    inputNames <- unlist(str_split(tempArgs$name, " "))
-    inputNames <- unique(inputNames[inputNames %in% colnames(tempData)])
+  # if the protocol is 'case', ensure that it has an iterator and uses argument
+  # names as argument text, otherwise combine them from name and value
+  if(protocol %in% c("range", "matches", "case", "grepl")){
     if(is.null(names(registry@flags))){
-      iter <- 1
+      iter <- NULL
     } else {
-      if(grepl(pattern = protocol, x = names(registry@flags))){
+      if(any(grepl(pattern = protocol, x = names(registry@flags)))){
         iter <- length(grep(pattern = protocol, x = names(registry@flags))) + 1
       } else {
-        iter <- 1
+        iter <- NULL
       }
     }
-    thisName <- paste0(protocol, iter, "_", paste0(inputNames, collapse = "-"))
-    argsProv <- paste0("withArguments: ", paste0(names(tidyArgs), collapse = ", "))
-
-    pcl$description <- str_replace(string = pcl$description, pattern = "\\{...\\}", replacement = "\\{cases\\}")
-    cases <- c("NULL", paste0("'", names(tidyArgs), "'"))
+  } else {
+    iter <- NULL
   }
+
+  if(protocol == "case"){
+    args_text <- names(args)
+    pcl$description <- str_replace(string = pcl$description, pattern = "\\{...\\}", replacement = "\\{cases\\}")
+    cases <- c("NULL", paste0("'", names(args), "'"))
+    inputNames <- unlist(str_split(tempArgs$name, " "))
+  } else {
+    args_text <- imap_chr(args, ~ paste0(.y, " = ", expr_text(get_expr(.x))))
+    inputNames <- unlist(str_split(tempArgs$val, " "))
+
+    # define descriptive variables
+    for(i in seq_along(formalNames$name)){
+      assign(formalNames$name[i], paste0("'", paste0(formalNames$val[which(formalNames$name == formalNames$name[i])], collapse = ", "), "'"), envir = environment())
+    }
+  }
+  inputNames <- unique(inputNames[inputNames %in% names(data)])
   desc <- glue(pcl$description)
 
   # customise name ----
-  if(is.null(name)){
-    name <- thisName
+  if(!is.null(name)){
+    thisName <- name
   } else {
-    assertDisjunct(x = name, y = names(registry@flags))
+    thisName <- paste0(protocol, iter, "_", paste0(inputNames, collapse = "-"))
+    assertDisjunct(x = thisName, y = names(registry@flags))
   }
 
+  # create the provenance items ----
+  testProv <- list(useTest = paste0(protocol, "_", pcl$version))
+  argsProv <- list(withArguments = args_text)
+  naProv <- list(substituteValue = na.val)
+  levelsProv <- list(extractLevels = levels_data)
+  encProv <- list(encodeAsBinary = list(sign = enc$sign, exponent = enc$exponent, significand = enc$significand, bias = enc$bias))
+  posProv <- list(assignPosition = c(min(pos), max(pos)))
+
   # store in registry ----
-  registry@flags[[name]] <- list(description = desc,
-                                 position = pos,
-                                 encoding = enc,
-                                 provenance = list(wasDerivedFrom = deparse(substitute(data)),
-                                                   wasGeneratedBy = c(testProv, argsProv, naProv, encProv),
-                                                   wasAssociatedWith = paste0(Sys.info()[["nodename"]], "_", Sys.info()[["user"]])))
+  registry@flags[[thisName]] <- list(comment = desc,
+                                     wasDerivedFrom = deparse(substitute(data)),
+                                     wasGeneratedBy = c(testProv, argsProv, naProv, levelsProv, encProv, posProv),
+                                     wasAssociatedWith = paste0(Sys.info()[["nodename"]], "_", Sys.info()[["user"]]))
 
   # update MD5 checksum ----
   registry <- .updateMD5(registry)
-
-  # assign tentative flags to environment ----
-  env_bind(.env = bf_env, !!name := out)
 
   return(registry)
 
