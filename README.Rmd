@@ -12,8 +12,6 @@ knitr::opts_chunk$set(
   out.width = "100%"
 )
 library(bitfield)
-library(dplyr)
-library(knitr)
 ```
 
 # bitfield <a href='https://github.com/bitfloat/bitfield/'><img src='man/figures/logo.svg' align="right" height="200" /></a>
@@ -25,19 +23,13 @@ library(knitr)
 [![R-CMD-check](https://github.com/bitfloat/bitfield/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bitfloat/bitfield/actions/workflows/R-CMD-check.yaml)
 [![codecov](https://codecov.io/gh/bitfloat/bitfield/graph/badge.svg?token=QZB36RION3)](https://app.codecov.io/gh/bitfloat/bitfield)
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
-
 <!-- badges: end -->
 
 ## Overview
 
-This package is designed to capture the computational footprint of any model workflow or output. It achieves this by encoding computational decisions into sequences of bits (i.e., [bitfields](https://en.wikipedia.org/wiki/Bit_field)) that are transformed to integer values. This allows storing a range of information into a single column of a table or a raster layer, which can be useful when documenting 
+The `bitfield` package enables efficient storage and transmission of metadata and intermediate results across scientific workflows by encoding computational decisions into sequences of bits that transform to integer values. This approach allows storing rich contextual information - including quality assessments, uncertainty metrics, model parameters, and processing thresholds - in a single column of a table or raster layer.
 
-  - the metadata of any dataset by collecting information throughout the dataset creation process, 
-  - intermediate data that accrue along a workflow, or 
-  - a set of output metrics or parameters.
-  - ...
-
-Think of a bit as a switch representing off and on states. A combination of a pair of bits can store four states, and n bits can accommodate 2^n states. These states could be the outcomes of (simple) tests that document binary responses, cases or numeric values. The data produced in that way could be described as meta-analytic or meta-algorithmic data, because they can be re-used to extend an analysis pipeline or algorithm by downstream applications.
+Think of a bit as a switch representing off and on states. A sequence of n bits can accommodate 2^n states, enabling the encoding of boolean responses, categorical cases, integers, or even floating-point values with limited precision. The resulting bitfield creates a 'computational footprint' that preserves the context needed for cross-workflow integration and downstream reuse.
 
 ## Installation
 
@@ -47,141 +39,78 @@ Install the official version from CRAN:
 install.packages("bitfield")
 ```
 
-Install the latest development version from github:
+Install the latest development version from GitHub:
 
 ```{r, eval=FALSE}
 devtools::install_github("bitfloat/bitfield")
 ```
 
-
-## Examples
+## Getting Started
 
 ```{r}
 library(bitfield)
 library(dplyr, warn.conflicts = FALSE)
-library(terra, warn.conflicts = FALSE)
+
+# Example data with quality issues
+bf_tbl
 ```
 
-Let's first load an example dataset
+Create a registry to capture metadata about your workflow:
 
 ```{r}
-bf_tbl$x                                       # invalid (259) and improbable (0) coordinate value
+reg <- bf_registry(name = "data_quality", 
+                   description = "Quality assessment for agricultural data")
 
-bf_tbl$y                                       # Inf and NaN value
+# Test for missing values
+reg <- bf_map(protocol = "na", data = bf_tbl, x = commodity, registry = reg)
 
-bf_tbl$commodity                               # NA value or mislabelled term ("honey")
+# Encode yield values with limited precision  
+reg <- bf_map(protocol = "numeric", data = bf_tbl, x = yield, 
+              format = "half", registry = reg)
 
-bf_tbl$yield                                   # correct range?!
-
-bf_tbl$year                                    # flags (*r)
-
-# and there is a set of valid commodity terms
-validComm <- c("soybean", "maize")
-```
-
-The first step is in creating what is called `registry` in `bitfield`. This registry captures all the information required to build the bitfield (note, this is merely a minimal tech demo, for additional information, check the respective function documentations).
-
-```{r}
-reg <- bf_registry(name = "yield_QA",
-                   description = "this example bitfield documents quality assessment of yield data.")
-```
-
-Then, individual bit flags need to be grown by specifying the respective protocols. These protocols create flags for the most common applications, such as `na` (to test for missing values), `case` (to test what case/class the observations are part of),`nChar` (to count the number of characters of a variable), or `numeric` to encode a numeric (floating point) variable as bit sequence.
-  
-```{r}
-# tests for longitude availability
-reg <- bf_map(protocol = "na",                       # the protocol with which to build the bit flag
-              data = bf_tbl,                         # specify where to determine flags
-              x = x,                                 # ... and which variable to test
-              pos = 1,                               # specify at which position to store the flag
-              registry = reg)                        # provide the registry to update
-
-# test which case an observation is part of
-reg <- bf_map(protocol = "case", data = bf_tbl, registry = reg, na.val = 0,
-              yield >= 11, yield < 11 & yield > 9, yield < 9 & commodity == "maize")
-
-# test the length (number of characters) of values
-reg <- bf_map(protocol = "nChar", data = bf_tbl, registry = reg, 
-              x = y)
-
-# store a simplified (e.g. rounded) numeric value
-reg <- bf_map(protocol = "numeric", data = bf_tbl, registry = reg, 
-              x = yield, format = "half")
-```
-
-These are functions that represent the possible encoding types boolean (`bool`), enumerated cases (`enum`), (signed) integers (`int`), and numeric floating-point (`num`). The encoding type determines various storage parameters of the resulting flags. This is, however, not yet the bitfield. The registry is merely the instruction manual, so to speak, to create the bitfield and encode it as integer, with the function `bf_encode()`.
-
-```{r}
+# View the registry structure
 reg
+```
 
+Encode the flags into integer representation:
+
+```{r}
 (field <- bf_encode(registry = reg))
 ```
 
-The bitfield can be decoded based on the registry with the function `bf_decode()` at a later point in time or another workflow, where the metadata contained in the bitfield can be used or extended in a downstream application.
+Decode the bitfield in a downstream application:
 
 ```{r}
-flags <- bf_decode(x = field, registry = reg, sep = "-")
+(flags <- bf_decode(x = field, registry = reg, verbose = FALSE))
 
-# -> prints legend by default, which is also available in bf_legend
+# -> legend is available in bf_legend
 
 bf_tbl |>
   bind_cols(flags) |>
-  kable()
+  knitr::kable()
 ```
 
-The column `bf_bin`, in combination with the legend, can be read one step at a time. For example, considering the first bit, we see that no observation has an `NA` value and considering the second bit, we see that observations 4 and 6 have a `yield` smaller than 9 and a `commodity` value "maize" (case 3 with binary value `11`).
-
-Moreover, more computation friendly, we can also separate the bitfield into distinct columns per flag and we can load the decoded values from the package environment `.GlobalEnv`.
+The decoded information is also available in the package environment for programmatic access:
 
 ```{r}
-bf_decode(x = field, registry = reg, verbose = FALSE)
-
 # access values manually
 ls(.GlobalEnv)
 
-.GlobalEnv[["nChar_y"]]
+.GlobalEnv[["na_commodity"]]
+.GlobalEnv[["numeric_yield"]]
+
+# beware that numeric values are stored with the precision you have specified
+bf_tbl$yield
 ```
 
-Beware that numeric values that have been encoded in this way, likely have a lower precision than the input values (which may not be a problem in the frequent case where only rounded values are of interest). This can be adjusted by setting the respective parameters in the protocol that encodes numeric values (a vignette explaining this in detail will follow).
+## Further Reading
 
-```{r}
-old <- options(pillar.sigfig = 7)
-tibble::tibble(original = bf_tbl$yield, 
-               bitfield = .GlobalEnv$numeric_yield)
-options(old)
-```
+- **[Best Practices](articles/best-practices.html)**: Guidelines for effective bitfield design, protocol selection, and common pitfalls
+- **[Community Contributions](articles/community-contributions.html)**: How to contribute protocols to the community standards repository
+- **[Applications and Citations](articles/applications.html)**: Papers and projects using the bitfield package
 
-## Bitfields for raster data
+## Getting Help
 
-An interesting use case is in encoding metadata for modelled gridded data. In the newest version of this package, this is possible simply by providing a raster instead of a table to the functions.
-
-```{r}
-library(terra)
-
-# define an example dataset
-bf_rst <- rast(nrows = 3, ncols = 3, vals = bf_tbl$commodity, 
-               names = "commodity") # with levels
-bf_rst$yield <- rast(nrows = 3, ncols = 3, vals = bf_tbl$yield) # numeric
-
-# build the registry
-reg <- bf_registry(name = "reg_raster",
-                   description = "bitfield for rasters.")
-
-reg <- bf_map(protocol = "na", data = bf_rst, registry = reg,
-              x = commodity)
-reg <- bf_map(protocol = "range", data = bf_rst, registry = reg, 
-              x = yield, min = 5, max = 11)
-reg <- bf_map(protocol = "category", data = bf_rst, registry = reg,
-              x = commodity, na.val = 0)
-              
-# encode as bitfield (and make raster out of it)
-field <- bf_encode(registry = reg)
-rst_field <- rast(bf_rst$yield, vals = field, names = names(field))
-
-# decode (gridded) bitfield somewhere downstream
-flags <- bf_decode(x = values(rst_field, dataframe = TRUE), registry = reg)
-
-bind_cols(flags, field)
-
-plot(c(bf_rst, rst_field))
-```
+- Browse the [function reference](reference/index.html) for detailed documentation
+- Report bugs at [github.com/bitfloat/bitfield/issues](https://github.com/bitfloat/bitfield/issues)
+- Join discussions about community standards at [github.com/bitfloat/standards](https://github.com/bitfloat/standards)

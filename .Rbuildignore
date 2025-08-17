@@ -9,3 +9,4 @@
 ^CRAN-SUBMISSION$
 ^cran-comments\.md$
 ^standards\.R
+old_documentation
