@@ -24,6 +24,7 @@
 bf_encode <- function(registry){
 
   assertClass(x = registry, classes = "registry")
+  assertList(x = registry@flags, min.len = 1)
 
   # open the registry
   theBitfield <- tibble(.rows = registry@length)

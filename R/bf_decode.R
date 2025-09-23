@@ -52,7 +52,7 @@ bf_decode <- function(x, registry, flags = NULL, sep = NULL, verbose = TRUE){
 
   # get the bits ...
   theBits <- map(.x = seq_along(registry@flags), .f = function(ix){
-    tibble(pos = registry@flags[[ix]]$wasGeneratedBy$assignPosition,
+    tibble(pos = registry@flags[[ix]]$wasGeneratedBy$assignPosition[1],
            name = names(registry@flags)[ix],
            flags = length(registry@flags[[ix]]$wasGeneratedBy$extractLevels$id),
            bits = length(registry@flags[[ix]]$wasGeneratedBy$assignPosition),
@@ -85,6 +85,7 @@ bf_decode <- function(x, registry, flags = NULL, sep = NULL, verbose = TRUE){
   if(!is.null(flags)){
     assertSubset(x = flags, choices = names(registry@flags))
     theFlags <- flags
+    tempOut <- tempOut[which(names(registry@flags) %in% flags)]
   } else {
     theFlags <- names(registry@flags)
   }
