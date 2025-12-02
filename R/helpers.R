@@ -44,6 +44,7 @@
         }
 
       }
+      if(is.null(bin)) bin <- 0
       bin <- paste0(bin, collapse = "")
 
       return(bin)
@@ -489,8 +490,14 @@
   assertCharacter(x = protocol$description, len = 1, any.missing = FALSE)
   assertCharacter(x = protocol$encoding_type, len = 1, any.missing = FALSE)
   assertIntegerish(x = protocol$bits, len = 1, lower = 1)
-  assertCharacter(x = protocol$test, len = 1, any.missing = FALSE)
   assertList(x = protocol$data)
+
+  # turn test string into function first, before validation
+  if (is.character(protocol$test)) {
+    protocol$test <- eval(parse(text = protocol$test))
+  }
+
+  # protocol$test can be either string or function at this point
 
   # ensure that glue statements have only names that are also in the data
 
@@ -502,16 +509,16 @@
     if(!testCharacter(x = protocol$extends_note, any.missing = FALSE, min.len = 1)) stop("please provide a short note about what this extension changes.")
   }
 
-  # turn test string into function
-  if (is.character(protocol$test)) {
-    protocol$test <- eval(parse(text = protocol$test))
-  }
-
   # ensure packages are installed
   if(!is.null(protocol$requires)){
     for(pkg in protocol$requires){
       require(pkg, character.only = TRUE)
     }
+  }
+
+  # ensure test is a function for execution
+  if (is.character(protocol$test)) {
+    protocol$test <- eval(parse(text = protocol$test))
   }
 
   # does the test run with the provided data
@@ -532,6 +539,8 @@
     stop("'test' and 'data' don't result in a valid call.")
   }
 
+  # keep test as function for bf_map execution
+  # string conversion only happens in bf_protocol for final storage
   return(protocol)
 
 }
@@ -673,11 +682,11 @@ project <- function(title, year = format(Sys.Date(), "%Y"), language = "en",
 
 
   # Add creators from registry metadata
-  if (!is.null(registry@metadata$author)) {
-    authors <- if (inherits(registry@metadata$author, "person")) {
-      list(registry@metadata$author)
+  if (!is.null(registry@attribution$author)) {
+    authors <- if (inherits(registry@attribution$author, "person")) {
+      list(registry@attribution$author)
     } else {
-      registry@metadata$author
+      registry@attribution$author
     }
 
     output$creators <- map(authors, function(p) {
@@ -729,19 +738,19 @@ project <- function(title, year = format(Sys.Date(), "%Y"), language = "en",
   }
 
   # Determine publisher
-  if (!is.null(registry@metadata$project$publisher)) {
-    output$publisher <- registry@metadata$project$publisher
-  } else if (!is.null(registry@metadata$author) &&
-             !is.null(registry@metadata$author$comment) &&
-             "affiliation" %in% names(registry@metadata$author$comment)) {
-    output$publisher <- registry@metadata$author$comment[["affiliation"]]
+  if (!is.null(registry@attribution$project$publisher)) {
+    output$publisher <- registry@attribution$project$publisher
+  } else if (!is.null(registry@attribution$author) &&
+             !is.null(registry@attribution$author$comment) &&
+             "affiliation" %in% names(registry@attribution$author$comment)) {
+    output$publisher <- registry@attribution$author$comment[["affiliation"]]
   } else {
     output$publisher <- "Individual Researcher"
   }
 
-  # Add project metadata if available
-  if (!is.null(registry@metadata$project)) {
-    proj <- registry@metadata$project
+  # Add project attribution if available
+  if (!is.null(registry@attribution$project)) {
+    proj <- registry@attribution$project
 
     # Add subjects/keywords
     if (!is.null(proj$subject)) {
@@ -781,10 +790,10 @@ project <- function(title, year = format(Sys.Date(), "%Y"), language = "en",
   }
 
   # Add rights/license information
-  if (!is.null(registry@metadata$license)) {
-    rights <- list(rights = registry@metadata$license)
-    if (registry@metadata$license %in% names(known_licenses)) {
-      rights$rightsURI <- known_licenses[[registry@metadata$license]]
+  if (!is.null(registry@attribution$license)) {
+    rights <- list(rights = registry@attribution$license)
+    if (registry@attribution$license %in% names(known_licenses)) {
+      rights$rightsURI <- known_licenses[[registry@attribution$license]]
     }
     output$rightsList <- list(rights)
   }
@@ -793,20 +802,20 @@ project <- function(title, year = format(Sys.Date(), "%Y"), language = "en",
   if (registry@width > 0) {
     # Create flag summary
     flag_summary <- map_chr(registry@flags, function(f) {
-      pcl <- str_split(str_split(f$provenance$wasGeneratedBy[1], ": ", simplify = TRUE)[2], "_", simplify = TRUE)[1]
+      pcl <- str_split(f$wasGeneratedBy$useTest, "_", simplify = TRUE)[1]
 
       base_info <- sprintf("Bit %s (%s encoding)",
-                           paste(c(min(f$position), max(f$position)), collapse="-"),
+                           paste(c(min(f$wasGeneratedBy$assignPosition), max(f$wasGeneratedBy$assignPosition)), collapse="-"),
                            bf_pcl[[pcl]]$encoding_type)
 
       # Handle multiple cases for enumeration
-      if (length(f$description) > 1) {
-        case_descriptions <- map_chr(seq_along(f$description), function(i) {
-          sprintf("  %d: %s", i-1, f$description[i])
+      if (length(f$comment) > 1) {
+        case_descriptions <- map_chr(seq_along(f$comment), function(i) {
+          sprintf("  %d: %s", i-1, f$comment[i])
         })
         return(sprintf("%s:\n%s", base_info, paste(case_descriptions, collapse="\n")))
       } else {
-        return(sprintf("%s: %s", base_info, f$description))
+        return(sprintf("%s: %s", base_info, f$comment))
       }
     })
 
