@@ -34,7 +34,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">bitfield</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.1</span>
       </span>
     </div>
 
@@ -72,19 +72,12 @@
 </h1></div>
 <!-- badges: start -->
 
-
-<!-- badges: end -->
+<p><a href="https://github.com/bitfloat/bitfield/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/bitfloat/bitfield/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a> <a href="https://app.codecov.io/gh/bitfloat/bitfield" class="external-link"><img src="https://codecov.io/gh/bitfloat/bitfield/graph/badge.svg?token=QZB36RION3" alt="codecov"></a> <a href="https://lifecycle.r-lib.org/articles/stages.html#stable" class="external-link"><img src="https://img.shields.io/badge/lifecycle-stable-brightgreen.svg" alt="Lifecycle: stable"></a> <!-- badges: end --></p>
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p>This package is designed to capture the computational footprint of any model workflow or output. It achieves this by encoding computational decisions into sequences of bits (i.e., <a href="https://en.wikipedia.org/wiki/Bit_field" class="external-link">bitfields</a>) that are transformed to integer values. This allows storing a range of information into a single column of a table or a raster layer, which can be useful when documenting</p>
-<ul>
-<li>the metadata of any dataset by collecting information throughout the dataset creation process,</li>
-<li>intermediate data that accrue along a workflow, or</li>
-<li>a set of output metrics or parameters.</li>
-<li>…</li>
-</ul>
-<p>Think of a bit as a switch representing off and on states. A combination of a pair of bits can store four states, and n bits can accommodate 2^n states. These states could be the outcomes of (simple) tests that document binary responses, cases or numeric values. The data produced in that way could be described as meta-analytic or meta-algorithmic data, because they can be re-used to extend an analysis pipeline or algorithm by downstream applications.</p>
+<p>The <code>bitfield</code> package enables efficient storage and transmission of metadata and intermediate results across scientific workflows by encoding computational decisions into sequences of bits that transform to integer values. This approach allows storing rich contextual information - including quality assessments, uncertainty metrics, model parameters, and processing thresholds - in a single column of a table or raster layer.</p>
+<p>Think of a bit as a switch representing off and on states. A sequence of n bits can accommodate 2^n states, enabling the encoding of boolean responses, categorical cases, integers, or even floating-point values with limited precision. The resulting bitfield creates a ‘computational footprint’ that preserves the context needed for cross-workflow integration and downstream reuse.</p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -92,113 +85,96 @@
 <p>Install the official version from CRAN:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"bitfield"</span><span class="op">)</span></span></code></pre></div>
-<p>Install the latest development version from github:</p>
+<p>Install the latest development version from GitHub:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"bitfloat/bitfield"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
+<h2 id="getting-started">Getting Started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
 </h2>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/bitfloat/bitfield" class="external-link">bitfield</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span>, warn.conflicts <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/" class="external-link">terra</a></span>, warn.conflicts <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; terra 1.8.54</span></span></code></pre></div>
-<p>Let’s first load an example dataset</p>
+<span></span>
+<span><span class="co"># Example data with quality issues</span></span>
+<span><span class="va">bf_tbl</span></span>
+<span><span class="co">#&gt; # A tibble: 9 × 5</span></span>
+<span><span class="co">#&gt;       x     y commodity yield year </span></span>
+<span><span class="co">#&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;     &lt;dbl&gt; &lt;chr&gt;</span></span>
+<span><span class="co">#&gt; 1  25.3  59.5 soybean   11.2  2021 </span></span>
+<span><span class="co">#&gt; 2  27.9  58.1 maize     12.0  &lt;NA&gt; </span></span>
+<span><span class="co">#&gt; 3  27.8  57.8 soybean   13.2  2021r</span></span>
+<span><span class="co">#&gt; 4  27    59.2 &lt;NA&gt;       4.43 2021 </span></span>
+<span><span class="co">#&gt; 5 259   Inf   honey     13.0  2021 </span></span>
+<span><span class="co">#&gt; 6  27.3  59.1 maize      8.55 2021 </span></span>
+<span><span class="co">#&gt; 7  26.1  58.4 soybean   11.3  2021 </span></span>
+<span><span class="co">#&gt; 8  26.5 NaN   maize     10.6  2021 </span></span>
+<span><span class="co">#&gt; 9   0     0   soybean    9.01 2021</span></span></code></pre></div>
+<p>Create a registry to capture metadata about your workflow:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bf_tbl</span><span class="op">$</span><span class="va">x</span>                                       <span class="co"># invalid (259) and improbable (0) coordinate value</span></span>
-<span><span class="co">#&gt; [1]  25.3  27.9  27.8  27.0 259.0  27.3  26.1  26.5   0.0</span></span>
+<code class="sourceCode R"><span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/bf_registry.html">bf_registry</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"data_quality"</span>, </span>
+<span>                   description <span class="op">=</span> <span class="st">"Quality assessment for agricultural data"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">bf_tbl</span><span class="op">$</span><span class="va">y</span>                                       <span class="co"># Inf and NaN value</span></span>
-<span><span class="co">#&gt; [1] 59.5 58.1 57.8 59.2  Inf 59.1 58.4  NaN  0.0</span></span>
+<span><span class="co"># Test for missing values</span></span>
+<span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/bf_map.html">bf_map</a></span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"na"</span>, data <span class="op">=</span> <span class="va">bf_tbl</span>, x <span class="op">=</span> <span class="va">commodity</span>, registry <span class="op">=</span> <span class="va">reg</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">bf_tbl</span><span class="op">$</span><span class="va">commodity</span>                               <span class="co"># NA value or mislabelled term ("honey")</span></span>
-<span><span class="co">#&gt; [1] soybean maize   soybean &lt;NA&gt;    honey   maize   soybean maize   soybean</span></span>
-<span><span class="co">#&gt; Levels: honey maize soybean</span></span>
+<span><span class="co"># Encode yield values with limited precision  </span></span>
+<span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/bf_map.html">bf_map</a></span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"numeric"</span>, data <span class="op">=</span> <span class="va">bf_tbl</span>, x <span class="op">=</span> <span class="va">yield</span>, </span>
+<span>              format <span class="op">=</span> <span class="st">"half"</span>, registry <span class="op">=</span> <span class="va">reg</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">bf_tbl</span><span class="op">$</span><span class="va">yield</span>                                   <span class="co"># correct range?!</span></span>
-<span><span class="co">#&gt; [1] 11.192915 11.986793 13.229386  4.431376 12.997422  8.548882 11.276921</span></span>
-<span><span class="co">#&gt; [8] 10.640715  9.010452</span></span>
-<span></span>
-<span><span class="va">bf_tbl</span><span class="op">$</span><span class="va">year</span>                                    <span class="co"># flags (*r)</span></span>
-<span><span class="co">#&gt; [1] "2021"  NA      "2021r" "2021"  "2021"  "2021"  "2021"  "2021"  "2021"</span></span>
-<span></span>
-<span><span class="co"># and there is a set of valid commodity terms</span></span>
-<span><span class="va">validComm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"soybean"</span>, <span class="st">"maize"</span><span class="op">)</span></span></code></pre></div>
-<p>The first step is in creating what is called <code>registry</code> in <code>bitfield</code>. This registry captures all the information required to build the bitfield (note, this is merely a minimal tech demo, for additional information, check the respective function documentations).</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/bf_registry.html">bf_registry</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"yield_QA"</span>,</span>
-<span>                   description <span class="op">=</span> <span class="st">"this example bitfield documents quality assessment of yield data."</span><span class="op">)</span></span></code></pre></div>
-<p>Then, individual bit flags need to be grown by specifying the respective protocols. These protocols create flags for the most common applications, such as <code>na</code> (to test for missing values), <code>case</code> (to test what case/class the observations are part of),<code>nChar</code> (to count the number of characters of a variable), or <code>numeric</code> to encode a numeric (floating point) variable as bit sequence.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># tests for longitude availability</span></span>
-<span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/bf_map.html">bf_map</a></span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"na"</span>,                       <span class="co"># the protocol with which to build the bit flag</span></span>
-<span>              data <span class="op">=</span> <span class="va">bf_tbl</span>,                         <span class="co"># specify where to determine flags</span></span>
-<span>              x <span class="op">=</span> <span class="va">x</span>,                                 <span class="co"># ... and which variable to test</span></span>
-<span>              pos <span class="op">=</span> <span class="fl">1</span>,                               <span class="co"># specify at which position to store the flag</span></span>
-<span>              registry <span class="op">=</span> <span class="va">reg</span><span class="op">)</span>                        <span class="co"># provide the registry to update</span></span>
-<span></span>
-<span><span class="co"># test which case an observation is part of</span></span>
-<span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/bf_map.html">bf_map</a></span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"case"</span>, data <span class="op">=</span> <span class="va">bf_tbl</span>, registry <span class="op">=</span> <span class="va">reg</span>, na.val <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>              <span class="va">yield</span> <span class="op">&gt;=</span> <span class="fl">11</span>, <span class="va">yield</span> <span class="op">&lt;</span> <span class="fl">11</span> <span class="op">&amp;</span> <span class="va">yield</span> <span class="op">&gt;</span> <span class="fl">9</span>, <span class="va">yield</span> <span class="op">&lt;</span> <span class="fl">9</span> <span class="op">&amp;</span> <span class="va">commodity</span> <span class="op">==</span> <span class="st">"maize"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Lade nötiges Paket: purrr</span></span>
-<span></span>
-<span><span class="co"># test the length (number of characters) of values</span></span>
-<span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/bf_map.html">bf_map</a></span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"nChar"</span>, data <span class="op">=</span> <span class="va">bf_tbl</span>, registry <span class="op">=</span> <span class="va">reg</span>, </span>
-<span>              x <span class="op">=</span> <span class="va">y</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># store a simplified (e.g. rounded) numeric value</span></span>
-<span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/bf_map.html">bf_map</a></span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"numeric"</span>, data <span class="op">=</span> <span class="va">bf_tbl</span>, registry <span class="op">=</span> <span class="va">reg</span>, </span>
-<span>              x <span class="op">=</span> <span class="va">yield</span>, format <span class="op">=</span> <span class="st">"half"</span><span class="op">)</span></span></code></pre></div>
-<p>These are functions that represent the possible encoding types boolean (<code>bool</code>), enumerated cases (<code>enum</code>), (signed) integers (<code>int</code>), and numeric floating-point (<code>num</code>). The encoding type determines various storage parameters of the resulting flags. This is, however, not yet the bitfield. The registry is merely the instruction manual, so to speak, to create the bitfield and encode it as integer, with the function <code><a href="reference/bf_encode.html">bf_encode()</a></code>.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">reg</span></span>
-<span><span class="co">#&gt;   width 23</span></span>
-<span><span class="co">#&gt;   flags 4  -|--|----|----------------</span></span>
+<span><span class="co"># View the registry structure</span></span>
+<span><span class="va">reg</span></span>
+<span><span class="co">#&gt;   width 17</span></span>
+<span><span class="co">#&gt;   flags 2  -|----------------</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;   pos encoding  type    col</span></span>
-<span><span class="co">#&gt;   1   0.0.1/0   na      x</span></span>
-<span><span class="co">#&gt;   2   0.0.2/0   case    yield-commodity</span></span>
-<span><span class="co">#&gt;   4   0.0.4/0   nChar   y</span></span>
-<span><span class="co">#&gt;   8   1.5.10/15 numeric yield</span></span>
-<span></span>
-<span><span class="op">(</span><span class="va">field</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/bf_encode.html">bf_encode</a></span><span class="op">(</span>registry <span class="op">=</span> <span class="va">reg</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   1   0.0.1/0   na      commodity</span></span>
+<span><span class="co">#&gt;   2   1.5.10/15 numeric yield</span></span></code></pre></div>
+<p>Encode the flags into integer representation:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="op">(</span><span class="va">field</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/bf_encode.html">bf_encode</a></span><span class="op">(</span>registry <span class="op">=</span> <span class="va">reg</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 9 × 1</span></span>
 <span><span class="co">#&gt;   bf_int1</span></span>
 <span><span class="co">#&gt;     &lt;int&gt;</span></span>
-<span><span class="co">#&gt; 1 1591704</span></span>
-<span><span class="co">#&gt; 2 1591806</span></span>
-<span><span class="co">#&gt; 3 1591965</span></span>
-<span><span class="co">#&gt; 4  541806</span></span>
-<span><span class="co">#&gt; 5 1460863</span></span>
-<span><span class="co">#&gt; 6 3688518</span></span>
-<span><span class="co">#&gt; 7 1591715</span></span>
-<span><span class="co">#&gt; 8 2509138</span></span>
-<span><span class="co">#&gt; 9 2246785</span></span></code></pre></div>
-<p>The bitfield can be decoded based on the registry with the function <code><a href="reference/bf_decode.html">bf_decode()</a></code> at a later point in time or another workflow, where the metadata contained in the bitfield can be used or extended in a downstream application.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">flags</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/bf_decode.html">bf_decode</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">field</span>, registry <span class="op">=</span> <span class="va">reg</span>, sep <span class="op">=</span> <span class="st">"-"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; # A tibble: 4 × 3</span></span>
-<span><span class="co">#&gt;   pos   name                 desc                                              </span></span>
-<span><span class="co">#&gt;   &lt;chr&gt; &lt;chr&gt;                &lt;chr&gt;                                             </span></span>
-<span><span class="co">#&gt; 1 1:1   na_x                 'x' contains NA-values.                           </span></span>
-<span><span class="co">#&gt; 2 2:3   case_yield-commodity The observations are distinguished into cases.    </span></span>
-<span><span class="co">#&gt; 3 4:7   nChar_y              'y' is that many characters long.                 </span></span>
-<span><span class="co">#&gt; 4 8:23  numeric_yield        'yield' is encoded as floating-point bit-sequence.</span></span>
+<span><span class="co">#&gt; 1   18840</span></span>
+<span><span class="co">#&gt; 2   18942</span></span>
+<span><span class="co">#&gt; 3   19101</span></span>
+<span><span class="co">#&gt; 4   83054</span></span>
+<span><span class="co">#&gt; 5   19071</span></span>
+<span><span class="co">#&gt; 6   18502</span></span>
+<span><span class="co">#&gt; 7   18851</span></span>
+<span><span class="co">#&gt; 8   18770</span></span>
+<span><span class="co">#&gt; 9   18561</span></span></code></pre></div>
+<p>Decode the bitfield in a downstream application:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="op">(</span><span class="va">flags</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/bf_decode.html">bf_decode</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">field</span>, registry <span class="op">=</span> <span class="va">reg</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 9 × 2</span></span>
+<span><span class="co">#&gt;   na_commodity numeric_yield   </span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;        &lt;chr&gt;           </span></span>
+<span><span class="co">#&gt; 1 0            0100100110011000</span></span>
+<span><span class="co">#&gt; 2 0            0100100111111110</span></span>
+<span><span class="co">#&gt; 3 0            0100101010011101</span></span>
+<span><span class="co">#&gt; 4 1            0100010001101110</span></span>
+<span><span class="co">#&gt; 5 0            0100101001111111</span></span>
+<span><span class="co">#&gt; 6 0            0100100001000110</span></span>
+<span><span class="co">#&gt; 7 0            0100100110100011</span></span>
+<span><span class="co">#&gt; 8 0            0100100101010010</span></span>
+<span><span class="co">#&gt; 9 0            0100100010000001</span></span>
 <span></span>
-<span><span class="co"># -&gt; prints legend by default, which is also available in bf_legend</span></span>
+<span><span class="co"># -&gt; legend is available in bf_legend</span></span>
 <span></span>
 <span><span class="va">bf_tbl</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_cols.html" class="external-link">bind_cols</a></span><span class="op">(</span><span class="va">flags</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">kable</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
-<col width="10%">
+<col width="9%">
 <col width="8%">
-<col width="15%">
-<col width="15%">
-<col width="10%">
-<col width="40%">
+<col width="14%">
+<col width="14%">
+<col width="9%">
+<col width="18%">
+<col width="24%">
 </colgroup>
 <thead><tr class="header">
 <th align="right">x</th>
@@ -206,7 +182,8 @@
 <th align="left">commodity</th>
 <th align="right">yield</th>
 <th align="left">year</th>
-<th align="left">bf_bin</th>
+<th align="left">na_commodity</th>
+<th align="left">numeric_yield</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
@@ -215,7 +192,8 @@
 <td align="left">soybean</td>
 <td align="right">11.192915</td>
 <td align="left">2021</td>
-<td align="left">0-01-1000-0100100110011000</td>
+<td align="left">0</td>
+<td align="left">0100100110011000</td>
 </tr>
 <tr class="even">
 <td align="right">27.9</td>
@@ -223,7 +201,8 @@
 <td align="left">maize</td>
 <td align="right">11.986793</td>
 <td align="left">NA</td>
-<td align="left">0-01-1000-0100100111111110</td>
+<td align="left">0</td>
+<td align="left">0100100111111110</td>
 </tr>
 <tr class="odd">
 <td align="right">27.8</td>
@@ -231,7 +210,8 @@
 <td align="left">soybean</td>
 <td align="right">13.229386</td>
 <td align="left">2021r</td>
-<td align="left">0-01-1000-0100101010011101</td>
+<td align="left">0</td>
+<td align="left">0100101010011101</td>
 </tr>
 <tr class="even">
 <td align="right">27.0</td>
@@ -239,7 +219,8 @@
 <td align="left">NA</td>
 <td align="right">4.431376</td>
 <td align="left">2021</td>
-<td align="left">0-00-1000-0100010001101110</td>
+<td align="left">1</td>
+<td align="left">0100010001101110</td>
 </tr>
 <tr class="odd">
 <td align="right">259.0</td>
@@ -247,7 +228,8 @@
 <td align="left">honey</td>
 <td align="right">12.997422</td>
 <td align="left">2021</td>
-<td align="left">0-01-0110-0100101001111111</td>
+<td align="left">0</td>
+<td align="left">0100101001111111</td>
 </tr>
 <tr class="even">
 <td align="right">27.3</td>
@@ -255,7 +237,8 @@
 <td align="left">maize</td>
 <td align="right">8.548882</td>
 <td align="left">2021</td>
-<td align="left">0-11-1000-0100100001000110</td>
+<td align="left">0</td>
+<td align="left">0100100001000110</td>
 </tr>
 <tr class="odd">
 <td align="right">26.1</td>
@@ -263,7 +246,8 @@
 <td align="left">soybean</td>
 <td align="right">11.276921</td>
 <td align="left">2021</td>
-<td align="left">0-01-1000-0100100110100011</td>
+<td align="left">0</td>
+<td align="left">0100100110100011</td>
 </tr>
 <tr class="even">
 <td align="right">26.5</td>
@@ -271,7 +255,8 @@
 <td align="left">maize</td>
 <td align="right">10.640715</td>
 <td align="left">2021</td>
-<td align="left">0-10-0110-0100100101010010</td>
+<td align="left">0</td>
+<td align="left">0100100101010010</td>
 </tr>
 <tr class="odd">
 <td align="right">0.0</td>
@@ -279,106 +264,51 @@
 <td align="left">soybean</td>
 <td align="right">9.010452</td>
 <td align="left">2021</td>
-<td align="left">0-10-0010-0100100010000001</td>
+<td align="left">0</td>
+<td align="left">0100100010000001</td>
 </tr>
 </tbody>
 </table>
-<p>The column <code>bf_bin</code>, in combination with the legend, can be read one step at a time. For example, considering the first bit, we see that no observation has an <code>NA</code> value and considering the second bit, we see that observations 4 and 6 have a <code>yield</code> smaller than 9 and a <code>commodity</code> value “maize” (case 3 with binary value <code>11</code>).</p>
-<p>Moreover, more computation friendly, we can also separate the bitfield into distinct columns per flag and we can load the decoded values from the package environment <code>.GlobalEnv</code>.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/bf_decode.html">bf_decode</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">field</span>, registry <span class="op">=</span> <span class="va">reg</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; # A tibble: 9 × 4</span></span>
-<span><span class="co">#&gt;   na_x  `case_yield-commodity` nChar_y numeric_yield   </span></span>
-<span><span class="co">#&gt;   &lt;chr&gt; &lt;chr&gt;                  &lt;chr&gt;   &lt;chr&gt;           </span></span>
-<span><span class="co">#&gt; 1 0     01                     1000    0100100110011000</span></span>
-<span><span class="co">#&gt; 2 0     01                     1000    0100100111111110</span></span>
-<span><span class="co">#&gt; 3 0     01                     1000    0100101010011101</span></span>
-<span><span class="co">#&gt; 4 0     00                     1000    0100010001101110</span></span>
-<span><span class="co">#&gt; 5 0     01                     0110    0100101001111111</span></span>
-<span><span class="co">#&gt; 6 0     11                     1000    0100100001000110</span></span>
-<span><span class="co">#&gt; 7 0     01                     1000    0100100110100011</span></span>
-<span><span class="co">#&gt; 8 0     10                     0110    0100100101010010</span></span>
-<span><span class="co">#&gt; 9 0     10                     0010    0100100010000001</span></span>
-<span></span>
-<span><span class="co"># access values manually</span></span>
+<p>The decoded information is also available in the package environment for programmatic access:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># access values manually</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/ls.html" class="external-link">ls</a></span><span class="op">(</span><span class="va">.GlobalEnv</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "bf_legend"            "case_yield-commodity" "field"               </span></span>
-<span><span class="co">#&gt; [4] "flags"                "na_x"                 "nChar_y"             </span></span>
-<span><span class="co">#&gt; [7] "numeric_yield"        "reg"                  "validComm"</span></span>
+<span><span class="co">#&gt; [1] "bf_legend"     "field"         "flags"         "na_commodity" </span></span>
+<span><span class="co">#&gt; [5] "numeric_yield" "reg"</span></span>
 <span></span>
-<span><span class="va">.GlobalEnv</span><span class="op">[[</span><span class="st">"nChar_y"</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="co">#&gt; [1] 8 8 8 8 6 8 8 6 2</span></span></code></pre></div>
-<p>Beware that numeric values that have been encoded in this way, likely have a lower precision than the input values (which may not be a problem in the frequent case where only rounded values are of interest). This can be adjusted by setting the respective parameters in the protocol that encodes numeric values (a vignette explaining this in detail will follow).</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">old</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>pillar.sigfig <span class="op">=</span> <span class="fl">7</span><span class="op">)</span></span>
-<span><span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>original <span class="op">=</span> <span class="va">bf_tbl</span><span class="op">$</span><span class="va">yield</span>, </span>
-<span>               bitfield <span class="op">=</span> <span class="va">.GlobalEnv</span><span class="op">$</span><span class="va">numeric_yield</span><span class="op">)</span></span>
-<span><span class="co">#&gt; # A tibble: 9 × 2</span></span>
-<span><span class="co">#&gt;    original  bitfield</span></span>
-<span><span class="co">#&gt;       &lt;dbl&gt;     &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1 11.19292  11.1875  </span></span>
-<span><span class="co">#&gt; 2 11.98679  11.98438 </span></span>
-<span><span class="co">#&gt; 3 13.22939  13.22656 </span></span>
-<span><span class="co">#&gt; 4  4.431376  4.429688</span></span>
-<span><span class="co">#&gt; 5 12.99742  12.99219 </span></span>
-<span><span class="co">#&gt; 6  8.548882  8.546875</span></span>
-<span><span class="co">#&gt; 7 11.27692  11.27344 </span></span>
-<span><span class="co">#&gt; 8 10.64072  10.64062 </span></span>
-<span><span class="co">#&gt; 9  9.010452  9.007812</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="va">old</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">.GlobalEnv</span><span class="op">[[</span><span class="st">"na_commodity"</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="co">#&gt; [1] 0 0 0 1 0 0 0 0 0</span></span>
+<span><span class="va">.GlobalEnv</span><span class="op">[[</span><span class="st">"numeric_yield"</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="co">#&gt; [1] 11.187500 11.984375 13.226562  4.429688 12.992188  8.546875 11.273438</span></span>
+<span><span class="co">#&gt; [8] 10.640625  9.007812</span></span>
+<span></span>
+<span><span class="co"># beware that numeric values are stored with the precision you have specified</span></span>
+<span><span class="va">bf_tbl</span><span class="op">$</span><span class="va">yield</span></span>
+<span><span class="co">#&gt; [1] 11.192915 11.986793 13.229386  4.431376 12.997422  8.548882 11.276921</span></span>
+<span><span class="co">#&gt; [8] 10.640715  9.010452</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="bitfields-for-raster-data">Bitfields for raster data<a class="anchor" aria-label="anchor" href="#bitfields-for-raster-data"></a>
+<h2 id="further-reading">Further Reading<a class="anchor" aria-label="anchor" href="#further-reading"></a>
 </h2>
-<p>An interesting use case is in encoding metadata for modelled gridded data. In the newest version of this package, this is possible simply by providing a raster instead of a table to the functions.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/" class="external-link">terra</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># define an example dataset</span></span>
-<span><span class="va">bf_rst</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span>nrows <span class="op">=</span> <span class="fl">3</span>, ncols <span class="op">=</span> <span class="fl">3</span>, vals <span class="op">=</span> <span class="va">bf_tbl</span><span class="op">$</span><span class="va">commodity</span>, </span>
-<span>               names <span class="op">=</span> <span class="st">"commodity"</span><span class="op">)</span> <span class="co"># with levels</span></span>
-<span><span class="va">bf_rst</span><span class="op">$</span><span class="va">yield</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span>nrows <span class="op">=</span> <span class="fl">3</span>, ncols <span class="op">=</span> <span class="fl">3</span>, vals <span class="op">=</span> <span class="va">bf_tbl</span><span class="op">$</span><span class="va">yield</span><span class="op">)</span> <span class="co"># numeric</span></span>
-<span></span>
-<span><span class="co"># build the registry</span></span>
-<span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/bf_registry.html">bf_registry</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"reg_raster"</span>,</span>
-<span>                   description <span class="op">=</span> <span class="st">"bitfield for rasters."</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/bf_map.html">bf_map</a></span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"na"</span>, data <span class="op">=</span> <span class="va">bf_rst</span>, registry <span class="op">=</span> <span class="va">reg</span>,</span>
-<span>              x <span class="op">=</span> <span class="va">commodity</span><span class="op">)</span></span>
-<span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/bf_map.html">bf_map</a></span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"range"</span>, data <span class="op">=</span> <span class="va">bf_rst</span>, registry <span class="op">=</span> <span class="va">reg</span>, </span>
-<span>              x <span class="op">=</span> <span class="va">yield</span>, min <span class="op">=</span> <span class="fl">5</span>, max <span class="op">=</span> <span class="fl">11</span><span class="op">)</span></span>
-<span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/bf_map.html">bf_map</a></span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"category"</span>, data <span class="op">=</span> <span class="va">bf_rst</span>, registry <span class="op">=</span> <span class="va">reg</span>,</span>
-<span>              x <span class="op">=</span> <span class="va">commodity</span>, na.val <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
-<span>              </span>
-<span><span class="co"># encode as bitfield (and make raster out of it)</span></span>
-<span><span class="va">field</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/bf_encode.html">bf_encode</a></span><span class="op">(</span>registry <span class="op">=</span> <span class="va">reg</span><span class="op">)</span></span>
-<span><span class="va">rst_field</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="va">bf_rst</span><span class="op">$</span><span class="va">yield</span>, vals <span class="op">=</span> <span class="va">field</span>, names <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">field</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># decode (gridded) bitfield somewhere downstream</span></span>
-<span><span class="va">flags</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/bf_decode.html">bf_decode</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/values.html" class="external-link">values</a></span><span class="op">(</span><span class="va">rst_field</span>, dataframe <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, registry <span class="op">=</span> <span class="va">reg</span><span class="op">)</span></span>
-<span><span class="co">#&gt; # A tibble: 3 × 3</span></span>
-<span><span class="co">#&gt;   pos   name               desc                                              </span></span>
-<span><span class="co">#&gt;   &lt;chr&gt; &lt;chr&gt;              &lt;chr&gt;                                             </span></span>
-<span><span class="co">#&gt; 1 1:1   na_commodity       'commodity' contains NA-values.                   </span></span>
-<span><span class="co">#&gt; 2 2:2   range_yield        The 'yield' values are between '5' and '11'.      </span></span>
-<span><span class="co">#&gt; 3 3:4   category_commodity 'commodity' is encoded as categorical enumeration.</span></span>
-<span></span>
-<span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_cols.html" class="external-link">bind_cols</a></span><span class="op">(</span><span class="va">flags</span>, <span class="va">field</span><span class="op">)</span></span>
-<span><span class="co">#&gt; # A tibble: 9 × 4</span></span>
-<span><span class="co">#&gt;   na_commodity range_yield category_commodity bf_int1</span></span>
-<span><span class="co">#&gt;   &lt;chr&gt;        &lt;chr&gt;       &lt;chr&gt;                &lt;int&gt;</span></span>
-<span><span class="co">#&gt; 1 0            0           10                       2</span></span>
-<span><span class="co">#&gt; 2 0            0           01                       1</span></span>
-<span><span class="co">#&gt; 3 0            0           10                       2</span></span>
-<span><span class="co">#&gt; 4 1            0           00                       8</span></span>
-<span><span class="co">#&gt; 5 0            0           00                       0</span></span>
-<span><span class="co">#&gt; 6 0            1           01                       5</span></span>
-<span><span class="co">#&gt; 7 0            0           10                       2</span></span>
-<span><span class="co">#&gt; 8 0            1           01                       5</span></span>
-<span><span class="co">#&gt; 9 0            1           10                       6</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">bf_rst</span>, <span class="va">rst_field</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-12-1.png" width="100%"></p>
+<ul>
+<li>
+<strong><a href="articles/best-practices.html">Best Practices</a></strong>: Guidelines for effective bitfield design, protocol selection, and common pitfalls</li>
+<li>
+<strong><a href="articles/community-contributions.html">Community Contributions</a></strong>: How to contribute protocols to the community standards repository</li>
+<li>
+<strong><a href="articles/applications.html">Applications</a></strong>: Examples and use cases using the bitfield package</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="getting-help">Getting Help<a class="anchor" aria-label="anchor" href="#getting-help"></a>
+</h2>
+<ul>
+<li>Browse the <a href="reference/index.html">function reference</a> for detailed documentation</li>
+<li>Report bugs at <a href="https://github.com/bitfloat/bitfield/issues" class="external-link">github.com/bitfloat/bitfield/issues</a>
+</li>
+<li>Join discussions about community standards at <a href="https://github.com/bitfloat/standards" class="external-link">github.com/bitfloat/standards</a>
+</li>
+</ul>
 </div>
 </div>
   </div>
@@ -430,7 +360,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer>
