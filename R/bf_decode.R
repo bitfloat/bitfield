@@ -53,21 +53,13 @@ bf_decode <- function(x, registry, flags = NULL, sep = NULL, verbose = TRUE){
   # get the bits ...
   theBits <- map(.x = seq_along(registry@flags), .f = function(ix){
     tibble(pos = registry@flags[[ix]]$wasGeneratedBy$assignPosition[1],
+           length = registry@flags[[ix]]$wasGeneratedBy$assignPosition[2] - registry@flags[[ix]]$wasGeneratedBy$assignPosition[1],
            name = names(registry@flags)[ix],
-           flags = length(registry@flags[[ix]]$wasGeneratedBy$extractLevels$id),
-           bits = length(registry@flags[[ix]]$wasGeneratedBy$assignPosition),
            desc = paste0(registry@flags[[ix]]$comment, collapse = " | "))
   }) |>
     bind_rows() |>
-    arrange(pos)
-
-  # ... and the positions where they should be split
-  theBits <- theBits |>
-    group_by(name) |>
-    summarise(split = max(pos),
-              pos = if_else(n() == 1, as.character(split), paste0(min(pos), ":", max(pos))),
-              desc = first(desc)) |>
-    arrange(split)
+    arrange(pos) |>
+    mutate(rn = row_number())
 
   # create look-up table for what the bits stand for
   lut <- separate_longer_delim(data = theBits, cols = desc, delim = " | ") |>
@@ -80,7 +72,7 @@ bf_decode <- function(x, registry, flags = NULL, sep = NULL, verbose = TRUE){
   }
   tempOut <- tempBits |>
     unite(col = "bin", 1:ncol(tempBits), sep = "") |>
-    separate(col = bin, into = paste0("flag", theBits$split), sep = theBits$split)
+    separate(col = bin, into = paste0("flag", theBits$rn), sep = c(theBits$pos + theBits$length))
 
   if(!is.null(flags)){
     assertSubset(x = flags, choices = names(registry@flags))
@@ -113,14 +105,14 @@ bf_decode <- function(x, registry, flags = NULL, sep = NULL, verbose = TRUE){
         paste0("1", flagSplit[[ix]][3])
       })
 
-      temp <- .toDec(x = str_replace(significand, pattern = paste0("^(.{", exponent + 1, "})(.*)$"), replacement = "\\1.\\2"))
+      temp <- sign * .toDec(x = str_replace(significand, pattern = paste0("^(.{", exponent + 1, "})(.*)$"), replacement = "\\1.\\2"))
     }
 
     env_bind(.env = .GlobalEnv, !!flagName := temp)
   }
 
   if(!is.null(sep)){
-    out <- unite(tempOut, col = "bf_bin", paste0("flag", theBits$split), sep = sep)
+    out <- unite(tempOut, col = "bf_bin", paste0("flag", theBits$rn), sep = sep)
   } else {
     colnames(tempOut) <- theFlags
     out <- tempOut
