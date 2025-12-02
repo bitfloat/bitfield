@@ -71,7 +71,8 @@ given categories. (\emph{enumeration}).
 \item \code{integer} (x, ...): encode the integer values as bit-sequence
 (\emph{signed integer}).
 \item \code{numeric} (x, ...): encode the numeric value as floating-point
-bit-sequence (with an adapted precision) (\emph{floating-point}).
+bit-sequence (see \code{\link{.makeEncoding}} for details on the
+... argument) (\emph{floating-point}).
 }
 }
 \section{Notes}{
@@ -109,7 +110,7 @@ reg <- bf_map(protocol = "range", data = bf_tbl, registry = reg,
 reg <- bf_map(protocol = "matches", data = bf_tbl, registry = reg,
               x = commodity, set = c("soybean", "honey"))
 reg <- bf_map(protocol = "grepl", data = bf_tbl, registry = reg,
-              x = year, pattern = "*r")
+              x = year, pattern = ".*r")
 
 # enumeration encoding
 reg <- bf_map(protocol = "category", data = bf_tbl, registry = reg,

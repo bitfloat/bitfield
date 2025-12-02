@@ -171,8 +171,8 @@ bf_tbl$yield
   effective bitfield design, protocol selection, and common pitfalls
 - **[Community Contributions](articles/community-contributions.html)**:
   How to contribute protocols to the community standards repository
-- **[Applications and Citations](articles/applications.html)**: Papers
-  and projects using the bitfield package
+- **[Applications](articles/applications.html)**: Examples and use cases
+  using the bitfield package
 
 ## Getting Help
 

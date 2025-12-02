@@ -5,8 +5,8 @@
 #'   the operation in this protocol. It will be parsed with
 #'   \code{\link[glue]{glue}} and used in the bitfield legend, so can include
 #'   the test arguments as enbraced expressions.
-#' @param test [`function(...)`][function]\cr the function used to compute the bit
-#'   flag.
+#' @param test [`function(...)`][character]\cr the function used to compute the bit
+#'   flag (expressed as character string).
 #' @param example [`list(.)`][list]\cr named list that contains all arguments in
 #'   \code{test} as name with values of the correct type.
 #' @param type [`character(1)`][character]\cr the encoding type according to
@@ -32,11 +32,11 @@
 #' @examples
 #' newFlag <- bf_protocol(name = "na",
 #'                        description = "{x} contains NA-values{result}.",
-#'                        test = function(x) is.na(x = x),
+#'                        test = "function(x) is.na(x = x)",
 #'                        example = list(x = bf_tbl$commodity),
 #'                        type = "bool")
-#' @importFrom checkmate assertCharacter assertFunction assertChoice
-#'   assertIntegerish
+#' @importFrom checkmate assertCharacter assertFunction assertList assertChoice
+#'   assertIntegerish assertClass
 #' @importFrom rlang exec
 #' @importFrom dplyr case_match case_when
 #' @importFrom utils bibentry
@@ -48,7 +48,7 @@ bf_protocol <- function(name, description, test, example, type, bits = NULL,
 
   assertCharacter(x = name, len = 1, any.missing = FALSE)
   assertCharacter(x = description, len = 1, any.missing = FALSE)
-  assertFunction(x = test)
+  assertCharacter(x = test, len = 1, any.missing = FALSE)
   assertList(x = example)
   assertChoice(x = type, choices = c("bool", "enum", "int", "float"))
   assertIntegerish(x = bits, len = 1, null.ok = TRUE)
@@ -57,6 +57,8 @@ bf_protocol <- function(name, description, test, example, type, bits = NULL,
   if(is.null(version)){
     version <- "1.0.0"
   }
+
+  test <- eval(parse(text = test))
 
   # determine number of bits, if not given ----
   if (is.null(bits)) {
@@ -94,7 +96,7 @@ bf_protocol <- function(name, description, test, example, type, bits = NULL,
               encoding_type = type,
               bits = bits, # when the test is general and could result in any number of bits, use NA here
               requires = requiredPkgs,
-              test = paste0(deparse(test), collapse = ""),
+              test = test,
               data = example,
               reference = reference)
 

@@ -12,12 +12,12 @@
 #' reg <- bf_map(protocol = "na", data = bf_tbl, registry = reg, x = y)
 #'
 #' field <- bf_encode(registry = reg)
-#' @importFrom checkmate assertClass assertCharacter assertLogical
+#' @importFrom checkmate assertClass assertList
 #' @importFrom tibble tibble
 #' @importFrom purrr map map_int
-#' @importFrom dplyr bind_rows arrange bind_cols select across
+#' @importFrom dplyr bind_rows arrange bind_cols select across mutate
 #' @importFrom stringr str_split str_split_i str_sub str_pad str_remove
-#' @importFrom tidyr separate_wider_position
+#' @importFrom tidyr separate_wider_position unite
 #' @importFrom rlang  `:=`
 #' @export
 
@@ -55,10 +55,11 @@ bf_encode <- function(registry){
         # get the decimal part of the binary value and ...
         decBits <- .toBin(x = theVals, dec = TRUE)
 
-        # 1. transform to scientific notation, then ...
+        # 1. transform to scientific notation...
         temp <- gsub("^(.{1})(.*)$", "\\1.\\2", str_remove(paste0(intBits, decBits), "^0+"))
+        temp <- ifelse(temp == "", paste0(c(".", rep(0, theFlag$wasGeneratedBy$encodeAsBinary$significand)), collapse = ""), temp)
 
-        # 2. encode as bit sequence
+        # 2. ... then encode as bit sequence
         sign <- as.integer(0 > theVals)
 
         # 3. bias exponent and encode as binary
@@ -66,11 +67,11 @@ bf_encode <- function(registry){
 
         # 4. extract significand
         significand  <- map(.x = temp,
-                        .f = \(x) str_sub(str_split(string = x, pattern = "[.]", simplify = TRUE)[2], end = theFlag$wasGeneratedBy$encodeAsBinary$significand ))  |>
+                        .f = \(x) str_pad(str_sub(str_split(string = x, pattern = "[.]", simplify = TRUE)[2], end = theFlag$wasGeneratedBy$encodeAsBinary$significand), width = theFlag$wasGeneratedBy$encodeAsBinary$significand, pad = "0", side = "right"))  |>
           unlist()
 
         # 5. store as bit sequence
-        theBits <- paste0(sign, exponent, significand )
+        theBits <- paste0(sign, exponent, significand)
 
       } else {
         theBits <- intBits

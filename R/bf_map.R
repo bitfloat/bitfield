@@ -50,7 +50,8 @@
 #'     \item \code{integer} (x, ...): encode the integer values as bit-sequence
 #'           (\emph{signed integer}).
 #'     \item \code{numeric} (x, ...): encode the numeric value as floating-point
-#'           bit-sequence (with an adapted precision) (\emph{floating-point}).
+#'           bit-sequence (see \code{\link{.makeEncoding}} for details on the
+#'           ... argument) (\emph{floating-point}).
 #'   }
 #'
 #' @section Notes: The console output of various classes (such as tibble) shows
@@ -87,7 +88,7 @@
 #' reg <- bf_map(protocol = "matches", data = bf_tbl, registry = reg,
 #'               x = commodity, set = c("soybean", "honey"))
 #' reg <- bf_map(protocol = "grepl", data = bf_tbl, registry = reg,
-#'               x = year, pattern = "*r")
+#'               x = year, pattern = ".*r")
 #'
 #' # enumeration encoding
 #' reg <- bf_map(protocol = "category", data = bf_tbl, registry = reg,
@@ -144,6 +145,7 @@ bf_map <- function(protocol, data, registry, ..., name = NULL, pos = NULL,
                    na.val = NULL){
 
   assertCharacter(x = protocol, len = 1, any.missing = FALSE)
+  if(grepl(x = protocol, pattern = "_")) stop("protocol name ('", protocol, "'), must not contain '_' symbols.")
   assertClass(x = registry, classes = "registry")
   assertCharacter(x = name, len = 1, any.missing = FALSE, null.ok = TRUE)
   assertIntegerish(x = pos, lower = 1, min.len = 1, unique = TRUE, null.ok = TRUE)
@@ -154,10 +156,18 @@ bf_map <- function(protocol, data, registry, ..., name = NULL, pos = NULL,
   # load protocol ----
   if(protocol %in% names(bf_pcl)){
     pcl <- bf_pcl[[protocol]]
+    # internal protocols already have string tests, convert to function for execution
+    if (is.character(pcl$test)) {
+      pcl$test <- eval(parse(text = pcl$test))
+    }
   } else {
     pcl <- get(protocol)
+    pcl <- .validateProtocol(pcl)
+    # custom protocols need string->function conversion
+    if (is.character(pcl$test)) {
+      pcl$test <- eval(parse(text = pcl$test))
+    }
   }
-  pcl <- .validateProtocol(pcl)
 
   # load potentially missing packages ----
   if(!is.null(pcl$requires)){

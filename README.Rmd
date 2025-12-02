@@ -90,7 +90,7 @@ bf_tbl |>
   knitr::kable()
 ```
 
-The decoded information is also available in the package environment for programmatic access:
+The decoded information is also available in the global environment for programmatic access:
 
 ```{r}
 # access values manually
@@ -107,7 +107,7 @@ bf_tbl$yield
 
 - **[Best Practices](articles/best-practices.html)**: Guidelines for effective bitfield design, protocol selection, and common pitfalls
 - **[Community Contributions](articles/community-contributions.html)**: How to contribute protocols to the community standards repository
-- **[Applications and Citations](articles/applications.html)**: Papers and projects using the bitfield package
+- **[Applications](articles/applications.html)**: Examples and use cases using the bitfield package
 
 ## Getting Help
 

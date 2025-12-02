@@ -25,8 +25,8 @@ the operation in this protocol. It will be parsed with
 \code{\link[glue]{glue}} and used in the bitfield legend, so can include
 the test arguments as enbraced expressions.}
 
-\item{test}{\code{\link[=function]{function(...)}}\cr the function used to compute the bit
-flag.}
+\item{test}{\code{\link[=character]{function(...)}}\cr the function used to compute the bit
+flag (expressed as character string).}
 
 \item{example}{\code{\link[=list]{list(.)}}\cr named list that contains all arguments in
 \code{test} as name with values of the correct type.}
@@ -65,7 +65,7 @@ Define a new bit-flag protocol
 \examples{
 newFlag <- bf_protocol(name = "na",
                        description = "{x} contains NA-values{result}.",
-                       test = function(x) is.na(x = x),
+                       test = "function(x) is.na(x = x)",
                        example = list(x = bf_tbl$commodity),
                        type = "bool")
 }

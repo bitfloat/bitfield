@@ -35,6 +35,7 @@ bf_flag <- function(registry, flag = NULL) {
   } else {
     pcl <- get(protocol)
   }
+  pcl$test <- paste0(deparse(pcl$test), collapse = "")
   pcl <- .validateProtocol(pcl)
 
   # get NA value
