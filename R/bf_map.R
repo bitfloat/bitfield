@@ -54,17 +54,15 @@
 #'           ... argument) (\emph{floating-point}).
 #'   }
 #'
-#' @section Notes: The console output of various classes (such as tibble) shows
-#'   decimals that are not present or rounds decimals that are present, even for
-#'   ordinary numeric vectors. R stores numeric values internally as
-#'   double-precision floating-point values (with 64 bits, where 52 bits encode
-#'   the significand), which corresponds to a decimal precision of ~16 digits
-#'   (\code{log10(2^52)}). Hence, if a bit flag doesn't seem to coincide with
-#'   the values you see in the console, double check the values with
-#'   \code{sprintf("%16f", values)}. If you use a larger value than 16 for
-#'   precision, you'll see more digits, but those are not meaningful, as they
-#'   result merely from the binary-to-decimal conversion (check out
-#'   \code{\link{.makeEncoding}} for an additional details.
+#' @section Notes: Console output from R classes (such as tibble) often rounds
+#'   or truncates decimal places, even for ordinary numeric vectors. Internally,
+#'   R stores numeric values as double-precision floating-point numbers (64
+#'   bits, with 52 bits for the significand), providing approximately 16
+#'   significant decimal digits ((\code{log10(2^52)}) ≈ 15.95). If a bit flag
+#'   appears inconsistent with the displayed values, verify the full precision
+#'   using \code{sprintf("%.16f", values)}. Using more than 16 digits will show
+#'   additional figures, but these are artifacts of binary-to-decimal conversion
+#'   and carry no meaningful information.
 #' @return an (updated) object of class 'registry' with the additional flag
 #'   defined here.
 #' @examples

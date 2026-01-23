@@ -22,36 +22,32 @@ an additional provenance term.
 Determine encoding
 }
 \details{
-Floating point values are encoded with three fields that can be
-readily stored as bit sequence. Any numeric value can be represented in
-scientific notation, for example, the decimal 923.52 can be represented as
-9.2352 * 10^2. These decimal values can be transformed to binary values,
-which can then likewise be represented in scientific notation. Here, the 10
-is replaced by a 2 (because we go from decimal to binary), for example the
-binary value 101011.101 can be represented as 1.01011101 * 2^5. This
-scientific notation can now be broken down into the three previously
-mentioned fields, one for the sign (positive or negative), one for the
-exponent and one for the remaining part, the significand. For background
-information on how these fields are processed, study for instance
-\href{https://www.cs.cornell.edu/~tomf/notes/cps104/floating}{'Floating
-Point' by Thomas Finley} and check out
-\href{https://float.exposed/}{https://float.exposed/} to play around with
-floating point encoding. Depending on the encoding needs, these three
-values can be adapted, for example increase the exponent to provide a wider
-range (i.e., smaller small and larger large values) or increase the
-significand to provide more precision (i.e., more decimal digits). In the
-scope of this package, these three values are documented with a tag of the
-form [x.y.z], with x = number of sign bits (either 0 or 1), y = number of
-exponent bits, and z number of significand bits.
+Floating-point values are encoded using three fields that map
+directly to bit sequences. Any numeric value can be written in scientific
+notation. For example, the decimal 923.52 becomes 9.2352 × 10². The same
+principle applies in binary: the value 101011.101₂ becomes 1.01011101 × 2⁵.
+This binary scientific notation directly yields the three encoding fields:
+\itemize{
+\item Sign: whether the value is positive or negative (here: positive → 0)
+\item Exponent: the power of 2 (here: 5)
+\item Significand: the fractional part after the leading 1 (here: 01011101)
+}
+For background on floating-point representation, see \href{https://www.cs.cornell.edu/~tomf/notes/cps104/floating}{'Floating
+Point'} by Thomas Finley, or explore encodings interactively at
+\href{https://float.exposed/}{https://float.exposed/}.
 
-When handling values that are not numeric, this package makes use of the
-same system, only that sign and exponent are set to 0, while the
-significand bits are set to either 1 (for binary responses [0.0.1]), or
-to whatever number of cases are required (i.e., for 8 cases with 3 required
-bits, resulting in the tag [0.0.3]).
+The allocation of bits across these fields can be adjusted to suit
+different needs: more exponent bits provide a wider range (smaller minimums
+and larger maximums), while more significand bits provide finer precision.
+This package documents bit allocation using the notation \link{s.e.m}, where
+s = sign bits (0 or 1), e = exponent bits, and m = significand bits.
+
+For non-numeric data (boolean or categorical), the same notation applies
+with sign and exponent set to 0. A binary flag uses \link{0.0.1}, while a
+categorical variable with 8 levels requires 3 bits, yielding \link{0.0.3}.
 
 Possible options (\code{...}) of this function are \itemize{
-\item \code{precision}: switch that determines the configuration of the
+\item \code{format}: switch that determines the configuration of the
 \href{https://en.wikipedia.org/wiki/Bfloat16_floating-point_format}{floating point encoding}.
 Possible values are \code{"half"} [1.5.10], \code{"bfloat16"}
 [1.8.7], \code{"tensor19"} [1.8.10], \code{"fp24"} [1.7.16],
