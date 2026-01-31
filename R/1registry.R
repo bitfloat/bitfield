@@ -2,9 +2,6 @@
 #'
 #' A \code{registry} stores metadata and flag configuration of a bitfield.
 #'
-#' @slot width [`integerish(1)`][integer]\cr how many bits is the bitfield wide.
-#' @slot length [`integerish(1)`][integer]\cr how many observations are encoded
-#'   in the bitfield.
 #' @slot name [`character(1)`][character]\cr short name of the bitfield.
 #' @slot version [`character(1)`][character]\cr automatically created version
 #'   tag of the bitfield. This consists of the package version, the version of R
@@ -13,15 +10,18 @@
 #'   determined with \link[tools]{md5sum}.
 #' @slot description [`character(1)`][character]\cr longer description of the
 #'   bitfield.
+#' @slot template [`list(.)`][list]\cr structural metadata for encoding/decoding,
+#'   including: \code{type} ("data.frame" or "SpatRaster"), \code{width} (total
+#'   bits), \code{length} (number of observations/cells), and for rasters:
+#'   \code{nrows}, \code{ncols}, \code{extent}, \code{crs}.
 #' @slot flags [`list(.)`][list]\cr list of flags in the registry.
 
 registry <- setClass(Class = "registry",
-                     slots = c(width = "integer",
-                               length = "integer",
-                               name = "character",
+                     slots = c(name = "character",
                                version = "list",
                                md5 = "character",
                                description = "character",
+                               template = "list",
                                attribution = "list",
                                flags = "list"
                      )
@@ -30,24 +30,6 @@ registry <- setClass(Class = "registry",
 setValidity("registry", function(object){
 
   errors = character()
-
-  if(!.hasSlot(object = object, name = "width")){
-    errors = c(errors, "the registry does not have a 'width' slot.")
-  } else {
-    if(!is.integer(object@width)){
-      errors = c(errors, "the slot 'width' is not a integer.")
-    }
-
-  }
-
-  if(!.hasSlot(object = object, name = "length")){
-    errors = c(errors, "the registry does not have a 'length' slot.")
-  } else {
-    if(!is.integer(object@length)){
-      errors = c(errors, "the slot 'length' is not a integer.")
-    }
-
-  }
 
   if(!.hasSlot(object = object, name = "name")){
     errors = c(errors, "the registry does not have a 'name' slot.")
@@ -81,6 +63,15 @@ setValidity("registry", function(object){
   } else {
     if(!is.character(object@description)){
       errors = c(errors, "the slot 'description' is not a character.")
+    }
+
+  }
+
+  if(!.hasSlot(object = object, name = "template")){
+    errors = c(errors, "the registry does not have a 'template' slot.")
+  } else {
+    if(!is.list(object@template)){
+      errors = c(errors, "the slot 'template' is not a list.")
     }
 
   }
@@ -155,14 +146,16 @@ setMethod(f = "show",
               theHeader <- paste0("  ",
                                   "pos", paste0(rep(" ", colWidth[1] - 3), collapse = ""),
                                   "encoding", paste0(rep(" ", colWidth[2] - 8), collapse = ""),
-                                  "type", paste0(rep(" ", colWidth[3] - 4), collapse = ""),
+                                  "name", paste0(rep(" ", colWidth[3] - 4), collapse = ""),
                                   "col", "\n")
-              barcode <- rep("-", object@width + length(object@flags) - 1)
+              theWidth <- object@template$width
+              barcode <- rep("-", theWidth + length(object@flags) - 1)
               bars <- unlist(minPos) + (1:length(object@flags))-1
               barcode[bars[-1]-1] <- "|"
               barcode <- paste0(barcode, collapse = "")
 
-              cat("  width", " ", object@width, "\n", sep = "")
+              cat("  type", "  ", object@template$type, "\n", sep = "")
+              cat("  width", " ", theWidth, "\n", sep = "")
               cat("  flags", " ", length(object@flags), "  ", barcode, "\n\n", sep = "")
               cat(theHeader)
               for(i in seq_along(object@flags)){
