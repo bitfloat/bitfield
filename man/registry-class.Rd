@@ -11,11 +11,6 @@ A \code{registry} stores metadata and flag configuration of a bitfield.
 \section{Slots}{
 
 \describe{
-\item{\code{width}}{\code{\link[=integer]{integerish(1)}}\cr how many bits is the bitfield wide.}
-
-\item{\code{length}}{\code{\link[=integer]{integerish(1)}}\cr how many observations are encoded
-in the bitfield.}
-
 \item{\code{name}}{\code{\link[=character]{character(1)}}\cr short name of the bitfield.}
 
 \item{\code{version}}{\code{\link[=character]{character(1)}}\cr automatically created version
@@ -27,6 +22,11 @@ determined with \link[tools]{md5sum}.}
 
 \item{\code{description}}{\code{\link[=character]{character(1)}}\cr longer description of the
 bitfield.}
+
+\item{\code{template}}{\code{\link[=list]{list(.)}}\cr structural metadata for encoding/decoding,
+including: \code{type} ("data.frame" or "SpatRaster"), \code{width} (total
+bits), \code{length} (number of observations/cells), and for rasters:
+\code{nrows}, \code{ncols}, \code{extent}, \code{crs}.}
 
 \item{\code{flags}}{\code{\link[=list]{list(.)}}\cr list of flags in the registry.}
 }}

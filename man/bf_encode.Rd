@@ -11,17 +11,29 @@ bf_encode(registry)
 encoded into a bitfield.}
 }
 \value{
-data.frame of the same length as the input data. Depending on type
-and amount of bit flags, this can be a table with any number of columns, each
-of which encodes a sequence of 32 bits into an integer.
+Depending on the registry template type: a \code{data.frame} with
+integer columns (one per 32-bit chunk) if template is a table, or a
+\code{SpatRaster} with integer layers if template is a raster.
 }
 \description{
 This function picks up the flags mentioned in a registry and encodes them as
 integer values.
 }
 \examples{
-reg <- bf_registry(name = "testBF", description = "test bitfield")
+reg <- bf_registry(name = "testBF", description = "test bitfield",
+                   template = bf_tbl)
 reg <- bf_map(protocol = "na", data = bf_tbl, registry = reg, x = y)
 
 field <- bf_encode(registry = reg)
+
+# with raster data
+library(terra)
+bf_rst <- rast(nrows = 3, ncols = 3, vals = bf_tbl$commodity, names = "commodity")
+bf_rst$yield <- rast(nrows = 3, ncols = 3, vals = bf_tbl$yield)
+
+reg <- bf_registry(name = "testBF", description = "raster bitfield",
+                   template = bf_rst)
+reg <- bf_map(protocol = "na", data = bf_rst, registry = reg, x = commodity)
+
+field <- bf_encode(registry = reg)  # returns a SpatRaster
 }

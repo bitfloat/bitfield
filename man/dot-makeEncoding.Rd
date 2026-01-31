@@ -39,12 +39,12 @@ Point'} by Thomas Finley, or explore encodings interactively at
 The allocation of bits across these fields can be adjusted to suit
 different needs: more exponent bits provide a wider range (smaller minimums
 and larger maximums), while more significand bits provide finer precision.
-This package documents bit allocation using the notation \link{s.e.m}, where
+This package documents bit allocation using the notation [s.e.m], where
 s = sign bits (0 or 1), e = exponent bits, and m = significand bits.
 
 For non-numeric data (boolean or categorical), the same notation applies
-with sign and exponent set to 0. A binary flag uses \link{0.0.1}, while a
-categorical variable with 8 levels requires 3 bits, yielding \link{0.0.3}.
+with sign and exponent set to 0. A binary flag uses [0.0.1], while a
+categorical variable with 8 levels requires 3 bits, yielding [0.0.3].
 
 Possible options (\code{...}) of this function are \itemize{
 \item \code{format}: switch that determines the configuration of the

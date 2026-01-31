@@ -4,11 +4,13 @@
 \alias{bf_decode}
 \title{Decode (unpack) a bitfield}
 \usage{
-bf_decode(x, registry, flags = NULL, sep = NULL, verbose = TRUE)
+bf_decode(x, registry, flags = NULL, envir = NULL, verbose = TRUE)
 }
 \arguments{
-\item{x}{\code{\link[=integer]{integerish(1)}}\cr table of the integer representation of
-the bitfield.}
+\item{x}{integer table or raster of the bitfield. For registries with a
+\code{SpatRaster} template, \code{x} should be a \code{SpatRaster}. For
+registries with a \code{data.frame} template, \code{x} should be a
+\code{data.frame}.}
 
 \item{registry}{\code{\link[=registry]{registry(1)}}\cr the registry that should be used
 to decode the bitfield.}
@@ -16,14 +18,20 @@ to decode the bitfield.}
 \item{flags}{\code{\link[=character]{character(.)}}\cr the name(s) of flags to extract
 from this bitfield; leave at \code{NULL} to extract the full bitfield.}
 
-\item{sep}{\code{\link[=character]{character(1)}}\cr a symbol with which, if given, the
-distinct fields shall be separated.}
+\item{envir}{\code{\link[=environment]{environment(1)}}\cr optional environment to store
+decoded flags as individual objects. If \code{NULL} (default), returns
+results as a list or SpatRaster. Use \code{.GlobalEnv} to store flags
+directly in the workspace.}
 
-\item{verbose}{\code{\link[=logical]{logical(1)}}\cr whether or not to return the
+\item{verbose}{\code{\link[=logical]{logical(1)}}\cr whether or not to print the
 registry legend.}
 }
 \value{
-data.frame with the binary values of flags in the registry in columns.
+Depending on the registry template type and \code{envir} parameter:
+If \code{envir} is \code{NULL}, returns a named \code{list} with decoded
+values for table templates, or a multi-layer \code{SpatRaster} for raster
+templates. If \code{envir} is specified, stores decoded flags as individual
+objects in that environment and returns \code{invisible(NULL)}.
 }
 \description{
 This function takes an integer bitfield and the registry used to build it
@@ -32,20 +40,38 @@ stored in the bitfield.
 }
 \examples{
 # build registry
-reg <- bf_registry(name = "testBF", description = "test bitfield")
+reg <- bf_registry(name = "testBF", description = "test bitfield",
+                   template = bf_tbl)
 reg <- bf_map(protocol = "na", data = bf_tbl, registry = reg, x = commodity)
 reg <- bf_map(protocol = "matches", data = bf_tbl, registry = reg,
-              x = commodity, set = c("soybean", "maize"))
+              x = commodity, set = c("soybean", "maize"), na.val = FALSE)
 reg
 
 # encode the flags into a bitfield
 field <- bf_encode(registry = reg)
 field
 
-# decode (somewhere downstream)
-flags <- bf_decode(x = field, registry = reg, sep = "-")
-flags
+# decode (somewhere downstream) - returns a named list
+decoded <- bf_decode(x = field, registry = reg)
+decoded$na_commodity
+decoded$matches_commodity
 
-# more reader friendly
-cbind(bf_tbl, bf_decode(x = field, registry = reg, verbose = FALSE))
+# alternatively, store directly in global environment
+bf_decode(x = field, registry = reg, envir = .GlobalEnv, verbose = FALSE)
+na_commodity
+matches_commodity
+
+# with raster data
+library(terra)
+bf_rst <- rast(nrows = 3, ncols = 3, vals = bf_tbl$commodity, names = "commodity")
+bf_rst$yield <- rast(nrows = 3, ncols = 3, vals = bf_tbl$yield)
+
+reg <- bf_registry(name = "testBF", description = "raster bitfield",
+                   template = bf_rst)
+reg <- bf_map(protocol = "na", data = bf_rst, registry = reg, x = commodity)
+field <- bf_encode(registry = reg)
+
+# decode back to multi-layer raster
+decoded <- bf_decode(x = field, registry = reg, verbose = FALSE)
+decoded  # SpatRaster with one layer per flag
 }
