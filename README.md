@@ -6,7 +6,6 @@
 <!-- badges: start -->
 
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/bitfield)](https://cran.r-project.org/package=bitfield)
-[![](http://cranlogs.r-pkg.org/badges/grand-total/bitfield)](https://cran.r-project.org/package=bitfield)
 
 [![R-CMD-check](https://github.com/bitfloat/bitfield/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bitfloat/bitfield/actions/workflows/R-CMD-check.yaml)
 [![codecov](https://codecov.io/gh/bitfloat/bitfield/graph/badge.svg?token=QZB36RION3)](https://app.codecov.io/gh/bitfloat/bitfield)
@@ -47,9 +46,10 @@ devtools::install_github("bitfloat/bitfield")
 
 ## Getting Started
 
+### Tabular Data
+
 ``` r
 library(bitfield)
-library(dplyr, warn.conflicts = FALSE)
 
 # Example data with quality issues
 bf_tbl
@@ -70,22 +70,24 @@ bf_tbl
 Create a registry to capture metadata about your workflow:
 
 ``` r
-reg <- bf_registry(name = "data_quality", 
-                   description = "Quality assessment for agricultural data")
+reg <- bf_registry(name = "data_quality",
+                   description = "Quality assessment for agricultural data",
+                   template = bf_tbl)
 
-# Test for missing values
+# Test for missing values (1 bit)
 reg <- bf_map(protocol = "na", data = bf_tbl, x = commodity, registry = reg)
 
-# Encode yield values with limited precision  
-reg <- bf_map(protocol = "numeric", data = bf_tbl, x = yield, 
+# Encode yield values with half precision (16 bits)
+reg <- bf_map(protocol = "numeric", data = bf_tbl, x = yield,
               format = "half", registry = reg)
 
 # View the registry structure
 reg
+#>   type  data.frame
 #>   width 17
 #>   flags 2  -|----------------
 #> 
-#>   pos encoding  type    col
+#>   pos encoding  name    col
 #>   1   0.0.1/0   na      commodity
 #>   2   1.5.10/15 numeric yield
 ```
@@ -93,7 +95,8 @@ reg
 Encode the flags into integer representation:
 
 ``` r
-(field <- bf_encode(registry = reg))
+field <- bf_encode(registry = reg)
+field
 #> # A tibble: 9 × 1
 #>   bf_int1
 #>     <int>
@@ -111,74 +114,72 @@ Encode the flags into integer representation:
 Decode the bitfield in a downstream application:
 
 ``` r
-(flags <- bf_decode(x = field, registry = reg, verbose = FALSE))
-#> # A tibble: 9 × 2
-#>   na_commodity numeric_yield   
-#>   <chr>        <chr>           
-#> 1 0            0100100110011000
-#> 2 0            0100100111111110
-#> 3 0            0100101010011101
-#> 4 1            0100010001101110
-#> 5 0            0100101001111111
-#> 6 0            0100100001000110
-#> 7 0            0100100110100011
-#> 8 0            0100100101010010
-#> 9 0            0100100010000001
+decoded <- bf_decode(x = field, registry = reg, verbose = FALSE)
 
-# -> legend is available in bf_legend
+# Returns a named list with decoded values
+names(decoded)
+#> [1] "na_commodity"  "numeric_yield"
 
-bf_tbl |>
-  bind_cols(flags) |>
-  knitr::kable()
-```
-
-|     x |    y | commodity |     yield | year  | na_commodity | numeric_yield    |
-|------:|-----:|:----------|----------:|:------|:-------------|:-----------------|
-|  25.3 | 59.5 | soybean   | 11.192915 | 2021  | 0            | 0100100110011000 |
-|  27.9 | 58.1 | maize     | 11.986793 | NA    | 0            | 0100100111111110 |
-|  27.8 | 57.8 | soybean   | 13.229386 | 2021r | 0            | 0100101010011101 |
-|  27.0 | 59.2 | NA        |  4.431376 | 2021  | 1            | 0100010001101110 |
-| 259.0 |  Inf | honey     | 12.997422 | 2021  | 0            | 0100101001111111 |
-|  27.3 | 59.1 | maize     |  8.548882 | 2021  | 0            | 0100100001000110 |
-|  26.1 | 58.4 | soybean   | 11.276921 | 2021  | 0            | 0100100110100011 |
-|  26.5 |  NaN | maize     | 10.640715 | 2021  | 0            | 0100100101010010 |
-|   0.0 |  0.0 | soybean   |  9.010452 | 2021  | 0            | 0100100010000001 |
-
-The decoded information is also available in the package environment for
-programmatic access:
-
-``` r
-# access values manually
-ls(.GlobalEnv)
-#> [1] "bf_legend"     "field"         "flags"         "na_commodity" 
-#> [5] "numeric_yield" "reg"
-
-.GlobalEnv[["na_commodity"]]
+# Access individual flags
+decoded$na_commodity
 #> [1] 0 0 0 1 0 0 0 0 0
-.GlobalEnv[["numeric_yield"]]
+decoded$numeric_yield
 #> [1] 11.187500 11.984375 13.226562  4.429688 12.992188  8.546875 11.273438
 #> [8] 10.640625  9.007812
-
-# beware that numeric values are stored with the precision you have specified
-bf_tbl$yield
-#> [1] 11.192915 11.986793 13.229386  4.431376 12.997422  8.548882 11.276921
-#> [8] 10.640715  9.010452
 ```
 
-## Further Reading
+### Raster Data
 
-- **[Best Practices](articles/best-practices.html)**: Guidelines for
-  effective bitfield design, protocol selection, and common pitfalls
-- **[Community Contributions](articles/community-contributions.html)**:
-  How to contribute protocols to the community standards repository
-- **[Applications](articles/applications.html)**: Examples and use cases
-  using the bitfield package
+The same workflow applies to raster data - just use a `SpatRaster` as
+the template:
+
+``` r
+library(terra)
+
+# Create example raster
+bf_rst <- rast(nrows = 3, ncols = 3, vals = bf_tbl$commodity, names = "commodity")
+bf_rst$yield <- rast(nrows = 3, ncols = 3, vals = bf_tbl$yield)
+
+# Create registry with raster template
+reg_rst <- bf_registry(name = "raster_quality",
+                       description = "Quality flags for raster data",
+                       template = bf_rst)
+
+reg_rst <- bf_map(protocol = "na", data = bf_rst, x = commodity, registry = reg_rst)
+reg_rst <- bf_map(protocol = "numeric", data = bf_rst, x = yield,
+                  format = "half", registry = reg_rst)
+
+# Encode returns a SpatRaster
+field_rst <- bf_encode(registry = reg_rst)
+field_rst
+#> class       : SpatRaster 
+#> size        : 3, 3, 1  (nrow, ncol, nlyr)
+#> resolution  : 120, 60  (x, y)
+#> extent      : -180, 180, -90, 90  (xmin, xmax, ymin, ymax)
+#> coord. ref. : lon/lat WGS 84 (CRS84) (OGC:CRS84) 
+#> source(s)   : memory
+#> name        : bf_int1 
+#> min value   :   18502 
+#> max value   :   83054
+
+# Decode returns a multi-layer SpatRaster
+decoded_rst <- bf_decode(x = field_rst, registry = reg_rst, verbose = FALSE)
+decoded_rst
+#> class       : SpatRaster 
+#> size        : 3, 3, 2  (nrow, ncol, nlyr)
+#> resolution  : 120, 60  (x, y)
+#> extent      : -180, 180, -90, 90  (xmin, xmax, ymin, ymax)
+#> coord. ref. : lon/lat WGS 84 (CRS84) (OGC:CRS84) 
+#> source(s)   : memory
+#> names       : na_commodity, numeric_yield 
+#> min values  :            0,      4.429688 
+#> max values  :            1,     13.226562
+```
 
 ## Getting Help
 
-- Browse the [function reference](reference/index.html) for detailed
-  documentation
+- Browse the [function
+  reference](https://bitfloat.github.io/bitfield/reference/index.html)
+  for detailed documentation
 - Report bugs at
   [github.com/bitfloat/bitfield/issues](https://github.com/bitfloat/bitfield/issues)
-- Join discussions about community standards at
-  [github.com/bitfloat/standards](https://github.com/bitfloat/standards)
