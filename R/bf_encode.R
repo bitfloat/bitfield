@@ -115,8 +115,8 @@ bf_encode <- function(registry){
         sigVal[overflow] <- 2^sigBits - 2
 
         # convert exponent and significand integers to binary strings
-        expBin <- .intToBinVec(biasedExp, expBits)
-        sigBin <- .intToBinVec(sigVal, sigBits)
+        expBin <- .toBin(biasedExp, len = expBits)
+        sigBin <- .toBin(sigVal, len = sigBits)
 
         theBits <- paste0(expBin, sigBin)
 
