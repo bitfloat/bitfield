@@ -1,88 +1,41 @@
 #' Make a binary value from an integer
 #'
-#' @param x [`numeric(1)`][numeric]\cr the numeric value for which to derive the
-#'   binary value.
+#' @param x [`numeric(.)`][numeric]\cr numeric vector for which to derive the
+#'   binary values.
 #' @param len [`integerish(1)`][integer]\cr the number of bits used to capture
-#'   the value.
-#' @param dec [`logical(1)`][logical]\cr whether to transform the decimal part
-#'   to bits, or the integer part.
-#' @param pad [`logical(1)`][logical]\cr whether to pad the binary value with 0
-#'   values.
-#' @importFrom checkmate assertIntegerish assertNumeric
+#'   each value. If NULL, computed from the maximum value.
+#' @param pad [`logical(1)`][logical]\cr whether to pad the binary values with
+#'   leading zeros to equal width.
+#' @importFrom checkmate assertIntegerish assertNumeric assertLogical
 #' @importFrom stringr str_pad
 
-.toBin <- function(x, len = NULL, pad = TRUE, dec = FALSE){
+.toBin <- function(x, len = NULL, pad = TRUE){
 
   assertNumeric(x = x)
   assertIntegerish(x = len, len = 1, any.missing = FALSE, null.ok = TRUE)
-  assertLogical(x = dec, len = 1, any.missing = FALSE)
   assertLogical(x = pad, len = 1, any.missing = FALSE)
 
-  if(dec){
-    x <- as.numeric(paste0(0, ".", str_split(x, "[.]", simplify = T)[,2]))
+  # use floor() to support unsigned 32-bit values (up to 2^32-1)
+  x <- floor(x)
 
-    temp <- map(.x = x, .f = function(ix){
-      val <- ix
-      bin <- NULL
+  # if len not provided, compute from max value
+  if (is.null(len)) {
+    maxVal <- max(x, 1)
+    len <- max(ceiling(log2(maxVal + 1)), 1)
+  }
 
-      if(is.null(len)){
-
-        while(val > 0){
-          val <- val * 2
-          bin <- c(bin, val %/% 1)
-          val <- val - val %/% 1
-        }
-
-      } else {
-
-        i <- 0
-        while(val > 0 & i < len){
-          val <- val * 2
-          bin <- c(bin, val %/% 1)
-          val <- val - val %/% 1
-          i <-  i + 1
-        }
-
-      }
-      if(is.null(bin)) bin <- 0
-      bin <- paste0(bin, collapse = "")
-
-      return(bin)
-    }) |> unlist()
-
-  } else {
-    x <- as.integer(x)
-
-    temp <- map(.x = x, .f = function(ix){
-      val <- ix
-      bin <- NULL
-      if(!is.null(len)){
-
-        while(len > 0){
-          bin[len] <- val %% 2
-          val <- val %/% 2
-          len <- len - 1
-        }
-
-      } else {
-
-        while(val > 0){
-          bin <- c(val %% 2, bin)
-          val <- val %/% 2
-        }
-
-        if(is.null(bin)) bin <- 0
-
-      }
-
-      bin <- paste0(bin, collapse = "")
-
-      return(bin)
-    }) |> unlist()
-
-    if(pad){
-      temp <- str_pad(temp, width = max(nchar(temp)), pad = "0")
+  temp <- vapply(x, function(val) {
+    bits <- character(len)
+    for (j in len:1) {
+      bits[j] <- as.character(val %% 2)
+      val <- val %/% 2
     }
+    paste0(bits, collapse = "")
+  }, character(1))
+
+  # pad to same width if requested (only matters if len was auto-computed per value)
+  if (pad) {
+    temp <- str_pad(temp, width = max(nchar(temp)), pad = "0")
   }
 
   return(temp)
@@ -147,12 +100,12 @@
 #'   The allocation of bits across these fields can be adjusted to suit
 #'   different needs: more exponent bits provide a wider range (smaller minimums
 #'   and larger maximums), while more significand bits provide finer precision.
-#'   This package documents bit allocation using the notation [s.e.m], where
+#'   This package documents bit allocation using the notation \[s.e.m\], where
 #'   s = sign bits (0 or 1), e = exponent bits, and m = significand bits.
 #'
 #'   For non-numeric data (boolean or categorical), the same notation applies
-#'   with sign and exponent set to 0. A binary flag uses [0.0.1], while a
-#'   categorical variable with 8 levels requires 3 bits, yielding [0.0.3].
+#'   with sign and exponent set to 0. A binary flag uses \[0.0.1\], while a
+#'   categorical variable with 8 levels requires 3 bits, yielding \[0.0.3\].
 #'
 #'   Possible options (\code{...}) of this function are \itemize{
 #'     \item \code{format}: switch that determines the configuration of the
@@ -215,14 +168,39 @@
   autoSign <- ifelse(any(var < 0, na.rm = TRUE), 1, 0)
 
   # determine variable significand
-  xInt <- var * 10^max(decimals, 0)
-  xInt <- as.integer(xInt)
-  autoSig <- ceiling(log2(max(xInt, 2, na.rm = TRUE) + 1))
+  # for int/enum types: bits needed to store the max integer value
+  # for float type: bits needed for decimal precision
+  if (type == "float") {
+    if (!is.null(decimals)) {
+      # decimals places needs about log2(10^decimals) bits
+      autoSig <- ceiling(decimals * 3.32)  # log2(10) ≈ 3.32
+    } else {
+      # default: 8 bits gives ~0.4% relative precision
+      autoSig <- 8L
+    }
+  } else {
+    # int/enum: bits needed to store the max value
+    xInt <- var * 10^max(decimals, 0)
+    xInt <- as.integer(xInt)
+    autoSig <- ceiling(log2(max(xInt, 2, na.rm = TRUE) + 1))
+  }
 
-  # determine variable exponent
-  expRange <- floor(log10(abs(var)))
-  bitSize <- max(max(expRange) - min(expRange), range)
-  autoExp <- ceiling(log2(bitSize + 1))
+
+  # determine variable exponent (in powers of 2, not 10)
+  # need enough bits to represent the range of exponents
+  nonZeroVar <- var[var != 0 & !is.na(var)]
+  if (length(nonZeroVar) > 0) {
+    expRange <- floor(log2(abs(nonZeroVar)))
+    minExp <- min(expRange)
+    maxExp <- max(expRange)
+    # exponent bits must cover range from minExp to maxExp with bias
+    # bias = 2^(expBits-1) - 1, so we need expBits where 2^(expBits-1) - 1 + maxExp fits
+    # and minExp + bias >= 0
+    expSpan <- maxExp - minExp
+    autoExp <- max(ceiling(log2(max(abs(minExp), abs(maxExp)) + 2)) + 1, ceiling(log2(expSpan + 2)), range, 1)
+  } else {
+    autoExp <- max(range, 1)
+  }
 
   if(type == "bool"){
 
@@ -286,19 +264,17 @@
   if(!is.null(fields) & !is.null(fields$exponent)){
     assertIntegerish(x = fields$exponent, lower = 0, len = 1, any.missing = FALSE)
     if(fields$exponent < exp){
-      stop("It is not possible to set less than ", exp, " 'exponent' bits.")
-    } else {
-      exp <- fields$exponent
+      warning("Using ", fields$exponent, " exponent bits (auto-calculated ", exp, " bits). Some values may overflow or lose precision.")
     }
+    exp <- fields$exponent
   }
 
   if(!is.null(fields) & !is.null(fields$mant)){
     assertIntegerish(x = fields$mant, lower = 0, len = 1, any.missing = FALSE)
     if(fields$mant < sig){
-      stop("It is not possible to set less than ", sig, " 'significand' bits.")
-    } else {
-      sig <- fields$mant
+      warning("Using ", fields$mant, " significand bits (auto-calculated ", sig, " bits). Some values may lose precision.")
     }
+    sig <- fields$mant
   }
 
   enc <- list(sign = as.integer(sign),
@@ -795,7 +771,7 @@ project <- function(title, year = format(Sys.Date(), "%Y"), language = "en",
   }
 
   # Add technical details as additional description
-  if (registry@width > 0) {
+  if (registry@template$width > 0) {
     # Create flag summary
     flag_summary <- map_chr(registry@flags, function(f) {
       pcl <- str_split(f$wasGeneratedBy$useTest, "_", simplify = TRUE)[1]
@@ -817,8 +793,8 @@ project <- function(title, year = format(Sys.Date(), "%Y"), language = "en",
 
     tech_description <- list(
       description = sprintf(
-        "Bitfield registry with %d bits across %d observations, containing %d flags\nFlag legend:\n%s",
-        registry@width, registry@length, length(registry@flags),
+        "Bitfield registry (%s) with %d bits across %d observations, containing %d flags\nFlag legend:\n%s",
+        registry@template$type, registry@template$width, registry@template$length, length(registry@flags),
         paste(flag_summary, collapse = "\n")
       ),
       descriptionType = "TechnicalInfo"

@@ -3,52 +3,97 @@
 #' This function takes an integer bitfield and the registry used to build it
 #' upstream to decode it into bit representation and thereby unpack the data
 #' stored in the bitfield.
-#' @param x [`integerish(1)`][integer]\cr table of the integer representation of
-#'   the bitfield.
+#' @param x integer table or raster of the bitfield. For registries with a
+#'   \code{SpatRaster} template, \code{x} should be a \code{SpatRaster}. For
+#'   registries with a \code{data.frame} template, \code{x} should be a
+#'   \code{data.frame}.
 #' @param registry [`registry(1)`][registry]\cr the registry that should be used
 #'   to decode the bitfield.
 #' @param flags [`character(.)`][character]\cr the name(s) of flags to extract
 #'   from this bitfield; leave at \code{NULL} to extract the full bitfield.
-#' @param sep [`character(1)`][character]\cr a symbol with which, if given, the
-#'   distinct fields shall be separated.
-#' @param verbose [`logical(1)`][logical]\cr whether or not to return the
+#' @param envir [`environment(1)`][environment]\cr optional environment to store
+#'   decoded flags as individual objects. If \code{NULL} (default), returns
+#'   results as a list or SpatRaster. Use \code{.GlobalEnv} to store flags
+#'   directly in the workspace.
+#' @param verbose [`logical(1)`][logical]\cr whether or not to print the
 #'   registry legend.
-#' @return data.frame with the binary values of flags in the registry in columns.
+#' @return Depending on the registry template type and \code{envir} parameter:
+#'   If \code{envir} is \code{NULL}, returns a named \code{list} with decoded
+#'   values for table templates, or a multi-layer \code{SpatRaster} for raster
+#'   templates. If \code{envir} is specified, stores decoded flags as individual
+#'   objects in that environment and returns \code{invisible(NULL)}.
 #' @examples
 #' # build registry
-#' reg <- bf_registry(name = "testBF", description = "test bitfield")
+#' reg <- bf_registry(name = "testBF", description = "test bitfield",
+#'                    template = bf_tbl)
 #' reg <- bf_map(protocol = "na", data = bf_tbl, registry = reg, x = commodity)
 #' reg <- bf_map(protocol = "matches", data = bf_tbl, registry = reg,
-#'               x = commodity, set = c("soybean", "maize"))
+#'               x = commodity, set = c("soybean", "maize"), na.val = FALSE)
 #' reg
 #'
 #' # encode the flags into a bitfield
 #' field <- bf_encode(registry = reg)
 #' field
 #'
-#' # decode (somewhere downstream)
-#' flags <- bf_decode(x = field, registry = reg, sep = "-")
-#' flags
+#' # decode (somewhere downstream) - returns a named list
+#' decoded <- bf_decode(x = field, registry = reg)
+#' decoded$na_commodity
+#' decoded$matches_commodity
 #'
-#' # more reader friendly
-#' cbind(bf_tbl, bf_decode(x = field, registry = reg, verbose = FALSE))
+#' # alternatively, store directly in global environment
+#' bf_decode(x = field, registry = reg, envir = .GlobalEnv, verbose = FALSE)
+#' na_commodity
+#' matches_commodity
+#'
+#' # with raster data
+#' library(terra)
+#' bf_rst <- rast(nrows = 3, ncols = 3, vals = bf_tbl$commodity, names = "commodity")
+#' bf_rst$yield <- rast(nrows = 3, ncols = 3, vals = bf_tbl$yield)
+#'
+#' reg <- bf_registry(name = "testBF", description = "raster bitfield",
+#'                    template = bf_rst)
+#' reg <- bf_map(protocol = "na", data = bf_rst, registry = reg, x = commodity)
+#' field <- bf_encode(registry = reg)
+#'
+#' # decode back to multi-layer raster
+#' decoded <- bf_decode(x = field, registry = reg, verbose = FALSE)
+#' decoded  # SpatRaster with one layer per flag
 #' @importFrom checkmate assertDataFrame assertNames assertClass assertCharacter
 #'   assertLogical assertSubset
-#' @importFrom purrr map map_dbl map_chr
+#' @importFrom purrr map map_dbl map_chr map_int
 #' @importFrom tibble tibble
 #' @importFrom dplyr bind_rows arrange group_by ungroup summarise rowwise mutate
 #'   left_join n first row_number if_else
 #' @importFrom tidyr separate unite separate_longer_delim
 #' @importFrom rlang env_bind `:=`
 #' @importFrom stringr str_sub_all str_replace
+#' @importFrom terra rast ext crs values nlyr
 #' @export
 
-bf_decode <- function(x, registry, flags = NULL, sep = NULL, verbose = TRUE){
+bf_decode <- function(x, registry, flags = NULL, envir = NULL, verbose = TRUE){
 
-  assertDataFrame(x = x, types = "integer", any.missing = FALSE)
   assertClass(x = registry, classes = "registry")
-  assertCharacter(x = sep, len = 1, null.ok = TRUE)
+  assertClass(x = envir, classes = "environment", null.ok = TRUE)
   assertLogical(x = verbose, len = 1, any.missing = FALSE)
+
+  # handle raster input
+  isRaster <- inherits(x, "SpatRaster")
+  if(registry@template$type == "SpatRaster"){
+    tmpl <- registry@template
+    if(!isRaster){
+      stop("registry template is 'SpatRaster' but 'x' is not a SpatRaster")
+    }
+    # extract values from raster layers into a data.frame
+    x <- values(x, dataframe = TRUE)
+    names(x) <- paste0("bf_int", seq_len(ncol(x)))
+  } else {
+    if(isRaster){
+      stop("registry template is 'data.frame' but 'x' is a SpatRaster")
+    }
+  }
+
+  # allow numeric types since large bitfields (>31 bits) may exceed signed 32-bit integer range
+  assertDataFrame(x = x, types = c("integer", "numeric"), any.missing = FALSE)
 
   # get the bits ...
   theBits <- map(.x = seq_along(registry@flags), .f = function(ix){
@@ -65,10 +110,23 @@ bf_decode <- function(x, registry, flags = NULL, sep = NULL, verbose = TRUE){
   lut <- separate_longer_delim(data = theBits, cols = desc, delim = " | ") |>
     select(pos, name, desc)
 
+  # calculate bit widths for each integer column (same logic as bf_encode)
+  bitLen <- registry@template$width
+  intLen <- ncol(x)
+  widths <- NULL
+  tempLen <- bitLen
+  while(tempLen > 0){
+    if(tempLen > 32){
+      widths <- c(widths, 32)
+    } else {
+      widths <- c(widths, tempLen)
+    }
+    tempLen <- tempLen - 32
+  }
+
   tempBits <- NULL
   for(i in seq_along(x)){
-    tempBits <- tibble(!!paste0("bin", i) := .toBin(x[[i]], len = registry@width)) |>
-      bind_cols(tempBits)
+    tempBits <- bind_cols(tempBits, tibble(!!paste0("bin", i) := .toBin(x[[i]], len = widths[i])))
   }
   tempOut <- tempBits |>
     unite(col = "bin", 1:ncol(tempBits), sep = "") |>
@@ -82,11 +140,17 @@ bf_decode <- function(x, registry, flags = NULL, sep = NULL, verbose = TRUE){
     theFlags <- names(registry@flags)
   }
 
+  # collect decoded values
+  out <- list()
+
   for(i in seq_along(theFlags)){
 
     flagName <- theFlags[i]
     theFlag <- registry@flags[[flagName]]
     flagEnc <- theFlag$wasGeneratedBy$encodeAsBinary
+
+    # get NA substitute value
+    naVal <- theFlag$wasGeneratedBy$substituteValue
 
     if(flagName == "cases"){
       temp <- .toDec(x = tempOut[[i]]) + 1
@@ -95,33 +159,86 @@ bf_decode <- function(x, registry, flags = NULL, sep = NULL, verbose = TRUE){
     } else {
       flagPos <- unlist(flagEnc)[1:3]
       flagSplit <- str_sub_all(tempOut[[i]], start = cumsum(c(1, flagPos[-length(flagPos)])), end = cumsum(flagPos))
-      sign <- map_dbl(flagSplit, function(ix){
-        (-1)^as.integer(ix[1])
-      })
-      exponent <- map_int(flagSplit, function(ix){
-        .toDec(x = ix[2]) - flagEnc$bias
-      })
-      significand <- map_chr(seq_along(flagSplit), function(ix){
-        paste0("1", flagSplit[[ix]][3])
-      })
 
-      temp <- sign * .toDec(x = str_replace(significand, pattern = paste0("^(.{", exponent + 1, "})(.*)$"), replacement = "\\1.\\2"))
+      # NA pattern: all 1s in exponent and significand
+      naPattern <- paste0(rep("1", flagPos[2] + flagPos[3]), collapse = "")
+
+      temp <- map_dbl(seq_along(flagSplit), function(ix){
+        parts <- flagSplit[[ix]]
+        expBits <- parts[2]
+        sigBits <- parts[3]
+
+        # check for NA: all exponent and significand bits are 1
+        if (!grepl("0", paste0(expBits, sigBits))) {
+          return(NA_real_)
+        }
+
+        # check for zero: all exponent and significand bits are 0
+        if (!grepl("1", paste0(expBits, sigBits))) {
+          return(0)
+        }
+
+        # sign
+        if (flagPos[1] == 0) {
+          sgn <- 1
+        } else {
+          sgn <- (-1)^as.integer(parts[1])
+        }
+
+        # exponent
+        exp <- .toDec(x = expBits) - flagEnc$bias
+
+        # significand with implicit leading 1
+        sig <- paste0("1", sigBits)
+
+        # handle radix point placement based on exponent
+        if (exp + 1 > 0) {
+          # positive radix position: split the significand
+          sigWithRadix <- str_replace(sig, pattern = paste0("^(.{", exp + 1, "})(.*)$"), replacement = "\\1.\\2")
+        } else {
+          # negative radix position: prepend zeros after radix
+          sigWithRadix <- paste0("0.", paste0(rep("0", -(exp + 1)), collapse = ""), sig)
+        }
+
+        sgn * .toDec(x = sigWithRadix)
+      })
     }
 
-    env_bind(.env = .GlobalEnv, !!flagName := temp)
+    if(registry@template$type == "SpatRaster"){
+      out[[flagName]] <- rast(nrows = tmpl$nrows, ncols = tmpl$ncols,
+                              extent = ext(tmpl$extent), crs = tmpl$crs,
+                              vals = temp,
+                              names = flagName)
+      # restore levels/attribute table for categorical data
+      flagProtocol <- strsplit(theFlag$wasGeneratedBy$useTest, "_")[[1]][1]
+      if(flagProtocol %in% c("category", "case")){
+        flagLevels <- theFlag$wasGeneratedBy$extractLevels
+        if(!is.null(flagLevels) && nrow(flagLevels) > 0){
+          # adjust levels to match 0-indexed decoded values
+          flagLevels$id <- flagLevels$id - min(flagLevels$id)
+          levels(out[[flagName]]) <- flagLevels
+        }
+      }
+    } else {
+      out[[flagName]] <- temp
+    }
   }
-
-  if(!is.null(sep)){
-    out <- unite(tempOut, col = "bf_bin", paste0("flag", theBits$rn), sep = sep)
-  } else {
-    colnames(tempOut) <- theFlags
-    out <- tempOut
-  }
-
-  # assign look-up table to the environment as well
-  env_bind(.env = .GlobalEnv, bf_legend = lut)
 
   if(verbose) print(lut)
 
+  # combine raster layers into single SpatRaster
+  if(registry@template$type == "SpatRaster"){
+    out <- rast(out)
+  }
+
+  if(!is.null(envir)){
+    for(name in names(out)){
+      env_bind(.env = envir, !!name := out[[name]])
+    }
+    env_bind(.env = envir, bf_legend = lut)
+    return(invisible(NULL))
+  }
+
+  attr(out, "legend") <- lut
   return(out)
 }
