@@ -4,21 +4,34 @@
 #' integer values.
 #' @param registry [`registry(1)`][registry]\cr the registry that should be
 #'   encoded into a bitfield.
-#' @return data.frame of the same length as the input data. Depending on type
-#'   and amount of bit flags, this can be a table with any number of columns, each
-#'   of which encodes a sequence of 32 bits into an integer.
+#' @return Depending on the registry template type: a \code{data.frame} with
+#'   integer columns (one per 32-bit chunk) if template is a table, or a
+#'   \code{SpatRaster} with integer layers if template is a raster.
 #' @examples
-#' reg <- bf_registry(name = "testBF", description = "test bitfield")
+#' reg <- bf_registry(name = "testBF", description = "test bitfield",
+#'                    template = bf_tbl)
 #' reg <- bf_map(protocol = "na", data = bf_tbl, registry = reg, x = y)
 #'
 #' field <- bf_encode(registry = reg)
+#'
+#' # with raster data
+#' library(terra)
+#' bf_rst <- rast(nrows = 3, ncols = 3, vals = bf_tbl$commodity, names = "commodity")
+#' bf_rst$yield <- rast(nrows = 3, ncols = 3, vals = bf_tbl$yield)
+#'
+#' reg <- bf_registry(name = "testBF", description = "raster bitfield",
+#'                    template = bf_rst)
+#' reg <- bf_map(protocol = "na", data = bf_rst, registry = reg, x = commodity)
+#'
+#' field <- bf_encode(registry = reg)  # returns a SpatRaster
 #' @importFrom checkmate assertClass assertList
 #' @importFrom tibble tibble
-#' @importFrom purrr map map_int
+#' @importFrom purrr map map_int map2_chr
 #' @importFrom dplyr bind_rows arrange bind_cols select across mutate
 #' @importFrom stringr str_split str_split_i str_sub str_pad str_remove
 #' @importFrom tidyr separate_wider_position unite
 #' @importFrom rlang  `:=`
+#' @importFrom terra rast ext crs
 #' @export
 
 bf_encode <- function(registry){
@@ -27,7 +40,7 @@ bf_encode <- function(registry){
   assertList(x = registry@flags, min.len = 1)
 
   # open the registry
-  theBitfield <- tibble(.rows = registry@length)
+  theBitfield <- tibble(.rows = registry@template$length)
 
   # arrange them by position of the bit ...
   theFlags <- bind_rows(map(seq_along(registry@flags), function(ix){
@@ -46,32 +59,78 @@ bf_encode <- function(registry){
 
     if(!is.logical(theVals)){
 
+      # track NA positions before any conversion (for float types)
+      naIdx <- is.na(theVals)
+
+      # replace NAs with dummy value for .toBin processing
+      # (these positions will be overwritten with NA pattern later for floats)
+      theValsForBin <- theVals
+      theValsForBin[naIdx] <- 1
+
       # get the integer part of the binary value
-      intBits <- .toBin(x = as.integer(theVals), pad = TRUE)
+      intBits <- .toBin(x = as.integer(theValsForBin), pad = TRUE)
 
       if(!is.integer(theVals)){
         # good explanation: https://www.cs.cornell.edu/~tomf/notes/cps104/floating
 
-        # get the decimal part of the binary value and ...
-        decBits <- .toBin(x = theVals, dec = TRUE)
+        if(grepl(x = theFlag$wasGeneratedBy$useTest, pattern = "integer|case|category")) stop("you are trying to apply an integer protocol when the values are numeric.")
 
-        # 1. transform to scientific notation...
-        temp <- gsub("^(.{1})(.*)$", "\\1.\\2", str_remove(paste0(intBits, decBits), "^0+"))
-        temp <- ifelse(temp == "", paste0(c(".", rep(0, theFlag$wasGeneratedBy$encodeAsBinary$significand)), collapse = ""), temp)
+        # get encoding parameters
+        signBit <- theFlag$wasGeneratedBy$encodeAsBinary$sign
+        expBits <- theFlag$wasGeneratedBy$encodeAsBinary$exponent
+        sigBits <- theFlag$wasGeneratedBy$encodeAsBinary$significand
+        bias <- theFlag$wasGeneratedBy$encodeAsBinary$bias
+        maxExp <- 2^expBits - 1
 
-        # 2. ... then encode as bit sequence
-        sign <- as.integer(0 > theVals)
+        # vectorized float encoding using math (not strings)
+        n <- length(theValsForBin)
+        absVals <- abs(theValsForBin)
+        isZero <- absVals == 0
 
-        # 3. bias exponent and encode as binary
-        exponent <- .toBin(x = nchar(str_remove(intBits, "^0+"))-1 + theFlag$wasGeneratedBy$encodeAsBinary$bias)
+        # compute exponent via log2 for non-zero values
+        actualExp <- rep(0L, n)
+        actualExp[!isZero] <- floor(log2(absVals[!isZero]))
 
-        # 4. extract significand
-        significand  <- map(.x = temp,
-                        .f = \(x) str_pad(str_sub(str_split(string = x, pattern = "[.]", simplify = TRUE)[2], end = theFlag$wasGeneratedBy$encodeAsBinary$significand), width = theFlag$wasGeneratedBy$encodeAsBinary$significand, pad = "0", side = "right"))  |>
-          unlist()
+        # biased exponent
+        biasedExp <- actualExp + bias
 
-        # 5. store as bit sequence
-        theBits <- paste0(sign, exponent, significand)
+        # detect underflow and overflow
+        underflow <- !isZero & biasedExp < 0
+        overflow <- !isZero & biasedExp > maxExp
+
+        # clamp exponents
+        biasedExp[underflow] <- 0L
+        biasedExp[overflow] <- maxExp
+
+        # compute significand as integer value
+        # normalize to [1, 2) then extract fractional part
+        normalized <- rep(1, n)
+        normalized[!isZero & !underflow] <- absVals[!isZero & !underflow] / 2^actualExp[!isZero & !underflow]
+        fracPart <- normalized - 1
+        sigVal <- floor(fracPart * 2^sigBits)
+
+        # underflow: significand is 0
+        sigVal[underflow] <- 0L
+        # overflow: max significand but not all 1s (reserved for NA)
+        sigVal[overflow] <- 2^sigBits - 2
+
+        # convert exponent and significand integers to binary strings
+        expBin <- .intToBinVec(biasedExp, expBits)
+        sigBin <- .intToBinVec(sigVal, sigBits)
+
+        theBits <- paste0(expBin, sigBin)
+
+        # NA pattern: all 1s (like IEEE NaN)
+        naPattern <- paste0(rep("1", expBits + sigBits), collapse = "")
+        theBits[naIdx] <- naPattern
+
+        # prepend sign bit if needed
+        if (signBit == 1) {
+          signBin <- as.integer(theValsForBin < 0)
+          theBits <- paste0(signBin, theBits)
+          # for NA values, sign bit is 0
+          theBits[naIdx] <- paste0("0", naPattern)
+        }
 
       } else {
         theBits <- intBits
@@ -80,6 +139,9 @@ bf_encode <- function(registry){
     } else {
       theBits <- as.integer(theVals)
     }
+
+    # internal test that should never trigger
+    if(any(nchar(theBits) > thisLen)) stop("the bit sequence is longer than it is allowed to be.")
 
     # add trailing 0s
     theBits <- str_pad(string = theBits, width = thisLen, side = "right", pad = "0")
@@ -105,6 +167,15 @@ bf_encode <- function(registry){
 
   out <- tempBits |>
     mutate(across(1:ncol(tempBits), .toDec))
+
+  # convert to raster if template is a raster
+ if(registry@template$type == "SpatRaster"){
+    tmpl <- registry@template
+    out <- rast(nrows = tmpl$nrows, ncols = tmpl$ncols,
+                extent = ext(tmpl$extent), crs = tmpl$crs,
+                nlyrs = ncol(out), vals = as.matrix(out),
+                names = names(out))
+  }
 
   return(out)
 
