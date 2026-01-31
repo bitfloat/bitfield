@@ -8,7 +8,8 @@
 #' call it on the data from which the flag shall be created.
 #' @return vector of the flag values.
 #' @examples
-#' reg <- bf_registry(name = "testBF", description = "test bitfield")
+#' reg <- bf_registry(name = "testBF", description = "test bitfield",
+#'                    template = bf_tbl)
 #' reg <- bf_map(protocol = "na", data = bf_tbl, registry = reg,
 #'               x = year)
 #' str(reg@flags)
@@ -57,12 +58,17 @@ bf_flag <- function(registry, flag = NULL) {
     tempData <- theData
   }
   usefulArgs <- theFlag$wasGeneratedBy$withArguments
-  usefulArgs <- usefulArgs[!names(usefulArgs) %in% c("...", "fields", "precision", "decimals", "range")]
+  # Only filter by names if the vector has names (case protocol stores unnamed expressions)
+  if (!is.null(names(usefulArgs))) {
+    usefulArgs <- usefulArgs[!names(usefulArgs) %in% c("...", "fields", "precision", "decimals", "range")]
+  }
   tidyArgs <- map(as.list(parse(text = usefulArgs)), eval_tidy, tempData)
   out <- exec(pcl$test, !!!tidyArgs)
 
   # handle NA values
-  if(any(is.na(out))) {
+  # for float encoding, NAs are handled by bf_encode using IEEE-style all-1s pattern
+  # for other types, use the substitute value
+  if(any(is.na(out)) && pcl$encoding_type != "float") {
     if(is.null(naVal)) {
       stop(paste0("there are NA values in the bit representation of '", flag, "', please define 'na.val'."))
     }

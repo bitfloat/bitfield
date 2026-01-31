@@ -23,7 +23,8 @@ This function extracts the flag specification, including its test to
 call it on the data from which the flag shall be created.
 }
 \examples{
-reg <- bf_registry(name = "testBF", description = "test bitfield")
+reg <- bf_registry(name = "testBF", description = "test bitfield",
+                   template = bf_tbl)
 reg <- bf_map(protocol = "na", data = bf_tbl, registry = reg,
               x = year)
 str(reg@flags)
