@@ -3,6 +3,10 @@
 #' @param name [`character(1)`][character]\cr the name of the bitfield.
 #' @param description [`character(1)`][character]\cr the description of the
 #'   bitfield.
+#' @param template the data object that serves as a template for the bitfield
+#'   structure. Can be a \code{data.frame} (or \code{tibble}) or a
+#'   \code{SpatRaster}. The template determines the output format of
+#'   \code{\link{bf_encode}} and \code{\link{bf_decode}}.
 #' @param author [`person(.)`][person]\cr the author(s) involved in the creation
 #'   of this registry.
 #' @param project [`list(1)`][list]\cr object created with the function
@@ -25,17 +29,27 @@
 #'                 subject = c("keyword", "subject"),
 #'                 license = "CC-BY-4.0")
 #'
+#' # with a data.frame template
 #' reg <- bf_registry(name = "currentWorkflow",
 #'                    description = "the registry to my modelling pipeline",
+#'                    template = bf_tbl,
 #'                    author = auth,
 #'                    project = proj)
-#' @importFrom checkmate assertIntegerish assertCharacter
+#'
+#' # with a raster template
+#' library(terra)
+#' bf_rst <- rast(nrows = 3, ncols = 3, vals = 1:9)
+#' reg <- bf_registry(name = "rasterWorkflow",
+#'                    description = "raster-based bitfield",
+#'                    template = bf_rst)
+#' @importFrom checkmate assertIntegerish assertCharacter assertClass
 #' @importFrom utils packageVersion
 #' @importFrom methods new
+#' @importFrom terra nrow ncol ext crs ncell
 #' @export
 
-bf_registry <- function(name, description, author = NULL, project = NULL,
-                        license = "MIT"){
+bf_registry <- function(name, description, template, author = NULL,
+                        project = NULL, license = "MIT"){
 
   assertCharacter(x = name, len = 1, null.ok = TRUE)
   assertCharacter(x = description, len = 1, null.ok = TRUE)
@@ -48,16 +62,36 @@ bf_registry <- function(name, description, author = NULL, project = NULL,
     name <- paste0("bf_", paste0(sample(c(LETTERS, letters), 12, TRUE), collapse = ""))
   }
 
+  # build template metadata from the provided data object
+ if(inherits(template, "SpatRaster")){
+    templateList <- list(
+      type = "SpatRaster",
+      width = 0L,
+      length = as.integer(ncell(template)),
+      nrows = as.integer(nrow(template)),
+      ncols = as.integer(ncol(template)),
+      extent = as.vector(ext(template)),
+      crs = as.character(crs(template))
+    )
+  } else if(inherits(template, "data.frame")){
+    templateList <- list(
+      type = "data.frame",
+      width = 0L,
+      length = as.integer(nrow(template))
+    )
+  } else {
+    stop("'template' must be a data.frame or SpatRaster")
+  }
+
   version <- list(bitfield = as.character(packageVersion("bitfield")), r = paste0(version$major, ".", version$minor), date = format(Sys.Date(), "%Y-%m-%d"))
 
   # put together the initial bitfield
   out <- new(Class = "registry",
-             width = 0L,
-             length = 0L,
              name = name,
              version = version,
              md5 = NA_character_,
              description = description,
+             template = templateList,
              attribution = list(author = author,
                                 project = project,
                                 license = license),

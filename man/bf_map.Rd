@@ -89,7 +89,8 @@ and carry no meaningful information.
 
 \examples{
 # first, set up the registry
-reg <- bf_registry(name = "testBF", description = "test bitfield")
+reg <- bf_registry(name = "testBF", description = "test bitfield",
+                   template = bf_tbl)
 
 # then, put the test for NA values together
 reg <- bf_map(protocol = "na", data = bf_tbl, registry = reg,
@@ -106,9 +107,9 @@ reg <- bf_map(protocol = "identical", data = bf_tbl, registry = reg,
 reg <- bf_map(protocol = "range", data = bf_tbl, registry = reg,
               x = yield, min = 10.4, max = 11)
 reg <- bf_map(protocol = "matches", data = bf_tbl, registry = reg,
-              x = commodity, set = c("soybean", "honey"))
+              x = commodity, set = c("soybean", "honey"), na.val = FALSE)
 reg <- bf_map(protocol = "grepl", data = bf_tbl, registry = reg,
-              x = year, pattern = ".*r")
+              x = year, pattern = ".*r", na.val = FALSE)
 
 # enumeration encoding
 reg <- bf_map(protocol = "category", data = bf_tbl, registry = reg,
@@ -138,7 +139,8 @@ library(terra)
 bf_rst <- rast(nrows = 3, ncols = 3, vals = bf_tbl$commodity, names = "commodity")
 bf_rst$yield <- rast(nrows = 3, ncols = 3, vals = bf_tbl$yield)
 
-reg <- bf_registry(name = "testBF", description = "raster bitfield")
+reg <- bf_registry(name = "testBF", description = "raster bitfield",
+                   template = bf_rst)
 
 reg <- bf_map(protocol = "na", data = bf_rst, registry = reg,
               x = commodity)

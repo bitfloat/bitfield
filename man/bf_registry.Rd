@@ -4,13 +4,25 @@
 \alias{bf_registry}
 \title{Initiate a new registry}
 \usage{
-bf_registry(name, description, author = NULL, project = NULL, license = "MIT")
+bf_registry(
+  name,
+  description,
+  template,
+  author = NULL,
+  project = NULL,
+  license = "MIT"
+)
 }
 \arguments{
 \item{name}{\code{\link[=character]{character(1)}}\cr the name of the bitfield.}
 
 \item{description}{\code{\link[=character]{character(1)}}\cr the description of the
 bitfield.}
+
+\item{template}{the data object that serves as a template for the bitfield
+structure. Can be a \code{data.frame} (or \code{tibble}) or a
+\code{SpatRaster}. The template determines the output format of
+\code{\link{bf_encode}} and \code{\link{bf_decode}}.}
 
 \item{author}{\code{\link[=person]{person(.)}}\cr the author(s) involved in the creation
 of this registry.}
@@ -42,8 +54,17 @@ proj <- project(title = "example project",
                 subject = c("keyword", "subject"),
                 license = "CC-BY-4.0")
 
+# with a data.frame template
 reg <- bf_registry(name = "currentWorkflow",
                    description = "the registry to my modelling pipeline",
+                   template = bf_tbl,
                    author = auth,
                    project = proj)
+
+# with a raster template
+library(terra)
+bf_rst <- rast(nrows = 3, ncols = 3, vals = 1:9)
+reg <- bf_registry(name = "rasterWorkflow",
+                   description = "raster-based bitfield",
+                   template = bf_rst)
 }

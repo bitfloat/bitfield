@@ -18,6 +18,7 @@
 #'                comment = c(ORCID = "0000-0000-0000-0000"))
 #' reg <- bf_registry(name = "analysis",
 #'                    description = "Data quality assessment",
+#'                    template = bf_tbl,
 #'                    author = auth)
 #'
 #' # Export to different formats
