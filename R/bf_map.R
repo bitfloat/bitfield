@@ -67,7 +67,8 @@
 #'   defined here.
 #' @examples
 #' # first, set up the registry
-#' reg <- bf_registry(name = "testBF", description = "test bitfield")
+#' reg <- bf_registry(name = "testBF", description = "test bitfield",
+#'                    template = bf_tbl)
 #'
 #' # then, put the test for NA values together
 #' reg <- bf_map(protocol = "na", data = bf_tbl, registry = reg,
@@ -84,9 +85,9 @@
 #' reg <- bf_map(protocol = "range", data = bf_tbl, registry = reg,
 #'               x = yield, min = 10.4, max = 11)
 #' reg <- bf_map(protocol = "matches", data = bf_tbl, registry = reg,
-#'               x = commodity, set = c("soybean", "honey"))
+#'               x = commodity, set = c("soybean", "honey"), na.val = FALSE)
 #' reg <- bf_map(protocol = "grepl", data = bf_tbl, registry = reg,
-#'               x = year, pattern = ".*r")
+#'               x = year, pattern = ".*r", na.val = FALSE)
 #'
 #' # enumeration encoding
 #' reg <- bf_map(protocol = "category", data = bf_tbl, registry = reg,
@@ -116,7 +117,8 @@
 #' bf_rst <- rast(nrows = 3, ncols = 3, vals = bf_tbl$commodity, names = "commodity")
 #' bf_rst$yield <- rast(nrows = 3, ncols = 3, vals = bf_tbl$yield)
 #'
-#' reg <- bf_registry(name = "testBF", description = "raster bitfield")
+#' reg <- bf_registry(name = "testBF", description = "raster bitfield",
+#'                    template = bf_rst)
 #'
 #' reg <- bf_map(protocol = "na", data = bf_rst, registry = reg,
 #'               x = commodity)
@@ -181,8 +183,27 @@ bf_map <- function(protocol, data, registry, ..., name = NULL, pos = NULL,
   }) |> list_rbind()
   formalNames <- tempArgs[tempArgs$name %in% formalArgs(pcl$test),]
 
+  # extract test values for validation (if 'x' argument is provided)
+  testVals <- NULL
+  if ("x" %in% names(args)) {
+    if (inherits(data, "SpatRaster")) {
+      colName <- as.character(get_expr(args[["x"]]))
+      testVals <- values(data[[colName]])[, 1]
+    } else {
+      testVals <- eval_tidy(args[["x"]], data)
+    }
+  }
+
   levelsProv <- NULL
   if(pcl$encoding_type == "bool") {
+
+    # protocols like na/nan/inf always output TRUE/FALSE, so no NA check needed
+    if (!is.null(testVals) && !protocol %in% c("na", "nan", "inf")) {
+      if (any(is.na(testVals)) && is.null(na.val)) {
+        stop("Data contains NA values but no 'na.val' was specified. ",
+             "For 'bool' encoding, you must provide 'na.val' to substitute NAs.")
+      }
+    }
 
     sample_vals <- c(FALSE, TRUE)
     levels_data <- data.frame(
@@ -192,6 +213,12 @@ bf_map <- function(protocol, data, registry, ..., name = NULL, pos = NULL,
 
   } else if(pcl$encoding_type == "enum") {
 
+    # validate: NA values need na.val
+    if (!is.null(testVals) && any(is.na(testVals)) && is.null(na.val)) {
+      stop("Data contains NA values but no 'na.val' was specified. ",
+           "For 'enum' encoding, you must provide 'na.val' to substitute NAs.")
+    }
+
     if(protocol == "case"){
 
       sample_vals <- 0:length(args) # add 0 as "no match" case
@@ -200,6 +227,14 @@ bf_map <- function(protocol, data, registry, ..., name = NULL, pos = NULL,
         label = c("no match", names(args)))
 
     } else {
+
+      # validate: category protocol expects factor/character data
+      if (protocol == "category" && !is.null(testVals)) {
+        if (!inherits(data, "SpatRaster") && !is.factor(testVals) && !is.character(testVals)) {
+          stop("Protocol 'category' expects factor or character data, but got '",
+               class(testVals)[1], "'. Convert your data or use a different protocol.")
+        }
+      }
 
       if(inherits(data, "SpatRaster")) {
         if(is.factor(data[formalNames$val])){
@@ -219,6 +254,21 @@ bf_map <- function(protocol, data, registry, ..., name = NULL, pos = NULL,
     }
 
   } else {
+    # int or float encoding types
+
+    # validate: integer protocol expects integer data
+    if (protocol == "integer" && !is.null(testVals)) {
+      nonNaVals <- testVals[!is.na(testVals)]
+      if (length(nonNaVals) > 0 && is.numeric(nonNaVals) && !is.integer(nonNaVals) && !all(nonNaVals == as.integer(nonNaVals))) {
+        stop("Data contains non-integer numeric values but protocol 'integer' ",
+             "expects integer values. Use protocol 'numeric' for floating-point data.")
+      }
+      if (any(is.na(testVals)) && is.null(na.val)) {
+        stop("Data contains NA values but no 'na.val' was specified. ",
+             "For 'int' encoding, you must provide 'na.val' to substitute NAs.")
+      }
+    }
+    # float encoding handles NAs internally via IEEE-style all-1s pattern, no na.val needed
 
     if(protocol %in% c("integer", "numeric") & "x" %in% names(args)){
 
@@ -249,27 +299,31 @@ bf_map <- function(protocol, data, registry, ..., name = NULL, pos = NULL,
   enc <- .makeEncoding(var = sample_vals, type = pcl$encoding_type, ...)
   # return(enc)
 
+  # validate data type matches template ----
+  dataIsRaster <- inherits(data, "SpatRaster")
+  templateIsRaster <- registry@template$type == "SpatRaster"
+  if(dataIsRaster != templateIsRaster){
+    stop("data type does not match registry template: expected '",
+         registry@template$type, "' but got '",
+         if(dataIsRaster) "SpatRaster" else "data.frame", "'")
+  }
+
+  # validate data length matches template ----
+  len <- if(dataIsRaster) as.integer(ncell(data)) else as.integer(nrow(data))
+  if(registry@template$length != len){
+    stop("data length (", len, ") does not match registry template length (",
+         registry@template$length, ")")
+  }
+
   # update position ----
   if(is.null(pos)){
-    pos <- (registry@width + 1L):(registry@width + enc$sign + enc$exponent + enc$significand)
+    pos <- (registry@template$width + 1L):(registry@template$width + enc$sign + enc$exponent + enc$significand)
   } else {
     # include test that checks whether sufficient positions are set, and give an error if not
   }
 
   # update registry ----
-  registry@width <- registry@width + enc$sign + enc$exponent + enc$significand
-  len <- if(inherits(data, "SpatRaster")){
-    as.integer(ncell(data))
-  } else {
-    as.integer(nrow(data))
-  }
-  if(registry@length == 0L){
-    registry@length <- len
-  } else {
-    if(registry@length != len){
-      stop(paste0("this flag doesn't have as many items, as there are observations in the bitfield."))
-    }
-  }
+  registry@template$width <- registry@template$width + enc$sign + enc$exponent + enc$significand
 
   # if the protocol is 'case', ensure that it has an iterator and uses argument
   # names as argument text, otherwise combine them from name and value
