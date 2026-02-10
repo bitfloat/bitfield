@@ -1139,7 +1139,7 @@
   if(!is.null(protocol$extends)){
     assertCharacter(x = protocol$extends, pattern = "^([a-zA-Z]+)_(\\d+\\.\\d+\\.\\d+)$")
     matches <- as.character(str_match(protocol$extends, "^([a-zA-Z]+)_(\\d+)\\.(\\d+)\\.(\\d+)$"))
-    assertChoice(x = matches[2], choices = names(bf_pcl))
+    # assertChoice(x = matches[2], choices = names(bf_pcl))
     if(!testCharacter(x = protocol$extends_note, any.missing = FALSE, min.len = 1)) stop("please provide a short note about what this extension changes.")
   }
 

@@ -1,0 +1,222 @@
+---
+title: "Getting Started with bitfield"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started with bitfield}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(bitfield)
+library(dplyr, warn.conflicts = FALSE)
+```
+
+This guide walks through the core workflow of the `bitfield` package: planning an encoding, choosing protocols, finding optimal bit allocations, and sharing protocols with the community.
+
+## The example data
+
+The package ships with `bf_tbl`, a small dataset with typical quality issues (missing values, invalid coordinates, mixed formats):
+
+```{r}
+bf_tbl
+```
+
+## Encoding types at a glance
+
+Every bit flag uses one of a few encoding types. The table below summarises when to use which:
+
+| Encoding | Protocol | Key parameters | Use when |
+|----------|----------|---------------|----------|
+| Boolean | `na`, `inf`, `matches` | `set` | Yes/no flags (1 bit each) |
+| Enumeration | `category` | `na.val` | Discrete classes (auto-sized) |
+| Integer | `integer` | `range`, `fields` | Bounded values with uniform precision |
+| Floating-point | `numeric` | `fields` (exp/sig) | Open-ended values spanning orders of magnitude |
+
+**Integer encoding** maps a bounded range linearly onto bit states. Good for percentages, indices, and quantities with well-defined limits.
+
+**Floating-point encoding** splits bits into exponent and significand fields. Precision is finest near zero and coarsens with magnitude. Good for standard deviations, rates, and other variables that can span several orders of magnitude.
+
+When in doubt, `bf_analyze()` helps decide.
+
+## Using bf_analyze() to find optimal bit allocations
+
+`bf_analyze()` works with any data type. For booleans, integers, and categories it reports the required bit count directly. For floating-point data it evaluates all possible exponent/significand configurations and reports those on the Pareto front for each total bit count.
+
+```{r}
+set.seed(42)
+x <- runif(1000, 0.1, 10)
+bf_analyze(x, range = c(0, 15), max_bits = 8, decimals = 1)
+```
+
+The Pareto table shows multiple rows per bit count when trade-offs exist. Key columns:
+
+- **Underflow/Overflow** -- percentage of values outside the representable range
+- **Changed** -- percentage differing after round-trip encoding at the specified decimal precision
+- **Min/Max Res** -- step size at smallest and largest representable values
+- **RMSE / Max Err** -- encoding error metrics
+
+For example, at 7 total bits, `exp=4/sig=3` covers the full range (no underflow) while `exp=3/sig=4` offers finer precision but cannot represent values below $2^{-3} = 0.125$. Neither dominates the other, so both appear.
+
+Use the result to pick a configuration, then pass it to `bf_map()`:
+
+```{r, eval = FALSE}
+# After deciding on exp=4, sig=3 based on bf_analyze() output:
+reg <- bf_map(protocol = "numeric", data = my_data, x = sd_values,
+              registry = reg, fields = list(exponent = 4, significand = 3))
+```
+
+## A complete example
+
+Here is a full workflow using `bf_tbl`:
+
+```{r}
+# 1. Create a registry
+reg <- bf_registry(
+  name = "yield_QA",
+  description = "Quality assessment for yield data",
+  template = bf_tbl)
+
+# 2. Add boolean flags
+reg <- bf_map(protocol = "na", data = bf_tbl, x = commodity, registry = reg)
+reg <- bf_map(protocol = "inf", data = bf_tbl, x = x, registry = reg)
+reg <- bf_map(protocol = "inf", data = bf_tbl, x = y, registry = reg)
+
+# 3. Add a category
+reg <- bf_map(protocol = "category", data = bf_tbl, x = commodity,
+              registry = reg, na.val = 0L)
+
+# 4. Add a numeric value with custom float encoding
+reg <- bf_map(protocol = "numeric", data = bf_tbl, x = yield,
+              registry = reg, format = "half")
+
+reg
+```
+
+```{r}
+# 5. Encode and decode
+field <- bf_encode(registry = reg)
+decoded <- bf_decode(field, registry = reg, verbose = FALSE)
+
+head(decoded, 3)
+```
+
+### Verify round-trip integrity
+
+Always check that the encode/decode cycle preserves essential information:
+
+```{r}
+# input NAs
+sum(is.na(bf_tbl$commodity))
+
+# NAs after roundtrip
+sum(decoded$na_commodity == 1)
+```
+
+## Design guidelines
+
+**Match precision to needs.** Do not allocate 16 bits where 5 suffice. Use `bf_analyze()` to quantify the trade-off.
+
+**Use atomic protocols.** Each `bf_map()` call should test one concept. This maximises reusability across projects.
+
+**Handle NA explicitly.** Use the `na.val` parameter to reserve a sentinel value for missing data. Choose a value outside your data range (can be 0 when that value is not relevant in and of itself, or the maximum integer state).
+
+**Test with edge cases.** Include `NA`, `Inf`, `NaN`, zeros, and boundary values in your test data:
+
+```{r}
+problematic <- bf_tbl[c(4, 5, 8, 9), ]
+print(problematic)
+```
+
+**Choose units wisely.** Livestock density in animals/km$^2$ (range 0--290) needs 9 bits. The same quantity in animals/ha (range 0--3.1) needs only 5 bits. Unit choice directly affects bit budget.
+
+## Creating custom protocols
+
+When built-in protocols do not cover your use case, create a custom one with `bf_protocol()`. For example, some datasets embed status flags directly in value strings -- a year column might contain `"2021r"` where `r` marks the value as revised. The built-in `grepl` protocol can detect such flags as a boolean, but a custom protocol can distinguish *which* flag is present:
+
+```{r}
+valueFlag <- bf_protocol(
+  name = "valueFlag",
+  description = paste("Extracts trailing status flags from {x}.",
+                      "0 = none, 1 = r(evised), 2 = p(rovisional),",
+                      "3 = e(stimated)"),
+  test = "function(x) { suffix <- sub('.*([a-z])$', '\\\\1', x); match(suffix, c('r','p','e'), nomatch = 0L) }",
+  example = list(x = c("2020", "2021r", "2019p", "2018e", NA)),
+  type = "int",
+  bits = 2
+)
+```
+
+### Versioning and extension
+
+When improving existing protocols, use versioning to maintain reproducibility:
+
+```{r}
+valueFlagV2 <- bf_protocol(
+  name = "valueFlag",
+  description = paste("Extracts trailing status flags from {x}.",
+                      "0 = none, 1 = r(evised), 2 = p(rovisional),",
+                      "3 = e(stimated). Now also handles uppercase flags."),
+  test = "function(x) { suffix <- sub('.*([a-zA-Z])$', '\\\\1', tolower(x)); match(suffix, c('r','p','e'), nomatch = 0L) }",
+  example = list(x = c("2020", "2021r", "2019P", "2018e", NA)),
+  type = "int",
+  bits = 2,
+  version = "1.1.0",
+  extends = "valueFlag_1.0.0",
+  note = "Now handles uppercase flags via case-insensitive matching"
+)
+```
+
+## Sharing protocols via community standards
+
+The [bitfloat/standards](https://github.com/bitfloat/standards) repository enables sharing encoding protocols. Access it through `bf_standards()`:
+
+```{r, eval = FALSE}
+# List available protocols
+bf_standards(action = "list")
+
+# Pull a community protocol
+soil_protocol <- bf_standards(
+  protocol = "soil_moisture",
+  remote = "environmental/soil",
+  action = "pull"
+)
+
+# Push your own protocol
+bf_standards(
+  protocol = dataAgeProtocol,
+  remote = "environmental/temporal",
+  action = "push",
+  version = "1.0.0",
+  change = "Initial release: data age encoding for environmental monitoring"
+)
+```
+
+This requires a GitHub Personal Access Token. See `?bf_standards` for setup instructions.
+
+## Quick reference
+
+**Do:**
+
+- Plan your encoding before writing code
+- Use `bf_analyze()` for floating-point configurations
+- Test encode/decode round-trips
+- Use `na.val` for missing data
+- Keep protocols atomic (one concept each)
+- Document registries with descriptive names
+
+**Avoid:**
+
+- Over-allocating bits for unnecessary precision
+- Encoding the same concept across multiple flags
+- Skipping edge case testing
+- Using floating-point encoding for bounded, uniform-precision variables
+
+For more details, see the function documentation (`?bf_map`, `?bf_analyze`, `?bf_protocol`) and the package website at <https://bitfloat.github.io/bitfield/>.

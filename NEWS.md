@@ -2,14 +2,14 @@
 
 ## New features
 
-- New `bf_analyze()` function for exploring encoding trade-offs. Reports Pareto-optimal exponent/significand configurations per bit count, with quality metrics including RMSE, max error, underflow, overflow, and changed values at a given decimal precision.
+- New `bf_analyze()` function for exploring encoding trade-offs. Reports Pareto-optimal exponent/significand configurations per bit count, with quality metrics including RMSE, max error, underflow, overflow, and changed values at a given decimal precision. Includes a formatted `print()` method with summary header, type-specific output, and ready-to-paste `bf_map()` usage hints.
 - Floating-point encode/decode rewritten from string-based to arithmetic computation, improving performance and correctness.
 - Expanded validation throughout `bf_map()` and `bf_flag()` with more informative error messages.
 
 ## Improvements
 
 - `bf_map()` now uses `template` from the registry instead of requiring explicit `length`/`width` parameters.
-- Vignettes revised and updated (applications vignette removed, best-practices and community-contributions rewritten).
+- Vignettes consolidated into a single "Getting Started" guide covering encoding design, `bf_analyze()`, custom protocols, and community standards.
 - Substantially expanded test suite covering `bf_analyze`, `bf_export`, `bf_protocol`, helpers, and edge cases across all core functions.
 - Documentation updates across all exported and internal functions.
 

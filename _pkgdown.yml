@@ -13,6 +13,8 @@ reference:
   - title: Main workflow
     desc: These functions make up the core of this package
     contents:
+      - bf_analyze
+      - print.bf_analysis
       - bf_decode
       - bf_encode
       - bf_export
