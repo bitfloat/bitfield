@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">bitfield</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
       </span>
     </div>
 
@@ -47,6 +47,28 @@
       <small>Source: <a href="https://github.com/bitfloat/bitfield/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="1.0.0" id="bitfield-100">bitfield 1.0.0<a class="anchor" aria-label="anchor" href="#bitfield-100"></a></h2>
+<div class="section level3">
+<h3 id="new-features-1-0-0">New features<a class="anchor" aria-label="anchor" href="#new-features-1-0-0"></a></h3>
+<ul><li>New <code><a href="../reference/bf_analyze.html">bf_analyze()</a></code> function for exploring encoding trade-offs. Reports Pareto-optimal exponent/significand configurations per bit count, with quality metrics including RMSE, max error, underflow, overflow, and changed values at a given decimal precision. Includes a formatted <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> method with summary header, type-specific output, and ready-to-paste <code><a href="../reference/bf_map.html">bf_map()</a></code> usage hints.</li>
+<li>Floating-point encode/decode rewritten from string-based to arithmetic computation, improving performance and correctness.</li>
+<li>Expanded validation throughout <code><a href="../reference/bf_map.html">bf_map()</a></code> and <code><a href="../reference/bf_flag.html">bf_flag()</a></code> with more informative error messages.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="improvements-1-0-0">Improvements<a class="anchor" aria-label="anchor" href="#improvements-1-0-0"></a></h3>
+<ul><li>
+<code><a href="../reference/bf_map.html">bf_map()</a></code> now uses <code>template</code> from the registry instead of requiring explicit <code>length</code>/<code>width</code> parameters.</li>
+<li>Vignettes consolidated into a single “Getting Started” guide covering encoding design, <code><a href="../reference/bf_analyze.html">bf_analyze()</a></code>, custom protocols, and community standards.</li>
+<li>Substantially expanded test suite covering <code>bf_analyze</code>, <code>bf_export</code>, <code>bf_protocol</code>, helpers, and edge cases across all core functions.</li>
+<li>Documentation updates across all exported and internal functions.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-1-0-0">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-1-0-0"></a></h3>
+<ul><li>Fixed <code><a href="../reference/bf_decode.html">bf_decode()</a></code> flag processing and sign bit handling.</li>
+<li>Fixed <code><a href="../reference/bf_export.html">bf_export()</a></code> metadata extraction to use correct field names from registry flags.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.8.0" id="bitfield-080">bitfield 0.8.0<a class="anchor" aria-label="anchor" href="#bitfield-080"></a></h2>
 <ul><li>introduction of <code><a href="../reference/bf_flag.html">bf_flag()</a></code> function, where building the flag can be found, which is moved out from <code><a href="../reference/bf_map.html">bf_map()</a></code>.</li>

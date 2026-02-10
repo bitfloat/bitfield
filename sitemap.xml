@@ -1,13 +1,12 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>http://bitfloat.github.io/bitfield/404.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/LICENSE.html</loc></url>
-<url><loc>http://bitfloat.github.io/bitfield/articles/applications.html</loc></url>
-<url><loc>http://bitfloat.github.io/bitfield/articles/best-practices.html</loc></url>
-<url><loc>http://bitfloat.github.io/bitfield/articles/community-contributions.html</loc></url>
+<url><loc>http://bitfloat.github.io/bitfield/articles/getting-started.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/articles/index.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/authors.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/index.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/news/index.html</loc></url>
+<url><loc>http://bitfloat.github.io/bitfield/reference/bf_analyze.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/bf_decode.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/bf_encode.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/bf_export.html</loc></url>
@@ -19,6 +18,7 @@
 <url><loc>http://bitfloat.github.io/bitfield/reference/bf_standards.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/bf_tbl.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/bitfield-package.html</loc></url>
+<url><loc>http://bitfloat.github.io/bitfield/reference/dot-assessEncodingQuality.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/dot-getDependencies.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/dot-makeDatacite.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/dot-makeEncoding.html</loc></url>
@@ -28,6 +28,7 @@
 <url><loc>http://bitfloat.github.io/bitfield/reference/dot-validateProtocol.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/dot-validateToken.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/index.html</loc></url>
+<url><loc>http://bitfloat.github.io/bitfield/reference/print.bf_analysis.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/project.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/registry-class.html</loc></url>
 <url><loc>http://bitfloat.github.io/bitfield/reference/show-registry-method.html</loc></url>

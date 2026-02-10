@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">bitfield</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
       </span>
     </div>
 
@@ -53,7 +53,14 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">bf_registry</span><span class="op">(</span><span class="va">name</span>, <span class="va">description</span>, author <span class="op">=</span> <span class="cn">NULL</span>, project <span class="op">=</span> <span class="cn">NULL</span>, license <span class="op">=</span> <span class="st">"MIT"</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">bf_registry</span><span class="op">(</span></span>
+<span>  <span class="va">name</span>,</span>
+<span>  <span class="va">description</span>,</span>
+<span>  <span class="va">template</span>,</span>
+<span>  author <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  project <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  license <span class="op">=</span> <span class="st">"MIT"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -67,6 +74,13 @@
 <dt id="arg-description">description<a class="anchor" aria-label="anchor" href="#arg-description"></a></dt>
 <dd><p><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character(1)</a></code><br> the description of the
 bitfield.</p></dd>
+
+
+<dt id="arg-template">template<a class="anchor" aria-label="anchor" href="#arg-template"></a></dt>
+<dd><p>the data object that serves as a template for the bitfield
+structure. Can be a <code>data.frame</code> (or <code>tibble</code>) or a
+<code>SpatRaster</code>. The template determines the output format of
+<code><a href="bf_encode.html">bf_encode</a></code> and <code><a href="bf_decode.html">bf_decode</a></code>.</p></dd>
 
 
 <dt id="arg-author">author<a class="anchor" aria-label="anchor" href="#arg-author"></a></dt>
@@ -106,10 +120,19 @@ doesn't contain any flags yet.</p>
 <span class="r-in"><span>                license <span class="op">=</span> <span class="st">"CC-BY-4.0"</span><span class="op">)</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> unable to find an inherited method for function ‘project’ for signature ‘x = "missing"’</span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># with a data.frame template</span></span></span>
 <span class="r-in"><span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu">bf_registry</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"currentWorkflow"</span>,</span></span>
 <span class="r-in"><span>                   description <span class="op">=</span> <span class="st">"the registry to my modelling pipeline"</span>,</span></span>
+<span class="r-in"><span>                   template <span class="op">=</span> <span class="va">bf_tbl</span>,</span></span>
 <span class="r-in"><span>                   author <span class="op">=</span> <span class="va">auth</span>,</span></span>
 <span class="r-in"><span>                   project <span class="op">=</span> <span class="va">proj</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># with a raster template</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/" class="external-link">terra</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">bf_rst</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span>nrows <span class="op">=</span> <span class="fl">3</span>, ncols <span class="op">=</span> <span class="fl">3</span>, vals <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">9</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu">bf_registry</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"rasterWorkflow"</span>,</span></span>
+<span class="r-in"><span>                   description <span class="op">=</span> <span class="st">"raster-based bitfield"</span>,</span></span>
+<span class="r-in"><span>                   template <span class="op">=</span> <span class="va">bf_rst</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
   </div>

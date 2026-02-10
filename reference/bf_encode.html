@@ -18,7 +18,7 @@ integer values."><meta property="og:image" content="http://bitfloat.github.io/bi
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">bitfield</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
       </span>
     </div>
 
@@ -69,17 +69,30 @@ encoded into a bitfield.</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>data.frame of the same length as the input data. Depending on type
-and amount of bit flags, this can be a table with any number of columns, each
-of which encodes a sequence of 32 bits into an integer.</p>
+    <p>Depending on the registry template type: a <code>data.frame</code> with
+integer columns (one per 32-bit chunk) if template is a table, or a
+<code>SpatRaster</code> with integer layers if template is a raster.</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="bf_registry.html">bf_registry</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"testBF"</span>, description <span class="op">=</span> <span class="st">"test bitfield"</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="bf_registry.html">bf_registry</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"testBF"</span>, description <span class="op">=</span> <span class="st">"test bitfield"</span>,</span></span>
+<span class="r-in"><span>                   template <span class="op">=</span> <span class="va">bf_tbl</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="bf_map.html">bf_map</a></span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"na"</span>, data <span class="op">=</span> <span class="va">bf_tbl</span>, registry <span class="op">=</span> <span class="va">reg</span>, x <span class="op">=</span> <span class="va">y</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">field</span> <span class="op">&lt;-</span> <span class="fu">bf_encode</span><span class="op">(</span>registry <span class="op">=</span> <span class="va">reg</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># with raster data</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/" class="external-link">terra</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">bf_rst</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span>nrows <span class="op">=</span> <span class="fl">3</span>, ncols <span class="op">=</span> <span class="fl">3</span>, vals <span class="op">=</span> <span class="va">bf_tbl</span><span class="op">$</span><span class="va">commodity</span>, names <span class="op">=</span> <span class="st">"commodity"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">bf_rst</span><span class="op">$</span><span class="va">yield</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span>nrows <span class="op">=</span> <span class="fl">3</span>, ncols <span class="op">=</span> <span class="fl">3</span>, vals <span class="op">=</span> <span class="va">bf_tbl</span><span class="op">$</span><span class="va">yield</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="bf_registry.html">bf_registry</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"testBF"</span>, description <span class="op">=</span> <span class="st">"raster bitfield"</span>,</span></span>
+<span class="r-in"><span>                   template <span class="op">=</span> <span class="va">bf_rst</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="bf_map.html">bf_map</a></span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"na"</span>, data <span class="op">=</span> <span class="va">bf_rst</span>, registry <span class="op">=</span> <span class="va">reg</span>, x <span class="op">=</span> <span class="va">commodity</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">field</span> <span class="op">&lt;-</span> <span class="fu">bf_encode</span><span class="op">(</span>registry <span class="op">=</span> <span class="va">reg</span><span class="op">)</span>  <span class="co"># returns a SpatRaster</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> use `writeRaster(x, filename, datatype = 'INT1U', gdal = 'COMPRESS=DEFLATE')` to preserve bitfield values when saving to disk</span>
 </code></pre></div>
     </div>
   </div>

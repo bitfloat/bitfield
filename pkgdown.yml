@@ -2,10 +2,8 @@ pandoc: 3.1.11
 pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
-  applications: applications.html
-  best-practices: best-practices.html
-  community-contributions: community-contributions.html
-last_built: 2025-12-02T23:31Z
+  getting-started: getting-started.html
+last_built: 2026-02-10T17:52Z
 urls:
   reference: http://bitfloat.github.io/bitfield/reference
   article: http://bitfloat.github.io/bitfield/articles

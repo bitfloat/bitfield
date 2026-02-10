@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">bitfield</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
       </span>
     </div>
 
@@ -53,7 +53,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">.toBin</span><span class="op">(</span><span class="va">x</span>, len <span class="op">=</span> <span class="cn">NULL</span>, pad <span class="op">=</span> <span class="cn">TRUE</span>, dec <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">.toBin</span><span class="op">(</span><span class="va">x</span>, len <span class="op">=</span> <span class="cn">NULL</span>, pad <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -61,23 +61,18 @@
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p><code><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric(1)</a></code><br> the numeric value for which to derive the
-binary value.</p></dd>
+<dd><p><code><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric(.)</a></code><br> numeric vector for which to derive the
+binary values.</p></dd>
 
 
 <dt id="arg-len">len<a class="anchor" aria-label="anchor" href="#arg-len"></a></dt>
 <dd><p><code><a href="https://rdrr.io/r/base/integer.html" class="external-link">integerish(1)</a></code><br> the number of bits used to capture
-the value.</p></dd>
+each value. If NULL, computed from the maximum value.</p></dd>
 
 
 <dt id="arg-pad">pad<a class="anchor" aria-label="anchor" href="#arg-pad"></a></dt>
-<dd><p><code><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical(1)</a></code><br> whether to pad the binary value with 0
-values.</p></dd>
-
-
-<dt id="arg-dec">dec<a class="anchor" aria-label="anchor" href="#arg-dec"></a></dt>
-<dd><p><code><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical(1)</a></code><br> whether to transform the decimal part
-to bits, or the integer part.</p></dd>
+<dd><p><code><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical(1)</a></code><br> whether to pad the binary values with
+leading zeros to equal width.</p></dd>
 
 </dl></div>
 

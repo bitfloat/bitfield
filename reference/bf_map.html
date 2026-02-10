@@ -18,7 +18,7 @@ into a bitfield."><meta property="og:image" content="http://bitfloat.github.io/b
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">bitfield</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
       </span>
     </div>
 
@@ -55,7 +55,7 @@ into a bitfield.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">bf_map</span><span class="op">(</span><span class="va">protocol</span>, <span class="va">data</span>, <span class="va">registry</span>, <span class="va">...</span>, name <span class="op">=</span> <span class="cn">NULL</span>, pos <span class="op">=</span> <span class="cn">NULL</span>, na.val <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">bf_map</span><span class="op">(</span><span class="va">protocol</span>, <span class="va">data</span>, <span class="va">registry</span>, <span class="va">...</span>, name <span class="op">=</span> <span class="cn">NULL</span>, na.val <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -83,11 +83,6 @@ Details.</p></dd>
 
 <dt id="arg-name">name<a class="anchor" aria-label="anchor" href="#arg-name"></a></dt>
 <dd><p><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character(1)</a></code><br> optional flag-name.</p></dd>
-
-
-<dt id="arg-pos">pos<a class="anchor" aria-label="anchor" href="#arg-pos"></a></dt>
-<dd><p><code><a href="https://rdrr.io/r/base/integer.html" class="external-link">integerish(.)</a></code><br> optional position(s) in the bitfield
-that should be set.</p></dd>
 
 
 <dt id="arg-na-val">na.val<a class="anchor" aria-label="anchor" href="#arg-na-val"></a></dt>
@@ -134,31 +129,36 @@ given categories. (<em>enumeration</em>).</p></li>
 (<em>unsigned integer</em>).</p></li>
 <li><p><code>nDec</code> (x): count the decimal digits of the variable values
 (<em>unsigned integer</em>).</p></li>
-<li><p><code>integer</code> (x, ...): encode the integer values as bit-sequence
-(<em>signed integer</em>).</p></li>
+<li><p><code>integer</code> (x, ...): encode values as integer bit-sequence.
+Accepts raw integer data directly, or numeric data with
+auto-scaling when <code>range</code>, <code>fields</code>, or <code>decimals</code>
+are provided. With <code>range = c(min, max)</code> and
+<code>fields = list(significand = n)</code>, values are linearly mapped
+from <code>[min, max]</code> to <code>[0, 2^n - 1]</code> during encoding and
+back during decoding. The scaling parameters are stored in
+provenance for transparent round-trips (<em>signed integer</em>).</p></li>
 <li><p><code>numeric</code> (x, ...): encode the numeric value as floating-point
 bit-sequence (see <code><a href="dot-makeEncoding.html">.makeEncoding</a></code> for details on the
 ... argument) (<em>floating-point</em>).</p></li>
 </ul></div>
     <div id="notes">
     <h2>Notes</h2>
-    <p>The console output of various classes (such as tibble) shows
-decimals that are not present or rounds decimals that are present, even for
-ordinary numeric vectors. R stores numeric values internally as
-double-precision floating-point values (with 64 bits, where 52 bits encode
-the significand), which corresponds to a decimal precision of ~16 digits
-(<code>log10(2^52)</code>). Hence, if a bit flag doesn't seem to coincide with
-the values you see in the console, double check the values with
-<code>sprintf("%16f", values)</code>. If you use a larger value than 16 for
-precision, you'll see more digits, but those are not meaningful, as they
-result merely from the binary-to-decimal conversion (check out
-<code><a href="dot-makeEncoding.html">.makeEncoding</a></code> for an additional details.</p>
+    <p>Console output from R classes (such as tibble) often rounds
+or truncates decimal places, even for ordinary numeric vectors. Internally,
+R stores numeric values as double-precision floating-point numbers (64
+bits, with 52 bits for the significand), providing approximately 16
+significant decimal digits ((<code>log10(2^52)</code>) ≈ 15.95). If a bit flag
+appears inconsistent with the displayed values, verify the full precision
+using <code>sprintf("%.16f", values)</code>. Using more than 16 digits will show
+additional figures, but these are artifacts of binary-to-decimal conversion
+and carry no meaningful information.</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># first, set up the registry</span></span></span>
-<span class="r-in"><span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="bf_registry.html">bf_registry</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"testBF"</span>, description <span class="op">=</span> <span class="st">"test bitfield"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="bf_registry.html">bf_registry</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"testBF"</span>, description <span class="op">=</span> <span class="st">"test bitfield"</span>,</span></span>
+<span class="r-in"><span>                   template <span class="op">=</span> <span class="va">bf_tbl</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># then, put the test for NA values together</span></span></span>
 <span class="r-in"><span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu">bf_map</span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"na"</span>, data <span class="op">=</span> <span class="va">bf_tbl</span>, registry <span class="op">=</span> <span class="va">reg</span>,</span></span>
@@ -175,14 +175,14 @@ result merely from the binary-to-decimal conversion (check out
 <span class="r-in"><span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu">bf_map</span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"range"</span>, data <span class="op">=</span> <span class="va">bf_tbl</span>, registry <span class="op">=</span> <span class="va">reg</span>,</span></span>
 <span class="r-in"><span>              x <span class="op">=</span> <span class="va">yield</span>, min <span class="op">=</span> <span class="fl">10.4</span>, max <span class="op">=</span> <span class="fl">11</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu">bf_map</span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"matches"</span>, data <span class="op">=</span> <span class="va">bf_tbl</span>, registry <span class="op">=</span> <span class="va">reg</span>,</span></span>
-<span class="r-in"><span>              x <span class="op">=</span> <span class="va">commodity</span>, set <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"soybean"</span>, <span class="st">"honey"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>              x <span class="op">=</span> <span class="va">commodity</span>, set <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"soybean"</span>, <span class="st">"honey"</span><span class="op">)</span>, na.val <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu">bf_map</span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"grepl"</span>, data <span class="op">=</span> <span class="va">bf_tbl</span>, registry <span class="op">=</span> <span class="va">reg</span>,</span></span>
-<span class="r-in"><span>              x <span class="op">=</span> <span class="va">year</span>, pattern <span class="op">=</span> <span class="st">".*r"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>              x <span class="op">=</span> <span class="va">year</span>, pattern <span class="op">=</span> <span class="st">".*r"</span>, na.val <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># enumeration encoding</span></span></span>
 <span class="r-in"><span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu">bf_map</span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"category"</span>, data <span class="op">=</span> <span class="va">bf_tbl</span>, registry <span class="op">=</span> <span class="va">reg</span>,</span></span>
 <span class="r-in"><span>              x <span class="op">=</span> <span class="va">commodity</span>, na.val <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu">bf_map</span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"case"</span>, data <span class="op">=</span> <span class="va">bf_tbl</span>, registry <span class="op">=</span> <span class="va">reg</span>, na.val <span class="op">=</span> <span class="fl">0</span>,</span></span>
+<span class="r-in"><span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu">bf_map</span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"case"</span>, data <span class="op">=</span> <span class="va">bf_tbl</span>, registry <span class="op">=</span> <span class="va">reg</span>, na.val <span class="op">=</span> <span class="fl">4</span>,</span></span>
 <span class="r-in"><span>              <span class="va">yield</span> <span class="op">&gt;=</span> <span class="fl">11</span>, <span class="va">yield</span> <span class="op">&lt;</span> <span class="fl">11</span> <span class="op">&amp;</span> <span class="va">yield</span> <span class="op">&gt;</span> <span class="fl">9</span>, <span class="va">yield</span> <span class="op">&lt;</span> <span class="fl">9</span> <span class="op">&amp;</span> <span class="va">commodity</span> <span class="op">==</span> <span class="st">"maize"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># integer encoding</span></span></span>
@@ -195,6 +195,15 @@ result merely from the binary-to-decimal conversion (check out
 <span class="r-in"><span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu">bf_map</span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"integer"</span>, data <span class="op">=</span> <span class="va">bf_tbl</span>, registry <span class="op">=</span> <span class="va">reg</span>,</span></span>
 <span class="r-in"><span>              x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">year</span><span class="op">)</span>, na.val <span class="op">=</span> <span class="fl">0L</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>NAs introduced by coercion</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>NAs introduced by coercion</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># integer encoding with auto-scaling (numeric data mapped to integer range)</span></span></span>
+<span class="r-in"><span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>density <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">1.2</span>, <span class="fl">2.8</span>, <span class="fl">0.0</span>, <span class="fl">3.1</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">reg2</span> <span class="op">&lt;-</span> <span class="fu"><a href="bf_registry.html">bf_registry</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"scaledBF"</span>, description <span class="op">=</span> <span class="st">"auto-scaled"</span>,</span></span>
+<span class="r-in"><span>                    template <span class="op">=</span> <span class="va">dat</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">reg2</span> <span class="op">&lt;-</span> <span class="fu">bf_map</span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"integer"</span>, data <span class="op">=</span> <span class="va">dat</span>, registry <span class="op">=</span> <span class="va">reg2</span>,</span></span>
+<span class="r-in"><span>               x <span class="op">=</span> <span class="va">density</span>, range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3.1</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>               fields <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>significand <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>, na.val <span class="op">=</span> <span class="fl">0L</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># floating-point encoding</span></span></span>
 <span class="r-in"><span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu">bf_map</span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"numeric"</span>, data <span class="op">=</span> <span class="va">bf_tbl</span>, registry <span class="op">=</span> <span class="va">reg</span>,</span></span>
@@ -202,10 +211,11 @@ result merely from the binary-to-decimal conversion (check out
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># finally, take a look at the registry</span></span></span>
 <span class="r-in"><span><span class="va">reg</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   type  data.frame</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   width 44</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   flags 14  -|-|-|-|-|-|-|--|--|----|---|---|-----------|------------</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   flags 14  -|-|-|-|-|-|-|--|---|----|---|---|-----------|-----------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   pos encoding type      col</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   pos encoding name      col</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   1   0.0.1/0  na        year</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   2   0.0.1/0  nan       y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   3   0.0.1/0  inf       y</span>
@@ -214,25 +224,20 @@ result merely from the binary-to-decimal conversion (check out
 <span class="r-out co"><span class="r-pr">#&gt;</span>   6   0.0.1/0  matches   commodity</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   7   0.0.1/0  grepl     year</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   8   0.0.2/0  category  commodity</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   10  0.0.2/0  case      yield-commodity</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   12  0.0.4/0  nChar     commodity</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   16  0.0.3/0  nInt      yield</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   19  0.0.3/0  nDec      yield</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   22  0.0.11/0 integer   year</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   33  0.1.11/0 numeric   yield</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   10  0.0.3/0  case      yield-commodity</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   13  0.0.4/0  nChar     commodity</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   17  0.0.3/0  nInt      yield</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   20  0.0.3/0  nDec      yield</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   23  0.0.11/0 integer   year</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   34  0.4.7/7  numeric   yield</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># alternatively, a raster</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/" class="external-link">terra</a></span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> terra 1.8.86</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Attaching package: ‘terra’</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The following object is masked from ‘package:bitfield’:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>     project</span>
 <span class="r-in"><span><span class="va">bf_rst</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span>nrows <span class="op">=</span> <span class="fl">3</span>, ncols <span class="op">=</span> <span class="fl">3</span>, vals <span class="op">=</span> <span class="va">bf_tbl</span><span class="op">$</span><span class="va">commodity</span>, names <span class="op">=</span> <span class="st">"commodity"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">bf_rst</span><span class="op">$</span><span class="va">yield</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span>nrows <span class="op">=</span> <span class="fl">3</span>, ncols <span class="op">=</span> <span class="fl">3</span>, vals <span class="op">=</span> <span class="va">bf_tbl</span><span class="op">$</span><span class="va">yield</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="bf_registry.html">bf_registry</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"testBF"</span>, description <span class="op">=</span> <span class="st">"raster bitfield"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="bf_registry.html">bf_registry</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"testBF"</span>, description <span class="op">=</span> <span class="st">"raster bitfield"</span>,</span></span>
+<span class="r-in"><span>                   template <span class="op">=</span> <span class="va">bf_rst</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu">bf_map</span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"na"</span>, data <span class="op">=</span> <span class="va">bf_rst</span>, registry <span class="op">=</span> <span class="va">reg</span>,</span></span>
 <span class="r-in"><span>              x <span class="op">=</span> <span class="va">commodity</span><span class="op">)</span></span></span>
@@ -243,10 +248,11 @@ result merely from the binary-to-decimal conversion (check out
 <span class="r-in"><span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu">bf_map</span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"category"</span>, data <span class="op">=</span> <span class="va">bf_rst</span>, registry <span class="op">=</span> <span class="va">reg</span>,</span></span>
 <span class="r-in"><span>              x <span class="op">=</span> <span class="va">commodity</span>, na.val <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">reg</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   type  SpatRaster</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   width 4</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   flags 3  -|-|--</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   pos encoding type     col</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   pos encoding name     col</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   1   0.0.1/0  na       commodity</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   2   0.0.1/0  range    yield</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   3   0.0.2/0  category commodity</span>

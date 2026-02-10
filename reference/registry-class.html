@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">bitfield</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
       </span>
     </div>
 
@@ -57,16 +57,7 @@
     <h2>Slots</h2>
 
 
-<dl><dt><code>width</code></dt>
-<dd><p><code><a href="https://rdrr.io/r/base/integer.html" class="external-link">integerish(1)</a></code><br> how many bits is the bitfield wide.</p></dd>
-
-
-<dt><code>length</code></dt>
-<dd><p><code><a href="https://rdrr.io/r/base/integer.html" class="external-link">integerish(1)</a></code><br> how many observations are encoded
-in the bitfield.</p></dd>
-
-
-<dt><code>name</code></dt>
+<dl><dt><code>name</code></dt>
 <dd><p><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character(1)</a></code><br> short name of the bitfield.</p></dd>
 
 
@@ -84,6 +75,13 @@ determined with <a href="https://rdrr.io/r/tools/md5sum.html" class="external-li
 <dt><code>description</code></dt>
 <dd><p><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character(1)</a></code><br> longer description of the
 bitfield.</p></dd>
+
+
+<dt><code>template</code></dt>
+<dd><p><code><a href="https://rdrr.io/r/base/list.html" class="external-link">list(.)</a></code><br> structural metadata for encoding/decoding,
+including: <code>type</code> ("data.frame" or "SpatRaster"), <code>width</code> (total
+bits), <code>length</code> (number of observations/cells), and for rasters:
+<code>nrows</code>, <code>ncols</code>, <code>extent</code>, <code>crs</code>.</p></dd>
 
 
 <dt><code>flags</code></dt>

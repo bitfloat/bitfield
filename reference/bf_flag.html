@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">bitfield</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
       </span>
     </div>
 
@@ -81,7 +81,8 @@ call it on the data from which the flag shall be created.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="bf_registry.html">bf_registry</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"testBF"</span>, description <span class="op">=</span> <span class="st">"test bitfield"</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="bf_registry.html">bf_registry</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"testBF"</span>, description <span class="op">=</span> <span class="st">"test bitfield"</span>,</span></span>
+<span class="r-in"><span>                   template <span class="op">=</span> <span class="va">bf_tbl</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="bf_map.html">bf_map</a></span><span class="op">(</span>protocol <span class="op">=</span> <span class="st">"na"</span>, data <span class="op">=</span> <span class="va">bf_tbl</span>, registry <span class="op">=</span> <span class="va">reg</span>,</span></span>
 <span class="r-in"><span>              x <span class="op">=</span> <span class="va">year</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">reg</span><span class="op">@</span><span class="va">flags</span><span class="op">)</span></span></span>
@@ -89,7 +90,7 @@ call it on the data from which the flag shall be created.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ na_year:List of 4</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ comment          : 'glue' chr "'year' contains NA-values."</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ wasDerivedFrom   : chr "bf_tbl"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ wasGeneratedBy   :List of 6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ wasGeneratedBy   :List of 7</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ useTest        : chr "na_1.0.0"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ withArguments  : Named chr "x = year"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..- attr(*, "names")= chr "x"</span>
@@ -97,13 +98,26 @@ call it on the data from which the flag shall be created.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ extractLevels  :'data.frame':	2 obs. of  2 variables:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ id   : int [1:2] 0 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ label: logi [1:2] FALSE TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ encodeAsBinary :List of 4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ encodeAsBinary :List of 5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ sign       : int 0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ exponent   : int 0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ significand: int 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ bias       : int 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ scale      : NULL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ assignPosition : int [1:2] 1 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ wasAssociatedWith: chr "runnervmg1sw1_runner"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ assessQuality  :List of 11</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ type          : chr "bool"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ n             : int 9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ n_valid       : int 8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ n_na          : int 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ underflow     : int 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ overflow      : int 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ precision_loss: int 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ rmse          : num 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ max_error     : num 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ min_resolution: num 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. .. ..$ max_resolution: num 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ wasAssociatedWith: chr "runnervmwffz4_runner"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">bf_flag</span><span class="op">(</span>registry <span class="op">=</span> <span class="va">reg</span>, flag <span class="op">=</span> <span class="st">"na_year"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE  TRUE FALSE FALSE FALSE FALSE FALSE FALSE FALSE</span>
