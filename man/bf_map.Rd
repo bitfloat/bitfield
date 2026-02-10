@@ -4,7 +4,7 @@
 \alias{bf_map}
 \title{Map variables to a bitflag}
 \usage{
-bf_map(protocol, data, registry, ..., name = NULL, pos = NULL, na.val = NULL)
+bf_map(protocol, data, registry, ..., name = NULL, na.val = NULL)
 }
 \arguments{
 \item{protocol}{\code{\link[=character]{character(1)}}\cr the protocol based on which
@@ -19,9 +19,6 @@ registry.}
 Details.}
 
 \item{name}{\code{\link[=character]{character(1)}}\cr optional flag-name.}
-
-\item{pos}{\code{\link[=integer]{integerish(.)}}\cr optional position(s) in the bitfield
-that should be set.}
 
 \item{na.val}{value, of the same encoding type as the flag, that needs to be
 given, if the test for this flag results in \code{NA}s.}
@@ -68,8 +65,14 @@ given categories. (\emph{enumeration}).
 (\emph{unsigned integer}).
 \item \code{nDec} (x): count the decimal digits of the variable values
 (\emph{unsigned integer}).
-\item \code{integer} (x, ...): encode the integer values as bit-sequence
-(\emph{signed integer}).
+\item \code{integer} (x, ...): encode values as integer bit-sequence.
+Accepts raw integer data directly, or numeric data with
+auto-scaling when \code{range}, \code{fields}, or \code{decimals}
+are provided. With \code{range = c(min, max)} and
+\code{fields = list(significand = n)}, values are linearly mapped
+from \code{[min, max]} to \code{[0, 2^n - 1]} during encoding and
+back during decoding. The scaling parameters are stored in
+provenance for transparent round-trips (\emph{signed integer}).
 \item \code{numeric} (x, ...): encode the numeric value as floating-point
 bit-sequence (see \code{\link{.makeEncoding}} for details on the
 ... argument) (\emph{floating-point}).
@@ -114,7 +117,7 @@ reg <- bf_map(protocol = "grepl", data = bf_tbl, registry = reg,
 # enumeration encoding
 reg <- bf_map(protocol = "category", data = bf_tbl, registry = reg,
               x = commodity, na.val = 0)
-reg <- bf_map(protocol = "case", data = bf_tbl, registry = reg, na.val = 0,
+reg <- bf_map(protocol = "case", data = bf_tbl, registry = reg, na.val = 4,
               yield >= 11, yield < 11 & yield > 9, yield < 9 & commodity == "maize")
 
 # integer encoding
@@ -126,6 +129,14 @@ reg <- bf_map(protocol = "nDec", data = bf_tbl, registry = reg,
               x = yield)
 reg <- bf_map(protocol = "integer", data = bf_tbl, registry = reg,
               x = as.integer(year), na.val = 0L)
+
+# integer encoding with auto-scaling (numeric data mapped to integer range)
+dat <- data.frame(density = c(0.5, 1.2, 2.8, 0.0, 3.1))
+reg2 <- bf_registry(name = "scaledBF", description = "auto-scaled",
+                    template = dat)
+reg2 <- bf_map(protocol = "integer", data = dat, registry = reg2,
+               x = density, range = c(0, 3.1),
+               fields = list(significand = 5), na.val = 0L)
 
 # floating-point encoding
 reg <- bf_map(protocol = "numeric", data = bf_tbl, registry = reg,

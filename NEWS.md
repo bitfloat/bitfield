@@ -1,3 +1,23 @@
+# bitfield 1.0.0
+
+## New features
+
+- New `bf_analyze()` function for exploring encoding trade-offs. Reports Pareto-optimal exponent/significand configurations per bit count, with quality metrics including RMSE, max error, underflow, overflow, and changed values at a given decimal precision.
+- Floating-point encode/decode rewritten from string-based to arithmetic computation, improving performance and correctness.
+- Expanded validation throughout `bf_map()` and `bf_flag()` with more informative error messages.
+
+## Improvements
+
+- `bf_map()` now uses `template` from the registry instead of requiring explicit `length`/`width` parameters.
+- Vignettes revised and updated (applications vignette removed, best-practices and community-contributions rewritten).
+- Substantially expanded test suite covering `bf_analyze`, `bf_export`, `bf_protocol`, helpers, and edge cases across all core functions.
+- Documentation updates across all exported and internal functions.
+
+## Bug fixes
+
+- Fixed `bf_decode()` flag processing and sign bit handling.
+- Fixed `bf_export()` metadata extraction to use correct field names from registry flags.
+
 # bitfield 0.8.0
 
 - introduction of `bf_flag()` function, where building the flag can be found, which is moved out from `bf_map()`.

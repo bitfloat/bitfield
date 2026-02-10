@@ -14,7 +14,8 @@ bf_tbl
 
 ## -----------------------------------------------------------------------------
 reg <- bf_registry(name = "quality_check",
-                   description = "Agricultural data quality assessment")
+                   description = "Agricultural data quality assessment",
+                   template = bf_tbl)
 
 # Detect missing commodities (1 bit)
 reg <- bf_map(protocol = "na", data = bf_tbl, x = commodity, registry = reg)
@@ -30,7 +31,8 @@ reg
 
 ## -----------------------------------------------------------------------------
 # Good: Separate protocols for different quality checks
-reg2 <- bf_registry(name = "detailed_quality", description = "Detailed quality flags")
+reg2 <- bf_registry(name = "detailed_quality", description = "Detailed quality flags",
+                    template = bf_tbl)
 
 reg2 <- bf_map(protocol = "na", data = bf_tbl, x = commodity, registry = reg2)
 reg2 <- bf_map(protocol = "range", data = bf_tbl, x = yield, registry = reg2,
@@ -54,7 +56,8 @@ head(result, 3)
 
 ## -----------------------------------------------------------------------------
 # Simple but effective approach
-simple_reg <- bf_registry(name = "essential", description = "Essential quality flags")
+simple_reg <- bf_registry(name = "essential", description = "Essential quality flags",
+                          template = bf_tbl)
 
 simple_reg <- bf_map(protocol = "na", data = bf_tbl, x = commodity, registry = simple_reg)
 simple_reg <- bf_map(protocol = "numeric", data = bf_tbl, x = yield, registry = simple_reg,
@@ -67,7 +70,8 @@ simple_reg
 problematic_rows <- bf_tbl[c(4, 5, 8, 9), ]  # NA, Inf, NaN, zeros
 print(problematic_rows)
 
-test_reg <- bf_registry(name = "edge_test", description = "Edge case testing")
+test_reg <- bf_registry(name = "edge_test", description = "Edge case testing",
+                        template = problematic_rows)
 test_reg <- bf_map(protocol = "na", data = problematic_rows, x = commodity, registry = test_reg)
 test_reg <- bf_map(protocol = "inf", data = problematic_rows, x = x, registry = test_reg)
 
@@ -78,8 +82,10 @@ test_decoded
 
 ## -----------------------------------------------------------------------------
 # Compare different numeric encoding approaches
-reg_precise <- bf_registry(name = "precise", description = "High precision encoding")
-reg_efficient <- bf_registry(name = "efficient", description = "Efficient encoding")
+reg_precise <- bf_registry(name = "precise", description = "High precision encoding",
+                           template = bf_tbl)
+reg_efficient <- bf_registry(name = "efficient", description = "Efficient encoding",
+                             template = bf_tbl)
 
 # High precision (16 bits)
 reg_precise <- bf_map(protocol = "numeric", data = bf_tbl, x = yield,
@@ -89,15 +95,16 @@ reg_precise <- bf_map(protocol = "numeric", data = bf_tbl, x = yield,
 reg_efficient <- bf_map(protocol = "numeric", data = bf_tbl, x = yield,
                         registry = reg_efficient, format = "half")
 
-cat("Precise encoding:", reg_precise@width, "bits\n")
-cat("Efficient encoding:", reg_efficient@width, "bits\n")
+cat("Precise encoding:", reg_precise@template$width, "bits\n")
+cat("Efficient encoding:", reg_efficient@template$width, "bits\n")
 
 ## -----------------------------------------------------------------------------
 # Check unique categories first
 unique(bf_tbl$commodity)
 
 # Encode categories (automatically determines bit needs)
-cat_reg <- bf_registry(name = "categories", description = "Categorical encoding")
+cat_reg <- bf_registry(name = "categories", description = "Categorical encoding",
+                       template = bf_tbl)
 cat_reg <- bf_map(protocol = "category", data = bf_tbl, x = commodity,
                   registry = cat_reg, na.val = 0L)
 
@@ -107,7 +114,8 @@ cat_reg
 # Well-documented registry
 final_reg <- bf_registry(
   name = "agricultural_qa",
-  description = "Agricultural data quality assessment including missing value detection, coordinate validation, and yield encoding with 8-bit precision"
+  description = "Agricultural data quality assessment including missing value detection, coordinate validation, and yield encoding with 8-bit precision",
+  template = bf_tbl
 )
 
 final_reg <- bf_map(protocol = "na", data = bf_tbl, x = commodity, registry = final_reg)
@@ -123,7 +131,7 @@ final_decoded <- bf_decode(final_field, registry = final_reg, verbose = FALSE)
 
 # Check that important information is preserved
 original_na_count <- sum(is.na(bf_tbl$commodity))
-decoded_na_count <- sum(final_decoded$na_commodity == "1")
+decoded_na_count <- sum(final_decoded$na_commodity == 1)
 
 cat("Original NA count:", original_na_count, "\n")
 cat("Decoded NA count:", decoded_na_count, "\n")

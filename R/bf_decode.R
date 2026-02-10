@@ -67,7 +67,7 @@
 #' @importFrom tidyr separate unite separate_longer_delim
 #' @importFrom rlang env_bind `:=`
 #' @importFrom stringr str_sub_all str_replace
-#' @importFrom terra rast ext crs values nlyr
+#' @importFrom terra rast ext crs values nlyr readStart readStop
 #' @export
 
 bf_decode <- function(x, registry, flags = NULL, envir = NULL, verbose = TRUE){
@@ -83,8 +83,12 @@ bf_decode <- function(x, registry, flags = NULL, envir = NULL, verbose = TRUE){
     if(!isRaster){
       stop("registry template is 'SpatRaster' but 'x' is not a SpatRaster")
     }
-    # extract values from raster layers into a data.frame
-    x <- values(x, dataframe = TRUE)
+    # extract values as doubles via the C++ pointer to avoid Terra's
+    # as.integer() coercion, which destroys INT4U values > 2^31-1
+    readStart(x)
+    v <- x@pntr$readValues(0, nrow(x), 0, ncol(x))
+    readStop(x)
+    x <- data.frame(matrix(v, ncol = nlyr(x)))
     names(x) <- paste0("bf_int", seq_len(ncol(x)))
   } else {
     if(isRaster){
@@ -156,6 +160,13 @@ bf_decode <- function(x, registry, flags = NULL, envir = NULL, verbose = TRUE){
       temp <- .toDec(x = tempOut[[i]]) + 1
     } else if(flagEnc$bias == 0){
       temp <- .toDec(x = tempOut[[i]])
+
+      # reverse auto-scaling if scale parameters exist in provenance
+      flagScale <- flagEnc$scale
+      if (!is.null(flagScale)) {
+        maxInt <- 2L^flagEnc$significand - 1L
+        temp <- temp / maxInt * (flagScale$max - flagScale$min) + flagScale$min
+      }
     } else {
       flagPos <- unlist(flagEnc)[1:3]
       flagSplit <- str_sub_all(tempOut[[i]], start = cumsum(c(1, flagPos[-length(flagPos)])), end = cumsum(flagPos))

@@ -6,6 +6,7 @@
 <!-- badges: start -->
 
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/bitfield)](https://cran.r-project.org/package=bitfield)
+[![](http://cranlogs.r-pkg.org/badges/grand-total/bitfield)](https://cran.r-project.org/package=bitfield)
 
 [![R-CMD-check](https://github.com/bitfloat/bitfield/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bitfloat/bitfield/actions/workflows/R-CMD-check.yaml)
 [![codecov](https://codecov.io/gh/bitfloat/bitfield/graph/badge.svg?token=QZB36RION3)](https://app.codecov.io/gh/bitfloat/bitfield)
@@ -123,9 +124,20 @@ names(decoded)
 # Access individual flags
 decoded$na_commodity
 #> [1] 0 0 0 1 0 0 0 0 0
-decoded$numeric_yield
-#> [1] 11.187500 11.984375 13.226562  4.429688 12.992188  8.546875 11.273438
-#> [8] 10.640625  9.007812
+library(tibble)
+tibble(original = bf_tbl$yield, decoded = decoded$numeric_yield)
+#> # A tibble: 9 × 2
+#>   original decoded
+#>      <dbl>   <dbl>
+#> 1    11.2    11.2 
+#> 2    12.0    12.0 
+#> 3    13.2    13.2 
+#> 4     4.43    4.43
+#> 5    13.0    13.0 
+#> 6     8.55    8.55
+#> 7    11.3    11.3 
+#> 8    10.6    10.6 
+#> 9     9.01    9.01
 ```
 
 ### Raster Data

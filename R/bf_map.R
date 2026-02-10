@@ -7,8 +7,6 @@
 #' @param data the object to build bit flags for.
 #' @param ... the protocol-specific arguments for building a bit flag, see
 #'   Details.
-#' @param pos [`integerish(.)`][integer]\cr optional position(s) in the bitfield
-#'   that should be set.
 #' @param name [`character(1)`][character]\cr optional flag-name.
 #' @param na.val value, of the same encoding type as the flag, that needs to be
 #'   given, if the test for this flag results in \code{NA}s.
@@ -47,8 +45,14 @@
 #'           (\emph{unsigned integer}).
 #'     \item \code{nDec} (x): count the decimal digits of the variable values
 #'           (\emph{unsigned integer}).
-#'     \item \code{integer} (x, ...): encode the integer values as bit-sequence
-#'           (\emph{signed integer}).
+#'     \item \code{integer} (x, ...): encode values as integer bit-sequence.
+#'           Accepts raw integer data directly, or numeric data with
+#'           auto-scaling when \code{range}, \code{fields}, or \code{decimals}
+#'           are provided. With \code{range = c(min, max)} and
+#'           \code{fields = list(significand = n)}, values are linearly mapped
+#'           from \code{[min, max]} to \code{[0, 2^n - 1]} during encoding and
+#'           back during decoding. The scaling parameters are stored in
+#'           provenance for transparent round-trips (\emph{signed integer}).
 #'     \item \code{numeric} (x, ...): encode the numeric value as floating-point
 #'           bit-sequence (see \code{\link{.makeEncoding}} for details on the
 #'           ... argument) (\emph{floating-point}).
@@ -92,7 +96,7 @@
 #' # enumeration encoding
 #' reg <- bf_map(protocol = "category", data = bf_tbl, registry = reg,
 #'               x = commodity, na.val = 0)
-#' reg <- bf_map(protocol = "case", data = bf_tbl, registry = reg, na.val = 0,
+#' reg <- bf_map(protocol = "case", data = bf_tbl, registry = reg, na.val = 4,
 #'               yield >= 11, yield < 11 & yield > 9, yield < 9 & commodity == "maize")
 #'
 #' # integer encoding
@@ -104,6 +108,14 @@
 #'               x = yield)
 #' reg <- bf_map(protocol = "integer", data = bf_tbl, registry = reg,
 #'               x = as.integer(year), na.val = 0L)
+#'
+#' # integer encoding with auto-scaling (numeric data mapped to integer range)
+#' dat <- data.frame(density = c(0.5, 1.2, 2.8, 0.0, 3.1))
+#' reg2 <- bf_registry(name = "scaledBF", description = "auto-scaled",
+#'                     template = dat)
+#' reg2 <- bf_map(protocol = "integer", data = dat, registry = reg2,
+#'                x = density, range = c(0, 3.1),
+#'                fields = list(significand = 5), na.val = 0L)
 #'
 #' # floating-point encoding
 #' reg <- bf_map(protocol = "numeric", data = bf_tbl, registry = reg,
@@ -141,14 +153,12 @@
 #' @importFrom stats quantile
 #' @export
 
-bf_map <- function(protocol, data, registry, ..., name = NULL, pos = NULL,
-                   na.val = NULL){
+bf_map <- function(protocol, data, registry, ..., name = NULL, na.val = NULL){
 
   assertCharacter(x = protocol, len = 1, any.missing = FALSE)
   if(grepl(x = protocol, pattern = "_")) stop("protocol name ('", protocol, "'), must not contain '_' symbols.")
   assertClass(x = registry, classes = "registry")
   assertCharacter(x = name, len = 1, any.missing = FALSE, null.ok = TRUE)
-  assertIntegerish(x = pos, lower = 1, min.len = 1, unique = TRUE, null.ok = TRUE)
 
   args <- enquos(..., .named = TRUE)
   # return(args)
@@ -221,7 +231,21 @@ bf_map <- function(protocol, data, registry, ..., name = NULL, pos = NULL,
 
     if(protocol == "case"){
 
-      sample_vals <- 0:length(args) # add 0 as "no match" case
+      n_cases <- length(args)
+      # case values are: 0 (no match), 1 to n_cases (the cases)
+      # na.val must be distinct from these to avoid confusion
+      if (!is.null(na.val)) {
+        if (!is.numeric(na.val) || na.val < 0 || na.val != as.integer(na.val)) {
+          stop("'na.val' must be a non-negative integer for 'case' protocol.")
+        }
+        if (na.val <= n_cases) {
+          stop("'na.val' (", na.val, ") conflicts with existing case values (0 = no match, 1-", n_cases, " = cases). ",
+               "Please use a value > ", n_cases, ", e.g., na.val = ", n_cases + 1, ".")
+        }
+      }
+      # expand sample_vals to include na.val so encoding allocates enough bits
+      max_val <- if (!is.null(na.val)) max(n_cases, na.val) else n_cases
+      sample_vals <- 0:max_val
       levels_data <- data.frame(
         id = 0:length(args),
         label = c("no match", names(args)))
@@ -240,6 +264,18 @@ bf_map <- function(protocol, data, registry, ..., name = NULL, pos = NULL,
         if(is.factor(data[formalNames$val])){
           levels_data <- levels(data)[[1]]
           names(levels_data)[1] <- "id"
+
+          # validate that actual raster values match expected level IDs
+          actualVals <- unique(testVals[!is.na(testVals)])
+          expectedIds <- levels_data$id
+          invalidVals <- setdiff(actualVals, expectedIds)
+          if (length(invalidVals) > 0) {
+            stop("Raster values do not match attribute table levels.\n",
+                 "  Found values: ", paste(sort(actualVals), collapse = ", "), "\n",
+                 "  Expected IDs: ", paste(expectedIds, collapse = ", "), "\n",
+                 "  Invalid values: ", paste(sort(invalidVals), collapse = ", "), "\n",
+                 "Ensure your raster values are 0-indexed integers matching the attribute table.")
+          }
         } else {
           stop("to encode the values as enumeration, please provide a raster attribute table.")
         }
@@ -251,17 +287,25 @@ bf_map <- function(protocol, data, registry, ..., name = NULL, pos = NULL,
           label = c("no category", lvls))
       }
       sample_vals <- levels_data$id
+
+      # include na.val so encoding allocates enough bits
+      if (!is.null(na.val)) {
+        sample_vals <- c(sample_vals, na.val)
+      }
     }
 
   } else {
     # int or float encoding types
 
-    # validate: integer protocol expects integer data
+    # validate: integer protocol expects integer data (unless auto-scaling args are provided)
     if (protocol == "integer" && !is.null(testVals)) {
       nonNaVals <- testVals[!is.na(testVals)]
-      if (length(nonNaVals) > 0 && is.numeric(nonNaVals) && !is.integer(nonNaVals) && !all(nonNaVals == as.integer(nonNaVals))) {
+      hasScalingArgs <- any(c("range", "decimals", "fields") %in% names(args))
+      if (length(nonNaVals) > 0 && is.numeric(nonNaVals) && !is.integer(nonNaVals)
+          && !all(nonNaVals == as.integer(nonNaVals)) && !hasScalingArgs) {
         stop("Data contains non-integer numeric values but protocol 'integer' ",
-             "expects integer values. Use protocol 'numeric' for floating-point data.")
+             "expects integer values. Use protocol 'numeric' for floating-point data, ",
+             "or provide 'range', 'decimals', or 'fields' for auto-scaling.")
       }
       if (any(is.na(testVals)) && is.null(na.val)) {
         stop("Data contains NA values but no 'na.val' was specified. ",
@@ -273,8 +317,8 @@ bf_map <- function(protocol, data, registry, ..., name = NULL, pos = NULL,
     if(protocol %in% c("integer", "numeric") & "x" %in% names(args)){
 
       if(inherits(data, "SpatRaster")) {
-        qq <- global(data, quantile, na.rm = TRUE)
-        minmax <- global(abs(data), range, na.rm = TRUE)
+        qq <- global(data[[formalNames$val]], quantile, na.rm = TRUE)
+        minmax <- global(abs(data[[formalNames$val]]), range, na.rm = TRUE)
       } else {
         temp_col <- eval_tidy(args[[1]], data)
         qq <- quantile(temp_col, na.rm = TRUE)
@@ -296,7 +340,17 @@ bf_map <- function(protocol, data, registry, ..., name = NULL, pos = NULL,
 
   }
 
-  enc <- .makeEncoding(var = sample_vals, type = pcl$encoding_type, ...)
+  # detect if original data is non-integer for auto-scaling decisions
+  dataIsNonInteger <- FALSE
+  if (protocol == "integer" && !is.null(testVals)) {
+    nonNaVals <- testVals[!is.na(testVals)]
+    if (length(nonNaVals) > 0 && is.numeric(nonNaVals) && !is.integer(nonNaVals)
+        && !all(nonNaVals == as.integer(nonNaVals))) {
+      dataIsNonInteger <- TRUE
+    }
+  }
+  enc <- .makeEncoding(var = sample_vals, type = pcl$encoding_type,
+                       .data_is_non_integer = dataIsNonInteger, ...)
   # return(enc)
 
   # validate data type matches template ----
@@ -316,11 +370,7 @@ bf_map <- function(protocol, data, registry, ..., name = NULL, pos = NULL,
   }
 
   # update position ----
-  if(is.null(pos)){
-    pos <- (registry@template$width + 1L):(registry@template$width + enc$sign + enc$exponent + enc$significand)
-  } else {
-    # include test that checks whether sufficient positions are set, and give an error if not
-  }
+  pos <- (registry@template$width + 1L):(registry@template$width + enc$sign + enc$exponent + enc$significand)
 
   # update registry ----
   registry@template$width <- registry@template$width + enc$sign + enc$exponent + enc$significand
@@ -371,13 +421,42 @@ bf_map <- function(protocol, data, registry, ..., name = NULL, pos = NULL,
   argsProv <- list(withArguments = args_text)
   naProv <- list(substituteValue = na.val)
   levelsProv <- list(extractLevels = levels_data)
-  encProv <- list(encodeAsBinary = list(sign = enc$sign, exponent = enc$exponent, significand = enc$significand, bias = enc$bias))
+  encProv <- list(encodeAsBinary = list(sign = enc$sign, exponent = enc$exponent, significand = enc$significand, bias = enc$bias, scale = enc$scale))
   posProv <- list(assignPosition = c(min(pos), max(pos)))
+
+  # assess encoding quality ----
+  # for int/float encoding, raw non-numeric input (e.g., factor from nChar) is
+  # not representative of the encoded output, so skip quality assessment
+  qualityVals <- testVals
+  if (pcl$encoding_type %in% c("int", "float") && !is.numeric(qualityVals)) {
+    qualityVals <- NULL
+  }
+  qualityMetrics <- .assessEncodingQuality(
+    values = qualityVals,
+    type = pcl$encoding_type,
+    enc = enc,
+    isRaster = dataIsRaster,
+    rasterLevels = if (pcl$encoding_type == "enum" && dataIsRaster) levels_data else NULL
+  )
+  qd <- qualityMetrics$data
+  qualityProv <- list(assessQuality = list(
+    type = qd$type,
+    n = qd$n,
+    n_valid = qd$n_valid,
+    n_na = qd$n_na,
+    underflow = qd$underflow,
+    overflow = qd$overflow,
+    precision_loss = qd$precision_loss,
+    rmse = qd$rmse,
+    max_error = qd$max_error,
+    min_resolution = qd$min_resolution,
+    max_resolution = qd$max_resolution
+  ))
 
   # store in registry ----
   registry@flags[[thisName]] <- list(comment = desc,
                                      wasDerivedFrom = deparse(substitute(data)),
-                                     wasGeneratedBy = c(testProv, argsProv, naProv, levelsProv, encProv, posProv),
+                                     wasGeneratedBy = c(testProv, argsProv, naProv, levelsProv, encProv, posProv, qualityProv),
                                      wasAssociatedWith = paste0(Sys.info()[["nodename"]], "_", Sys.info()[["user"]]))
 
   # update MD5 checksum ----

@@ -1,7 +1,7 @@
 Package: bitfield
 Type: Package
 Title: Handle Bitfields to Record Meta Data
-Version: 0.8.1
+Version: 1.0.0
 Authors@R: c(
     person("Steffen", "Ehrmann", role = c("aut", "cre"), 
            email = "steffen.ehrmann@posteo.de", 

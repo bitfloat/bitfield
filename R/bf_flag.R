@@ -52,18 +52,43 @@ bf_flag <- function(registry, flag = NULL) {
   })
 
   # call function to build flag
+  isRasterCategory <- FALSE
   if(inherits(theData, "SpatRaster")) {
     tempData <- as.data.frame(values(theData))
+    # check if this is a category protocol with attribute table
+    # in this case, values are already 0-indexed integers and don't need conversion
+    if(protocol == "category" && any(is.factor(theData))) {
+      isRasterCategory <- TRUE
+    }
   } else {
     tempData <- theData
   }
   usefulArgs <- theFlag$wasGeneratedBy$withArguments
   # Only filter by names if the vector has names (case protocol stores unnamed expressions)
   if (!is.null(names(usefulArgs))) {
-    usefulArgs <- usefulArgs[!names(usefulArgs) %in% c("...", "fields", "precision", "decimals", "range")]
+    usefulArgs <- usefulArgs[!names(usefulArgs) %in% c("...", "fields", "precision", "decimals", "range", ".data_is_non_integer")]
   }
   tidyArgs <- map(as.list(parse(text = usefulArgs)), eval_tidy, tempData)
-  out <- exec(pcl$test, !!!tidyArgs)
+
+  # for SpatRaster with attribute table and category protocol,
+  # values are already 0-indexed integers - return directly without conversion
+  if(isRasterCategory) {
+    out <- tidyArgs[[1]]
+  } else {
+    out <- exec(pcl$test, !!!tidyArgs)
+  }
+
+  # apply auto-scaling for integer protocol with scale parameters
+  flagScale <- theFlag$wasGeneratedBy$encodeAsBinary$scale
+  if (!is.null(flagScale) && pcl$encoding_type == "int") {
+    maxInt <- 2L^theFlag$wasGeneratedBy$encodeAsBinary$significand - 1L
+    naIdx <- is.na(out)
+    scaled <- round((out - flagScale$min) /
+                    (flagScale$max - flagScale$min) * maxInt)
+    scaled <- pmin(pmax(scaled, 0L), maxInt)
+    scaled[naIdx] <- NA
+    out <- as.integer(scaled)
+  }
 
   # handle NA values
   # for float encoding, NAs are handled by bf_encode using IEEE-style all-1s pattern
@@ -76,7 +101,7 @@ bf_flag <- function(registry, flag = NULL) {
   }
 
   if(pcl$encoding_type %in% c("int", "enum")){
-    if(all(as.integer(out) == out)) out <- as.integer(out)
+    if(all(as.integer(out) == out, na.rm = TRUE)) out <- as.integer(out)
   }
 
   return(out)

@@ -13,6 +13,7 @@ knitr::opts_chunk$set(
 )
 library(bitfield)
 library(terra)
+library(tibble)
 ```
 
 # bitfield <a href='https://github.com/bitfloat/bitfield/'><img src='man/figures/logo.svg' align="right" height="200" /></a>
@@ -91,7 +92,9 @@ names(decoded)
 
 # Access individual flags
 decoded$na_commodity
-decoded$numeric_yield
+library(tibble)
+tibble(original = bf_tbl$yield, decoded = decoded$numeric_yield)
+
 ```
 
 ### Raster Data

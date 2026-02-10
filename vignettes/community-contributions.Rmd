@@ -73,7 +73,8 @@ test_data <- data.frame(
   days_old = c(1, 5, 12, 30, 45, 67, 120, 180, 300)  # Include > 255 to test limit
 )
 
-test_reg <- bf_registry(name = "freshness_test", description = "Data freshness testing")
+test_reg <- bf_registry(name = "freshness_test", description = "Data freshness testing",
+                        template = test_data)
 test_reg <- bf_map(protocol = "dataAgeProtocol", data = test_data,
                    daysSince = days_old, registry = test_reg)
 
@@ -92,7 +93,7 @@ test_decoded <- bf_decode(test_field, registry = test_reg, verbose = FALSE)
 # Verify protocol handles edge cases correctly
 verification <- data.frame(
   original = test_data$days_old,
-  decoded = as.numeric(test_decoded$dataAgeProtocol_days_old),
+  decoded = test_decoded$dataAgeProtocol_days_old,
   capped_at_255 = pmin(test_data$days_old, 255)
 )
 
@@ -121,7 +122,8 @@ yieldReliability <- bf_protocol(
 
 # Test with the example data
 reliability_reg <- bf_registry(name = "yield_reliability_test",
-                              description = "Test yield reliability protocol")
+                              description = "Test yield reliability protocol",
+                              template = bf_tbl)
 reliability_reg <- bf_map(protocol = "yieldReliability", data = bf_tbl,
                          x = x, y = y, registry = reliability_reg)
 
@@ -178,7 +180,8 @@ commodityProtocol <- bf_protocol(
 )
 
 # Test the categorical protocol
-cat_reg <- bf_registry(name = "commodity_test", description = "Commodity encoding test")
+cat_reg <- bf_registry(name = "commodity_test", description = "Commodity encoding test",
+                       template = bf_tbl)
 cat_reg <- bf_map(protocol = "commodityProtocol", data = bf_tbl,
                   commodity = commodity, registry = cat_reg)
 
@@ -232,7 +235,8 @@ soil_moisture <- bf_standards(
 )
 
 # Use in your analysis
-soil_reg <- bf_registry(name = "soil_analysis", description = "Soil moisture analysis")
+soil_reg <- bf_registry(name = "soil_analysis", description = "Soil moisture analysis",
+                        template = my_soil_data)
 soil_reg <- bf_map(protocol = soil_moisture, data = my_soil_data,
                   valMoisture = moisture_percent, registry = soil_reg)
 ```

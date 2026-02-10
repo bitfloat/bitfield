@@ -7,7 +7,7 @@
 .toDec(x)
 }
 \arguments{
-\item{x}{\code{\link[=character]{character(1)}}\cr the binary value (character of 0s and
+\item{x}{\code{\link[=character]{character(1)}}\cr a binary string (sequence of 0s and
 1s) for which to derive the integer.}
 }
 \description{

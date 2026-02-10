@@ -94,6 +94,9 @@ bf_encode <- function(registry){
         # biased exponent
         biasedExp <- actualExp + bias
 
+        # zero encodes as all-zero bits (exponent = 0, significand = 0)
+        biasedExp[isZero] <- 0L
+
         # detect underflow and overflow
         underflow <- !isZero & biasedExp < 0
         overflow <- !isZero & biasedExp > maxExp
@@ -171,10 +174,23 @@ bf_encode <- function(registry){
   # convert to raster if template is a raster
  if(registry@template$type == "SpatRaster"){
     tmpl <- registry@template
+
+    # determine the appropriate GeoTIFF datatype for each chunk
+    maxWidth <- max(widths)
+    if(maxWidth <= 8){
+      dtype <- "INT1U"
+    } else if(maxWidth <= 16){
+      dtype <- "INT2U"
+    } else {
+      dtype <- "INT4U"
+    }
+
     out <- rast(nrows = tmpl$nrows, ncols = tmpl$ncols,
                 extent = ext(tmpl$extent), crs = tmpl$crs,
                 nlyrs = ncol(out), vals = as.matrix(out),
                 names = names(out))
+
+    message("use `writeRaster(x, filename, datatype = '", dtype, "', gdal = 'COMPRESS=DEFLATE')` to preserve bitfield values when saving to disk")
   }
 
   return(out)

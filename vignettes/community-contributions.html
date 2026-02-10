@@ -48,6 +48,7 @@ overflow: visible;
 }
 </style>
 <style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
@@ -341,15 +342,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(bitfield)</span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co">#&gt; Attaching package: &#39;dplyr&#39;</span></span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co">#&gt; The following objects are masked from &#39;package:stats&#39;:</span></span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co">#&gt;     filter, lag</span></span>
-<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co">#&gt; The following objects are masked from &#39;package:base&#39;:</span></span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span></code></pre></div>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code></pre></div>
 <div id="contributing-to-community-standards" class="section level1">
 <h1>Contributing to Community Standards</h1>
 <p>The <code>bitfield</code> package enables collaborative development
@@ -401,16 +394,18 @@ exactly one thing:</p>
 <span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>  <span class="at">days_old =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">12</span>, <span class="dv">30</span>, <span class="dv">45</span>, <span class="dv">67</span>, <span class="dv">120</span>, <span class="dv">180</span>, <span class="dv">300</span>)  <span class="co"># Include &gt; 255 to test limit</span></span>
 <span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>)</span>
 <span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a></span>
-<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>test_reg <span class="ot">&lt;-</span> <span class="fu">bf_registry</span>(<span class="at">name =</span> <span class="st">&quot;freshness_test&quot;</span>, <span class="at">description =</span> <span class="st">&quot;Data freshness testing&quot;</span>)</span>
-<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>test_reg <span class="ot">&lt;-</span> <span class="fu">bf_map</span>(<span class="at">protocol =</span> <span class="st">&quot;dataAgeProtocol&quot;</span>, <span class="at">data =</span> test_data,</span>
-<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>                   <span class="at">daysSince =</span> days_old, <span class="at">registry =</span> test_reg)</span>
-<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a></span>
-<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a>test_reg</span>
-<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a><span class="co">#&gt;   width 8</span></span>
-<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a><span class="co">#&gt;   flags 1  --------</span></span>
-<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a><span class="co">#&gt;   pos encoding type            col</span></span>
-<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a><span class="co">#&gt;   1   0.0.8/0  dataAgeProtocol days-old</span></span></code></pre></div>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>test_reg <span class="ot">&lt;-</span> <span class="fu">bf_registry</span>(<span class="at">name =</span> <span class="st">&quot;freshness_test&quot;</span>, <span class="at">description =</span> <span class="st">&quot;Data freshness testing&quot;</span>,</span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>                        <span class="at">template =</span> test_data)</span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>test_reg <span class="ot">&lt;-</span> <span class="fu">bf_map</span>(<span class="at">protocol =</span> <span class="st">&quot;dataAgeProtocol&quot;</span>, <span class="at">data =</span> test_data,</span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>                   <span class="at">daysSince =</span> days_old, <span class="at">registry =</span> test_reg)</span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a></span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a>test_reg</span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a><span class="co">#&gt;   type  data.frame</span></span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a><span class="co">#&gt;   width 8</span></span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a><span class="co">#&gt;   flags 1  --------</span></span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a><span class="co">#&gt;   pos encoding name            col</span></span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a><span class="co">#&gt;   1   0.0.8/0  dataAgeProtocol days-old</span></span></code></pre></div>
 </div>
 <div id="testing-your-protocol" class="section level3">
 <h3>Testing Your Protocol</h3>
@@ -422,21 +417,21 @@ exactly one thing:</p>
 <span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co"># Verify protocol handles edge cases correctly</span></span>
 <span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>verification <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
 <span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>  <span class="at">original =</span> test_data<span class="sc">$</span>days_old,</span>
-<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>  <span class="at">decoded =</span> <span class="fu">as.numeric</span>(test_decoded<span class="sc">$</span>dataAgeProtocol_days_old),</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>  <span class="at">decoded =</span> test_decoded<span class="sc">$</span>dataAgeProtocol_days_old,</span>
 <span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>  <span class="at">capped_at_255 =</span> <span class="fu">pmin</span>(test_data<span class="sc">$</span>days_old, <span class="dv">255</span>)</span>
 <span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>)</span>
 <span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a></span>
 <span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="fu">print</span>(verification)</span>
-<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="co">#&gt;   original  decoded capped_at_255</span></span>
-<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="co">#&gt; 1        1        1             1</span></span>
-<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="co">#&gt; 2        5      101             5</span></span>
-<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a><span class="co">#&gt; 3       12     1100            12</span></span>
-<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a><span class="co">#&gt; 4       30    11110            30</span></span>
-<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a><span class="co">#&gt; 5       45   101101            45</span></span>
-<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a><span class="co">#&gt; 6       67  1000011            67</span></span>
-<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a><span class="co">#&gt; 7      120  1111000           120</span></span>
-<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a><span class="co">#&gt; 8      180 10110100           180</span></span>
-<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a><span class="co">#&gt; 9      300 11111111           255</span></span></code></pre></div>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="co">#&gt;   original decoded capped_at_255</span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="co">#&gt; 1        1       1             1</span></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="co">#&gt; 2        5       5             5</span></span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a><span class="co">#&gt; 3       12      12            12</span></span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a><span class="co">#&gt; 4       30      30            30</span></span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a><span class="co">#&gt; 5       45      45            45</span></span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a><span class="co">#&gt; 6       67      67            67</span></span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a><span class="co">#&gt; 7      120     120           120</span></span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a><span class="co">#&gt; 8      180     180           180</span></span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a><span class="co">#&gt; 9      300     255           255</span></span></code></pre></div>
 </div>
 </div>
 <div id="working-with-the-bf_tbl-example" class="section level2">
@@ -471,35 +466,36 @@ exactly one thing:</p>
 <span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a></span>
 <span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a><span class="co"># Test with the example data</span></span>
 <span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a>reliability_reg <span class="ot">&lt;-</span> <span class="fu">bf_registry</span>(<span class="at">name =</span> <span class="st">&quot;yield_reliability_test&quot;</span>,</span>
-<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a>                              <span class="at">description =</span> <span class="st">&quot;Test yield reliability protocol&quot;</span>)</span>
-<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a>reliability_reg <span class="ot">&lt;-</span> <span class="fu">bf_map</span>(<span class="at">protocol =</span> <span class="st">&quot;yieldReliability&quot;</span>, <span class="at">data =</span> bf_tbl,</span>
-<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a>                         <span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">registry =</span> reliability_reg)</span>
-<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a></span>
-<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a>reliability_field <span class="ot">&lt;-</span> <span class="fu">bf_encode</span>(<span class="at">registry =</span> reliability_reg)</span>
-<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a>reliability_decoded <span class="ot">&lt;-</span> <span class="fu">bf_decode</span>(reliability_field, <span class="at">registry =</span> reliability_reg, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a></span>
-<span id="cb6-37"><a href="#cb6-37" tabindex="-1"></a><span class="co"># Check results - first see what columns exist</span></span>
-<span id="cb6-38"><a href="#cb6-38" tabindex="-1"></a><span class="fu">print</span>(<span class="st">&quot;Available columns:&quot;</span>)</span>
-<span id="cb6-39"><a href="#cb6-39" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Available columns:&quot;</span></span>
-<span id="cb6-40"><a href="#cb6-40" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">names</span>(reliability_decoded))</span>
-<span id="cb6-41"><a href="#cb6-41" tabindex="-1"></a><span class="co">#&gt; [1] &quot;yieldReliability_x-y&quot;</span></span>
-<span id="cb6-42"><a href="#cb6-42" tabindex="-1"></a></span>
-<span id="cb6-43"><a href="#cb6-43" tabindex="-1"></a>result_check <span class="ot">&lt;-</span> bf_tbl <span class="sc">%&gt;%</span></span>
-<span id="cb6-44"><a href="#cb6-44" tabindex="-1"></a>  <span class="fu">bind_cols</span>(reliability_decoded)</span>
-<span id="cb6-45"><a href="#cb6-45" tabindex="-1"></a></span>
-<span id="cb6-46"><a href="#cb6-46" tabindex="-1"></a><span class="fu">print</span>(result_check)</span>
-<span id="cb6-47"><a href="#cb6-47" tabindex="-1"></a><span class="co">#&gt; # A tibble: 9 × 6</span></span>
-<span id="cb6-48"><a href="#cb6-48" tabindex="-1"></a><span class="co">#&gt;       x     y commodity yield year  `yieldReliability_x-y`</span></span>
-<span id="cb6-49"><a href="#cb6-49" tabindex="-1"></a><span class="co">#&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;     &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;                 </span></span>
-<span id="cb6-50"><a href="#cb6-50" tabindex="-1"></a><span class="co">#&gt; 1  25.3  59.5 soybean   11.2  2021  110                   </span></span>
-<span id="cb6-51"><a href="#cb6-51" tabindex="-1"></a><span class="co">#&gt; 2  27.9  58.1 maize     12.0  &lt;NA&gt;  110                   </span></span>
-<span id="cb6-52"><a href="#cb6-52" tabindex="-1"></a><span class="co">#&gt; 3  27.8  57.8 soybean   13.2  2021r 110                   </span></span>
-<span id="cb6-53"><a href="#cb6-53" tabindex="-1"></a><span class="co">#&gt; 4  27    59.2 &lt;NA&gt;       4.43 2021  110                   </span></span>
-<span id="cb6-54"><a href="#cb6-54" tabindex="-1"></a><span class="co">#&gt; 5 259   Inf   honey     13.0  2021  100                   </span></span>
-<span id="cb6-55"><a href="#cb6-55" tabindex="-1"></a><span class="co">#&gt; 6  27.3  59.1 maize      8.55 2021  110                   </span></span>
-<span id="cb6-56"><a href="#cb6-56" tabindex="-1"></a><span class="co">#&gt; 7  26.1  58.4 soybean   11.3  2021  110                   </span></span>
-<span id="cb6-57"><a href="#cb6-57" tabindex="-1"></a><span class="co">#&gt; 8  26.5 NaN   maize     10.6  2021  000                   </span></span>
-<span id="cb6-58"><a href="#cb6-58" tabindex="-1"></a><span class="co">#&gt; 9   0     0   soybean    9.01 2021  010</span></span></code></pre></div>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a>                              <span class="at">description =</span> <span class="st">&quot;Test yield reliability protocol&quot;</span>,</span>
+<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a>                              <span class="at">template =</span> bf_tbl)</span>
+<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a>reliability_reg <span class="ot">&lt;-</span> <span class="fu">bf_map</span>(<span class="at">protocol =</span> <span class="st">&quot;yieldReliability&quot;</span>, <span class="at">data =</span> bf_tbl,</span>
+<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a>                         <span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">registry =</span> reliability_reg)</span>
+<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a></span>
+<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a>reliability_field <span class="ot">&lt;-</span> <span class="fu">bf_encode</span>(<span class="at">registry =</span> reliability_reg)</span>
+<span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a>reliability_decoded <span class="ot">&lt;-</span> <span class="fu">bf_decode</span>(reliability_field, <span class="at">registry =</span> reliability_reg, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb6-37"><a href="#cb6-37" tabindex="-1"></a></span>
+<span id="cb6-38"><a href="#cb6-38" tabindex="-1"></a><span class="co"># Check results - first see what columns exist</span></span>
+<span id="cb6-39"><a href="#cb6-39" tabindex="-1"></a><span class="fu">print</span>(<span class="st">&quot;Available columns:&quot;</span>)</span>
+<span id="cb6-40"><a href="#cb6-40" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Available columns:&quot;</span></span>
+<span id="cb6-41"><a href="#cb6-41" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">names</span>(reliability_decoded))</span>
+<span id="cb6-42"><a href="#cb6-42" tabindex="-1"></a><span class="co">#&gt; [1] &quot;yieldReliability_x-y&quot;</span></span>
+<span id="cb6-43"><a href="#cb6-43" tabindex="-1"></a></span>
+<span id="cb6-44"><a href="#cb6-44" tabindex="-1"></a>result_check <span class="ot">&lt;-</span> bf_tbl <span class="sc">%&gt;%</span></span>
+<span id="cb6-45"><a href="#cb6-45" tabindex="-1"></a>  <span class="fu">bind_cols</span>(reliability_decoded)</span>
+<span id="cb6-46"><a href="#cb6-46" tabindex="-1"></a></span>
+<span id="cb6-47"><a href="#cb6-47" tabindex="-1"></a><span class="fu">print</span>(result_check)</span>
+<span id="cb6-48"><a href="#cb6-48" tabindex="-1"></a><span class="co">#&gt; # A tibble: 9 × 6</span></span>
+<span id="cb6-49"><a href="#cb6-49" tabindex="-1"></a><span class="co">#&gt;       x     y commodity yield year  `yieldReliability_x-y`</span></span>
+<span id="cb6-50"><a href="#cb6-50" tabindex="-1"></a><span class="co">#&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;     &lt;dbl&gt; &lt;chr&gt;                  &lt;int&gt;</span></span>
+<span id="cb6-51"><a href="#cb6-51" tabindex="-1"></a><span class="co">#&gt; 1  25.3  59.5 soybean   11.2  2021                       6</span></span>
+<span id="cb6-52"><a href="#cb6-52" tabindex="-1"></a><span class="co">#&gt; 2  27.9  58.1 maize     12.0  &lt;NA&gt;                       6</span></span>
+<span id="cb6-53"><a href="#cb6-53" tabindex="-1"></a><span class="co">#&gt; 3  27.8  57.8 soybean   13.2  2021r                      6</span></span>
+<span id="cb6-54"><a href="#cb6-54" tabindex="-1"></a><span class="co">#&gt; 4  27    59.2 &lt;NA&gt;       4.43 2021                       6</span></span>
+<span id="cb6-55"><a href="#cb6-55" tabindex="-1"></a><span class="co">#&gt; 5 259   Inf   honey     13.0  2021                       4</span></span>
+<span id="cb6-56"><a href="#cb6-56" tabindex="-1"></a><span class="co">#&gt; 6  27.3  59.1 maize      8.55 2021                       6</span></span>
+<span id="cb6-57"><a href="#cb6-57" tabindex="-1"></a><span class="co">#&gt; 7  26.1  58.4 soybean   11.3  2021                       6</span></span>
+<span id="cb6-58"><a href="#cb6-58" tabindex="-1"></a><span class="co">#&gt; 8  26.5 NaN   maize     10.6  2021                       0</span></span>
+<span id="cb6-59"><a href="#cb6-59" tabindex="-1"></a><span class="co">#&gt; 9   0     0   soybean    9.01 2021                       2</span></span></code></pre></div>
 </div>
 <div id="protocol-versioning-and-extension" class="section level2">
 <h2>Protocol Versioning and Extension</h2>
@@ -538,30 +534,31 @@ exactly one thing:</p>
 <span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a>)</span>
 <span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a></span>
 <span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a><span class="co"># Test the categorical protocol</span></span>
-<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a>cat_reg <span class="ot">&lt;-</span> <span class="fu">bf_registry</span>(<span class="at">name =</span> <span class="st">&quot;commodity_test&quot;</span>, <span class="at">description =</span> <span class="st">&quot;Commodity encoding test&quot;</span>)</span>
-<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a>cat_reg <span class="ot">&lt;-</span> <span class="fu">bf_map</span>(<span class="at">protocol =</span> <span class="st">&quot;commodityProtocol&quot;</span>, <span class="at">data =</span> bf_tbl,</span>
-<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a>                  <span class="at">commodity =</span> commodity, <span class="at">registry =</span> cat_reg)</span>
-<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a></span>
-<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a>cat_field <span class="ot">&lt;-</span> <span class="fu">bf_encode</span>(<span class="at">registry =</span> cat_reg)</span>
-<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a>cat_decoded <span class="ot">&lt;-</span> <span class="fu">bf_decode</span>(cat_field, <span class="at">registry =</span> cat_reg, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a></span>
-<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a>commodity_check <span class="ot">&lt;-</span> bf_tbl <span class="sc">%&gt;%</span></span>
-<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a>  <span class="fu">bind_cols</span>(cat_decoded) <span class="sc">%&gt;%</span></span>
-<span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a>  <span class="fu">select</span>(commodity, commodityProtocol_commodity)</span>
-<span id="cb8-28"><a href="#cb8-28" tabindex="-1"></a></span>
-<span id="cb8-29"><a href="#cb8-29" tabindex="-1"></a><span class="fu">print</span>(commodity_check)</span>
-<span id="cb8-30"><a href="#cb8-30" tabindex="-1"></a><span class="co">#&gt; # A tibble: 9 × 2</span></span>
-<span id="cb8-31"><a href="#cb8-31" tabindex="-1"></a><span class="co">#&gt;   commodity commodityProtocol_commodity</span></span>
-<span id="cb8-32"><a href="#cb8-32" tabindex="-1"></a><span class="co">#&gt;   &lt;fct&gt;     &lt;chr&gt;                      </span></span>
-<span id="cb8-33"><a href="#cb8-33" tabindex="-1"></a><span class="co">#&gt; 1 soybean   010                        </span></span>
-<span id="cb8-34"><a href="#cb8-34" tabindex="-1"></a><span class="co">#&gt; 2 maize     100                        </span></span>
-<span id="cb8-35"><a href="#cb8-35" tabindex="-1"></a><span class="co">#&gt; 3 soybean   010                        </span></span>
-<span id="cb8-36"><a href="#cb8-36" tabindex="-1"></a><span class="co">#&gt; 4 &lt;NA&gt;      000                        </span></span>
-<span id="cb8-37"><a href="#cb8-37" tabindex="-1"></a><span class="co">#&gt; 5 honey     110                        </span></span>
-<span id="cb8-38"><a href="#cb8-38" tabindex="-1"></a><span class="co">#&gt; 6 maize     100                        </span></span>
-<span id="cb8-39"><a href="#cb8-39" tabindex="-1"></a><span class="co">#&gt; 7 soybean   010                        </span></span>
-<span id="cb8-40"><a href="#cb8-40" tabindex="-1"></a><span class="co">#&gt; 8 maize     100                        </span></span>
-<span id="cb8-41"><a href="#cb8-41" tabindex="-1"></a><span class="co">#&gt; 9 soybean   010</span></span></code></pre></div>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a>cat_reg <span class="ot">&lt;-</span> <span class="fu">bf_registry</span>(<span class="at">name =</span> <span class="st">&quot;commodity_test&quot;</span>, <span class="at">description =</span> <span class="st">&quot;Commodity encoding test&quot;</span>,</span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a>                       <span class="at">template =</span> bf_tbl)</span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a>cat_reg <span class="ot">&lt;-</span> <span class="fu">bf_map</span>(<span class="at">protocol =</span> <span class="st">&quot;commodityProtocol&quot;</span>, <span class="at">data =</span> bf_tbl,</span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a>                  <span class="at">commodity =</span> commodity, <span class="at">registry =</span> cat_reg)</span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a></span>
+<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a>cat_field <span class="ot">&lt;-</span> <span class="fu">bf_encode</span>(<span class="at">registry =</span> cat_reg)</span>
+<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a>cat_decoded <span class="ot">&lt;-</span> <span class="fu">bf_decode</span>(cat_field, <span class="at">registry =</span> cat_reg, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a></span>
+<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a>commodity_check <span class="ot">&lt;-</span> bf_tbl <span class="sc">%&gt;%</span></span>
+<span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a>  <span class="fu">bind_cols</span>(cat_decoded) <span class="sc">%&gt;%</span></span>
+<span id="cb8-28"><a href="#cb8-28" tabindex="-1"></a>  <span class="fu">select</span>(commodity, commodityProtocol_commodity)</span>
+<span id="cb8-29"><a href="#cb8-29" tabindex="-1"></a></span>
+<span id="cb8-30"><a href="#cb8-30" tabindex="-1"></a><span class="fu">print</span>(commodity_check)</span>
+<span id="cb8-31"><a href="#cb8-31" tabindex="-1"></a><span class="co">#&gt; # A tibble: 9 × 2</span></span>
+<span id="cb8-32"><a href="#cb8-32" tabindex="-1"></a><span class="co">#&gt;   commodity commodityProtocol_commodity</span></span>
+<span id="cb8-33"><a href="#cb8-33" tabindex="-1"></a><span class="co">#&gt;   &lt;fct&gt;                           &lt;int&gt;</span></span>
+<span id="cb8-34"><a href="#cb8-34" tabindex="-1"></a><span class="co">#&gt; 1 soybean                             2</span></span>
+<span id="cb8-35"><a href="#cb8-35" tabindex="-1"></a><span class="co">#&gt; 2 maize                               4</span></span>
+<span id="cb8-36"><a href="#cb8-36" tabindex="-1"></a><span class="co">#&gt; 3 soybean                             2</span></span>
+<span id="cb8-37"><a href="#cb8-37" tabindex="-1"></a><span class="co">#&gt; 4 &lt;NA&gt;                                0</span></span>
+<span id="cb8-38"><a href="#cb8-38" tabindex="-1"></a><span class="co">#&gt; 5 honey                               6</span></span>
+<span id="cb8-39"><a href="#cb8-39" tabindex="-1"></a><span class="co">#&gt; 6 maize                               4</span></span>
+<span id="cb8-40"><a href="#cb8-40" tabindex="-1"></a><span class="co">#&gt; 7 soybean                             2</span></span>
+<span id="cb8-41"><a href="#cb8-41" tabindex="-1"></a><span class="co">#&gt; 8 maize                               4</span></span>
+<span id="cb8-42"><a href="#cb8-42" tabindex="-1"></a><span class="co">#&gt; 9 soybean                             2</span></span></code></pre></div>
 </div>
 <div id="contributing-to-the-community-repository" class="section level2">
 <h2>Contributing to the Community Repository</h2>
@@ -598,9 +595,10 @@ exactly one thing:</p>
 <span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>)</span>
 <span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a></span>
 <span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a><span class="co"># Use in your analysis</span></span>
-<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a>soil_reg <span class="ot">&lt;-</span> <span class="fu">bf_registry</span>(<span class="at">name =</span> <span class="st">&quot;soil_analysis&quot;</span>, <span class="at">description =</span> <span class="st">&quot;Soil moisture analysis&quot;</span>)</span>
-<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a>soil_reg <span class="ot">&lt;-</span> <span class="fu">bf_map</span>(<span class="at">protocol =</span> soil_moisture, <span class="at">data =</span> my_soil_data,</span>
-<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a>                  <span class="at">valMoisture =</span> moisture_percent, <span class="at">registry =</span> soil_reg)</span></code></pre></div>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a>soil_reg <span class="ot">&lt;-</span> <span class="fu">bf_registry</span>(<span class="at">name =</span> <span class="st">&quot;soil_analysis&quot;</span>, <span class="at">description =</span> <span class="st">&quot;Soil moisture analysis&quot;</span>,</span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a>                        <span class="at">template =</span> my_soil_data)</span>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a>soil_reg <span class="ot">&lt;-</span> <span class="fu">bf_map</span>(<span class="at">protocol =</span> soil_moisture, <span class="at">data =</span> my_soil_data,</span>
+<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a>                  <span class="at">valMoisture =</span> moisture_percent, <span class="at">registry =</span> soil_reg)</span></code></pre></div>
 </div>
 <div id="quality-assurance-checklist" class="section level2">
 <h2>Quality Assurance Checklist</h2>
