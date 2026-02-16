@@ -24,11 +24,11 @@ Determine encoding
 \details{
 Floating-point values are encoded using three fields that map
 directly to bit sequences. Any numeric value can be written in scientific
-notation. For example, the decimal 923.52 becomes 9.2352 × 10². The same
-principle applies in binary: the value 101011.101₂ becomes 1.01011101 × 2⁵.
+notation. For example, the decimal 923.52 becomes 9.2352 × 10^2. The same
+principle applies in binary: the value 101011.101 becomes 1.01011101 × 2^5.
 This binary scientific notation directly yields the three encoding fields:
 \itemize{
-\item Sign: whether the value is positive or negative (here: positive → 0)
+\item Sign: whether the value is positive or negative (here: positive -> 0)
 \item Exponent: the power of 2 (here: 5)
 \item Significand: the fractional part after the leading 1 (here: 01011101)
 }

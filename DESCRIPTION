@@ -7,7 +7,9 @@ Authors@R: c(
            email = "steffen.ehrmann@posteo.de", 
            comment = c(ORCID = "0000-0002-2958-0796"))
     )
-Description: Record algorithmic and analytic meta data along a workflow to store that in a bitfield, which can be published alongside any (modelled) data products.
+Description: Record algorithmic and analytic meta data along a workflow to store 
+    that in a bitfield, which can be published alongside any (modelled) data 
+    products.
 URL: https://github.com/bitfloat/bitfield, https://bitfloat.github.io/bitfield/
 BugReports: https://github.com/bitfloat/bitfield/issues
 License: GPL (>= 3)

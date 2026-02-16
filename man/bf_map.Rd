@@ -83,7 +83,7 @@ bit-sequence (see \code{\link{.makeEncoding}} for details on the
 or truncates decimal places, even for ordinary numeric vectors. Internally,
 R stores numeric values as double-precision floating-point numbers (64
 bits, with 52 bits for the significand), providing approximately 16
-significant decimal digits ((\code{log10(2^52)}) ≈ 15.95). If a bit flag
+significant decimal digits (\eqn{log10(2^52) = 15.65}). If a bit flag
 appears inconsistent with the displayed values, verify the full precision
 using \code{sprintf("\%.16f", values)}. Using more than 16 digits will show
 additional figures, but these are artifacts of binary-to-decimal conversion
