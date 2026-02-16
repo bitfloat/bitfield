@@ -45,7 +45,7 @@ into a bitfield."><meta property="og:image" content="http://bitfloat.github.io/b
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Map variables to a bitflag</h1>
-    <small class="dont-index">Source: <a href="https://github.com/bitfloat/bitfield/blob/bitfield_v1.0.0/R/bf_map.R" class="external-link"><code>R/bf_map.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/bitfloat/bitfield/blob/main/R/bf_map.R" class="external-link"><code>R/bf_map.R</code></a></small>
     <div class="hidden name"><code>bf_map.Rd</code></div>
     </div>
 
@@ -147,7 +147,7 @@ bit-sequence (see <code><a href="dot-makeEncoding.html">.makeEncoding</a></code>
 or truncates decimal places, even for ordinary numeric vectors. Internally,
 R stores numeric values as double-precision floating-point numbers (64
 bits, with 52 bits for the significand), providing approximately 16
-significant decimal digits ((<code>log10(2^52)</code>) ≈ 15.95). If a bit flag
+significant decimal digits (\(log10(2^52) = 15.65\)). If a bit flag
 appears inconsistent with the displayed values, verify the full precision
 using <code>sprintf("%.16f", values)</code>. Using more than 16 digits will show
 additional figures, but these are artifacts of binary-to-decimal conversion

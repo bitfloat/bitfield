@@ -44,7 +44,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Determine encoding</h1>
-    <small class="dont-index">Source: <a href="https://github.com/bitfloat/bitfield/blob/bitfield_v1.0.0/R/helpers.R" class="external-link"><code>R/helpers.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/bitfloat/bitfield/blob/main/R/helpers.R" class="external-link"><code>R/helpers.R</code></a></small>
     <div class="hidden name"><code>dot-makeEncoding.Rd</code></div>
     </div>
 
@@ -82,9 +82,9 @@ an additional provenance term.</p>
     <h2>Details</h2>
     <p>Floating-point values are encoded using three fields that map
 directly to bit sequences. Any numeric value can be written in scientific
-notation. For example, the decimal 923.52 becomes 9.2352 × 10². The same
-principle applies in binary: the value 101011.101₂ becomes 1.01011101 × 2⁵.
-This binary scientific notation directly yields the three encoding fields:</p><ul><li><p>Sign: whether the value is positive or negative (here: positive → 0)</p></li>
+notation. For example, the decimal 923.52 becomes 9.2352 × 10^2. The same
+principle applies in binary: the value 101011.101 becomes 1.01011101 × 2^5.
+This binary scientific notation directly yields the three encoding fields:</p><ul><li><p>Sign: whether the value is positive or negative (here: positive -&gt; 0)</p></li>
 <li><p>Exponent: the power of 2 (here: 5)</p></li>
 <li><p>Significand: the fractional part after the leading 1 (here: 01011101)</p></li>
 </ul><p>For background on floating-point representation, see <a href="https://www.cs.cornell.edu/~tomf/notes/cps104/floating" class="external-link">'Floating
